@@ -39,24 +39,24 @@ public:
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        dst_u8[jr] = (src.data[ir] * coeff_r + src.data[ir + 1] * coeff_g +
+        dst_u8[jr] = (u_char)(src.data[ir] * coeff_r + src.data[ir + 1] * coeff_g +
                       src.data[ir + 2] * coeff_b + 8192) >>
                      14;
         dst_u8[jr + 1] =
-            (src.data[ir + cn] * coeff_r + src.data[ir + cn + 1] * coeff_g +
+            (u_char)(src.data[ir + cn] * coeff_r + src.data[ir + cn + 1] * coeff_g +
              src.data[ir + cn + 2] * coeff_b + 8192) >>
             14;
         dst_u8[jr + 2] =
-            (src.data[ir + cn2] * coeff_r + src.data[ir + cn2 + 1] * coeff_g +
+            (u_char)(src.data[ir + cn2] * coeff_r + src.data[ir + cn2 + 1] * coeff_g +
              src.data[ir + cn2 + 2] * coeff_b + 8192) >>
             14;
         dst_u8[jr + 3] =
-            (src.data[ir + cn3] * coeff_r + src.data[ir + cn3 + 1] * coeff_g +
+            (u_char)(src.data[ir + cn3] * coeff_r + src.data[ir + cn3 + 1] * coeff_g +
              src.data[ir + cn3 + 2] * coeff_b + 8192) >>
             14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        dst_u8[jr] = (src.data[ir] * coeff_r + src.data[ir + 1] * coeff_g +
+        dst_u8[jr] = (u_char)(src.data[ir] * coeff_r + src.data[ir + 1] * coeff_g +
                       src.data[ir + 2] * coeff_b + 8192) >>
                      14;
       }

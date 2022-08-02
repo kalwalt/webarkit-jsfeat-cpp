@@ -1,5 +1,6 @@
 #include <matrix_t/matrix_t.h>
 #include <orb/rectify_patch.h>
+#include <types/types.h>
 #include <imgproc/imgproc.h>
 #include <stdlib.h>
 
@@ -18,6 +19,5 @@ int main() {
   matrix_t src(3, 3, 0x0100 | 0x04, 0x0100);
   matrix_t dst(3, 3, 0x0100 | 0x01, 0x0100);
   imgproc img;
-  img.grayscale(src, 3, 3, dst, 0);
-
+  img.grayscale(src, 3, 3, dst, Colors::COLOR_RGBA2GRAY);
 }

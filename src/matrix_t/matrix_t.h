@@ -31,12 +31,8 @@ public:
   void allocate() {
     if (type == Types::U8_t) {
       //printf("type is : %i\n", type);
-      Array<u_char> array(size - 1);
-      for (int i = 0; i < size - 1; i++) {
-        array.at(i) = 0;
-        //std::cout << (int)array[i] << std::endl;
-      }
-      data = array.data();
+      _array.assign(size - 1, 0);
+      data = _array.data();
       //std::cout << (int)data[0] << std::endl;
     }
   }
@@ -62,6 +58,7 @@ public:
 private:
   int size;
   Array<int> _data_type_size;
+  Array<u_char> _array;
   int get_data_type(int type) { return (type & 0xFF00); }
   int get_channel(int type) { return (type & 0xFF); };
   int get_data_type_size(int type) {
