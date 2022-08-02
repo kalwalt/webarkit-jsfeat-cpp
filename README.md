@@ -1,2 +1,2 @@
-# webarkit-jsfeat-c-
-c++ jsfeat version
+# webarkit-jsfeat-cpp
+c++ jsfeat version to build a WASM version. WIP !

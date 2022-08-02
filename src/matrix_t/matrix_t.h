@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cstdio>
 
+namespace jsfeat {
 class matrix_t {
 
 public:
@@ -65,4 +66,6 @@ private:
     return _data_type_size[(type & 0xFF00) >> 8];
   }
 };
+}
+
 #endif

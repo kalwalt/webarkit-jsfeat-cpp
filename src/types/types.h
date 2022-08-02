@@ -3,7 +3,7 @@
 
 #include <cstdio>
 #include <vector>
-
+namespace jsfeat {
 typedef unsigned char u_char;
 template <typename T> using Array = std::vector<T>;
 
@@ -20,10 +20,11 @@ enum Types {
 };
 
 enum Colors {
-    COLOR_RGBA2GRAY = 0,
-    COLOR_RGB2GRAY = 1,
-    COLOR_BGRA2GRAY = 2,
-    COLOR_BGR2GRAY = 3
+  COLOR_RGBA2GRAY = 0,
+  COLOR_RGB2GRAY = 1,
+  COLOR_BGRA2GRAY = 2,
+  COLOR_BGR2GRAY = 3
 };
+} // namespace jsfeat
 
 #endif

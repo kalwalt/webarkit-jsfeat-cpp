@@ -2,6 +2,8 @@
 #include <orb/rectify_patch.h>
 #include <stdlib.h>
 
+using namespace jsfeat;
+
 int main() {
   srand(1);
   for (int i = 0; i < 4; ++i) {
