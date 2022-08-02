@@ -18,12 +18,14 @@ public:
   matrix_t(int c, int r, int data_type, int data_buffer) {
     cols = c;
     rows = r;
-    size = (cols * rows);
     type = get_data_type(data_type) | 0;
     printf("type is : %i\n", type);
     channel = get_channel(data_type) | 0;
+    printf("channel is : %i\n", channel);
     _data_type_size = {-1, 1,  4,  -1, 4,  -1, -1, -1, 8,
                        -1, -1, -1, -1, -1, -1, -1, 8};
+    size = (cols * get_data_type_size(data_type) * channel) * rows; //(cols * rows);
+    printf("size is: %i\n", size);
   };
 
   void allocate() {

@@ -30,7 +30,7 @@ void rectify_patch(float angle, int px, int py, int psize) {
 };
 
 void test_matrix_t() {
-  jsfeat::matrix_t m(2, 2, 0x0100, 0x0100);
+  jsfeat::matrix_t m(2, 2, 0x0100 | 0x01, 0x0100);
   // cout << m << endl;
   m.allocate();
 }
