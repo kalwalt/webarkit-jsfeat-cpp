@@ -4,6 +4,7 @@
 #include <types/types.h>
 #include <cstddef>
 #include <cstdio>
+#include <iostream>
 
 namespace jsfeat {
 class matrix_t {
@@ -14,6 +15,7 @@ public:
   int type;
   int channel;
   u_char *data;
+  Array<u_char> u8;
 
   matrix_t(int c, int r, int data_type, int data_buffer) {
     cols = c;
@@ -31,8 +33,14 @@ public:
   void allocate() {
     if (type == Types::U8_t) {
       //printf("type is : %i\n", type);
-      _array.assign(size - 1, 0);
-      data = _array.data();
+      //u8.assign(size - 1, 0);
+      std::cout << "size parameter: " << size << std::endl;
+      for (int i=0; i < size-1; i++){
+       u8.push_back(i);
+      }
+      std::cout << "size is: " << u8.size() <<  std::endl;
+      std::cout << "allocated" << std::endl;
+      //data = _array.data();
       //std::cout << (int)data[0] << std::endl;
     }
   }
@@ -42,7 +50,8 @@ public:
       ch = channel;
     }
     // relocate buffer only if new size doesnt fit
-    int new_size = (c * get_data_type_size(type) * ch) * r;
+    int new_size = ((c * get_data_type_size(type) * ch) * r)-1;
+    std::cout << "New size is: " << new_size << std::endl;
     if (new_size > size-1) {
       cols = c;
       rows = r;
@@ -58,7 +67,6 @@ public:
 private:
   int size;
   Array<int> _data_type_size;
-  Array<u_char> _array;
   int get_data_type(int type) { return (type & 0xFF00); }
   int get_channel(int type) { return (type & 0xFF); };
   int get_data_type_size(int type) {

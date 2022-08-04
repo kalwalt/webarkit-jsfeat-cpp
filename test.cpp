@@ -16,8 +16,11 @@ int main() {
   test_matrix_t();
   matrix_t t(3, 1, 0x0100 | 0x01, 0x0100);
   test2_matrix_t(t);
-  matrix_t src(3, 3, 0x0100 | 0x04, 0x0100);
-  matrix_t dst(3, 3, 0x0100 | 0x01, 0x0100);
+  matrix_t *src = new matrix_t(3, 3, 0x0100 | 0x04, 0x0100);
+  matrix_t *dst = new matrix_t(3, 3, 0x0100 | 0x01, 0x0100);
+  src->allocate();
+  dst->allocate();
+  std::cout << src->u8.size() <<  std::endl;
   imgproc img;
   img.grayscale(src, 3, 3, dst, Colors::COLOR_RGBA2GRAY);
 }
