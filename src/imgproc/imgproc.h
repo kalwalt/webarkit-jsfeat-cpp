@@ -79,6 +79,61 @@ public:
       std::cout << "value dst: " << (int)dst->u8.at(i) << std::endl;
     }
   };
+
+  void grayscale(u_char *src, int w, int h, matrix_t *dst, int code) {
+    // this is default image data representation in browser
+    if (!code) {
+      code = Colors::COLOR_RGBA2GRAY;
+    }
+    int videosize = w * h;
+    int x = 0;
+    int y = 0;
+    int i = 0;
+    int j = 0;
+    int ir = 0;
+    int jr = 0;
+    int coeff_r = 4899;
+    int coeff_g = 9617;
+    int coeff_b = 1868;
+    int cn = 4;
+
+    if (code == Colors::COLOR_BGRA2GRAY || code == Colors::COLOR_BGR2GRAY) {
+      coeff_r = 1868;
+      coeff_b = 4899;
+    }
+    if (code == Colors::COLOR_RGB2GRAY || code == Colors::COLOR_BGR2GRAY) {
+      cn = 3;
+    }
+    int cn2 = cn << 1;
+    int cn3 = (cn * 3) | 0;
+    std::cout << "cn3: " << cn3 << std::endl;
+
+    dst->resize(w, h, 1);
+    std::cout << "dst size is: " << dst->u8.size() << std::endl;
+    //std::cout << src->length() << std::endl;
+    /*if (src->u8.empty()) {
+      std::cout << "vector is empty" << std::endl;
+    }*/
+    // this should print a zero value
+    std::cout << "value: " << (int)src[0] << std::endl;
+
+    // code from jsartoolkit5
+    int q = 0;
+    int r;
+    int g;
+    int b;
+
+    for (int p = 0; p < videosize; p++) {
+      r = src[q + 0], g = src[q + 1], b = src[q + 2];
+      std::cout << "p is: " << p << std::endl;
+      // https://stackoverflow.com/a/596241/5843642
+      dst->u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
+      q += 4;
+    }
+    for (int i = 0; i < dst->u8.size(); i++) {
+      std::cout << "value dst: " << (int)dst->u8.at(i) << std::endl;
+    }
+  };
 };
 } // namespace jsfeat
 

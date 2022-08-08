@@ -26,4 +26,5 @@ int main() {
   std::cout << src->u8.size() <<  std::endl;
   imgproc img;
   img.grayscale(src, 2, 2, dst, Colors::COLOR_RGBA2GRAY);
+  img.grayscale(some, 2, 2, dst, Colors::COLOR_RGBA2GRAY);
 }
