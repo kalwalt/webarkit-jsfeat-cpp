@@ -16,14 +16,14 @@ int main() {
   test_matrix_t();
   matrix_t t(3, 1, 0x0100 | 0x01, 0x0100);
   test2_matrix_t(t);
-  matrix_t *src = new matrix_t(3, 3, 0x0100 | 0x04, 0x0100);
-  matrix_t *dst = new matrix_t(3, 3, 0x0100 | 0x01, 0x0100);
+  matrix_t *src = new matrix_t(2, 2, 0x0100 | 0x04, 0x0100);
+  matrix_t *dst = new matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
   src->allocate();
-  u_char some[] = { 23, 20, 12, 24, 212, 220, 120, 46, 78, 92};
+  u_char some[] = { 23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120 };
   src->data = some;
   src->fill(some);
   dst->allocate();
   std::cout << src->u8.size() <<  std::endl;
   imgproc img;
-  img.grayscale(src, 3, 3, dst, Colors::COLOR_RGBA2GRAY);
+  img.grayscale(src, 2, 2, dst, Colors::COLOR_RGBA2GRAY);
 }
