@@ -36,7 +36,7 @@ public:
       // printf("type is : %i\n", type);
       // u8.assign(size - 1, 0);
       std::cout << "size parameter: " << size << std::endl;
-      for (int i = 0; i < size - 1; i++) {
+      for (int i = 0; i < size; i++) {
         u8.push_back(i);
       }
       std::cout << "size is: " << u8.size() << std::endl;
