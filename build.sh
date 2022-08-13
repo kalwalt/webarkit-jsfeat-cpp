@@ -57,5 +57,5 @@ if [ $BUILD_EM ]; then
   echo "Building jsfeat with emscripten..."
   emcc -Isrc src/jsfeat.cpp -r -o build/libjsfeat.bc
   echo "Linking libs and final emscripten output."
-  emcc -Isrc build/libjsfeat.bc emscripten/webarkitJsfeat.cpp --bind -o build/grayscale.js
+  emcc -Isrc build/libjsfeat.bc emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale -sEXPORTED_RUNTIME_METHODS=cwrap --bind -o build/grayscale.js
 fi

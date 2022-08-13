@@ -3,7 +3,7 @@
 <body>
 
     <script>
-       
+
         var Module = {
             onRuntimeInitialized: function () {
                 console.log(Module)
@@ -13,8 +13,19 @@
                 m.allocate();
 
                 var some = [23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120];
+                var num = 16;
+                var buf = Module._malloc(100);
+                var arr = new Uint8Array(num);
+                for (var i = 0; i < num; i++) {
+                    arr[i] = some[i];
+                }
 
-                Module.toGrayscale(some, 2, 2, m, 0)
+                //Module.toGrayscale(arr, 2, 2, m, 0);
+
+                var Grayscale = Module.cwrap("Grayscale", 'number', 'number', 'number', 'number', 'number');
+                Grayscale(arr, 2, 2, m, 0);
+
+                Module._free(buf);
             }
         };
     </script>
