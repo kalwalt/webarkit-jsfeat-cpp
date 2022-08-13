@@ -6618,6 +6618,9 @@ var asm = createWasm();
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
 
 /** @type {function(...*):?} */
+var _Grayscale = Module["_Grayscale"] = createExportWrapper("Grayscale");
+
+/** @type {function(...*):?} */
 var ___getTypeName = Module["___getTypeName"] = createExportWrapper("__getTypeName");
 
 /** @type {function(...*):?} */
@@ -6691,7 +6694,7 @@ var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = createExportWrapper("dynCall
 unexportedRuntimeFunction('intArrayFromString', false);
 unexportedRuntimeFunction('intArrayToString', false);
 unexportedRuntimeFunction('ccall', false);
-unexportedRuntimeFunction('cwrap', false);
+Module["cwrap"] = cwrap;
 unexportedRuntimeFunction('setValue', false);
 unexportedRuntimeFunction('getValue', false);
 unexportedRuntimeFunction('allocate', false);
