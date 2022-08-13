@@ -3,10 +3,18 @@
 <body>
 
     <script>
-        console.log(Module)
+       
         var Module = {
             onRuntimeInitialized: function () {
-                var m = new Module.matrix_t(1, 2, 2, 256);
+                console.log(Module)
+                console.log(Module.Types.U8_t.value);
+                console.log(Module.Colors.COLOR_RGBA2GRAY.value);
+                var m = new Module.matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
+                m.allocate();
+
+                var some = [23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120];
+
+                Module.toGrayscale(some, 2, 2, m, 0)
             }
         };
     </script>
