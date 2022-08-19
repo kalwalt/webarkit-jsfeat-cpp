@@ -18,7 +18,7 @@ do
             ;;
         emscripten) BUILD_EM=1
             ;;
-        --debug) DEBUG=
+        --debug_em) DEBUG_EM=1
             ;;
         --*) echo "bad option $1"
             usage
@@ -53,9 +53,18 @@ if [ $BUILD_LINUX ] ; then
   g++ -Isrc test.cpp -g -o test_d
 fi
 
+MEMORY_OPTION=' -s TOTAL_MEMORY=268435456 -s ALLOW_MEMORY_GROWTH=1 '
+
 if [ $BUILD_EM ]; then
   echo "Building jsfeat with emscripten..."
   emcc -Isrc src/jsfeat.cpp -r -o build/libjsfeat.bc
   echo "Linking libs and final emscripten output."
-  emcc -Isrc build/libjsfeat.bc emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale -sEXPORTED_RUNTIME_METHODS=cwrap --bind -o build/grayscale.js
+  emcc -Isrc build/libjsfeat.bc emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale -sEXPORTED_RUNTIME_METHODS=cwrap $MEMORY_OPTION --bind -o build/grayscale.js
+fi
+
+if [ $DEBUG_EM ]; then
+  echo "Building jsfeat with emscripten..."
+  emcc -Isrc src/jsfeat.cpp -std=c++17 -fsanitize=undefined -r -o build/libjsfeat_debug.bc
+  echo "Linking libs and final emscripten output."
+  emcc -Isrc build/libjsfeat_debug.bc -std=c++17 emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale -sEXPORTED_RUNTIME_METHODS=cwrap -g -O1 $MEMORY_OPTION -fsanitize=undefined -sASSERTIONS=1 --profiling -s DEMANGLE_SUPPORT=1 --bind -o build/grayscale_debug.js
 fi

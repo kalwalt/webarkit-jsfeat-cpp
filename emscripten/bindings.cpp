@@ -5,6 +5,8 @@ using namespace emscripten;
 
 
 EMSCRIPTEN_BINDINGS(webarkit) {
+    register_vector<Array<u_char>>("vector_u_char");
+
     class_<matrix_t>("matrix_t")
     .constructor<int, int, int, int>()
     .function("allocate", &matrix_t::allocate)
