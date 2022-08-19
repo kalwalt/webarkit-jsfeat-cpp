@@ -8,9 +8,11 @@
             onRuntimeInitialized: function () {
                 console.log(Module)
                 console.log(Module.Types.U8_t.value);
-                console.log(Module.Colors.COLOR_RGBA2GRAY.value);
+                var RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value
+                console.log(RGBA2GRAY);
                 var m = new Module.matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
-                m.allocate();
+                //m.allocate();
+               
 
                 var some = [23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120];
                 var num = some.length;
@@ -19,20 +21,22 @@
                 for (var i = 0; i < num; i++) {
                     arr[i] = some[i];
                 }
+                console.log(arr);
 
                 Module.HEAPU8.set(arr, buf);
+                console.log(buf);
 
                 //Module.toGrayscale(arr, 2, 2, m, 0);
 
-                var Grayscale = Module.cwrap("Grayscale", 'number', ['number', 'number', 'number', 'number', 'number']);
-                Grayscale(buf, 2, 2, m, 0);
+                var Grayscale = Module.cwrap('Grayscale', 'null', ['number', 'number', 'number', 'number', 'number']);
+                Grayscale(buf, 2, 2, m, RGBA2GRAY);
                 m.delete();
 
                 Module._free(buf);
             }
         };
     </script>
-    <script src="grayscale.js"></script>
+    <script src="grayscale_debug.js"></script>
 </body>
 
 </html>

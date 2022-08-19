@@ -24,11 +24,12 @@ public:
     printf("type is : %i\n", type);
     channel = get_channel(data_type) | 0;
     printf("channel is : %i\n", channel);
-    _data_type_size = {-1, 1,  4,  -1, 4,  -1, -1, -1, 8,
-                       -1, -1, -1, -1, -1, -1, -1, 8};
+    _data_type_size.assign({-1, 1,  4,  -1, 4,  -1, -1, -1, 8,
+                       -1, -1, -1, -1, -1, -1, -1, 8});
     size = (cols * get_data_type_size(data_type) * channel) *
            rows; //(cols * rows);
     printf("size is: %i\n", size);
+    data = new u_char[size*channel];
   };
 
   void allocate() {
@@ -37,10 +38,11 @@ public:
       // u8.assign(size - 1, 0);
       std::cout << "size parameter: " << size << std::endl;
       for (int i = 0; i < size; i++) {
-        u8.push_back(i);
+        u8.push_back(0);
       }
       std::cout << "size is: " << u8.size() << std::endl;
       std::cout << "allocated" << std::endl;
+      std::cout << (int)u8.at(0) << std::endl;
       // data = _array.data();
       // std::cout << (int)data[0] << std::endl;
     }
@@ -59,9 +61,17 @@ public:
     if (!ch) {
       ch = channel;
     }
+    std::cout << "channel: " << ch << std::endl;
     // relocate buffer only if new size doesnt fit
+    std::cout << "Type inside resize: " << type << std::endl;
+    std::cout << "Get data type size: " << get_data_type_size(type) << std::endl;
+    std::cout << "size: " << size << std::endl;
     int new_size = ((c * get_data_type_size(type) * ch) * r) - 1;
     std::cout << "New size is: " << new_size << std::endl;
+    new_size = 4;
+    if (u8.empty()) {
+      std::cout << "empty array!" << std::endl;
+    }
     if (new_size > size - 1) {
       cols = c;
       rows = r;
