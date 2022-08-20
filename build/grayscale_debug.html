@@ -16,7 +16,7 @@
 
                 var some = [23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120];
                 var num = some.length;
-                var buf = Module._malloc(100);
+                var buf = Module._malloc(16);
                 var arr = new Uint8Array(num);
                 for (var i = 0; i < num; i++) {
                     arr[i] = some[i];
@@ -28,10 +28,23 @@
 
                 //Module.toGrayscale(arr, 2, 2, m, 0);
 
-                var Grayscale = Module.cwrap('Grayscale', 'null', ['number', 'number', 'number', 'number', 'number']);
+                /*var Grayscale = Module.cwrap('Grayscale', 'null', ['number', 'number', 'number', 'number', 'number']);
                 Grayscale(buf, 2, 2, m, RGBA2GRAY);
-                m.delete();
+                m.delete();*/
 
+               
+
+                var Mat_t = { 
+                    size: 4,
+                    cols: 2,
+                    rows: 2,
+                    channels: 1,
+                    data: []
+                }
+
+
+                var Grayscale_s = Module.cwrap('Grayscale_s', 'null', ['number', 'number', 'number', 'number', 'number']);
+                Grayscale_s(buf, 2, 2, Mat_t, RGBA2GRAY);
                 Module._free(buf);
             }
         };

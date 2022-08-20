@@ -160,7 +160,7 @@ public:
     }*/
   };
 
-  void grayscale_s(u_char *src, int w, int h, Mat_t *dst, int code) {
+  void grayscale_s(u_char *src, int w, int h, Mat_t dst, int code) {
     // this is default image data representation in browser
     if (!code) {
       code = Colors::COLOR_RGBA2GRAY;
@@ -189,7 +189,7 @@ public:
     std::cout << "cn3: " << cn3 << std::endl;
 
     //dst->resize(w, h, 1);
-    std::cout << "dst size is: " << dst->data.size() << std::endl;
+    std::cout << "dst size is: " << dst.data.size() << std::endl;
     // this should print a zero value
     std::cout << "value: " << (int)src[0] << std::endl;
 
@@ -203,11 +203,12 @@ public:
       r = src[q + 0], g = src[q + 1], b = src[q + 2];
       std::cout << "p is: " << p << std::endl;
       // https://stackoverflow.com/a/596241/5843642
-      dst->data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
+      //dst.data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
+      dst.data.push_back ((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
-    for (int i = 0; i < dst->data.size(); i++) {
-      std::cout << "value dst: " << (int)dst->data.at(i) << std::endl;
+    for (int i = 0; i < dst.data.size(); i++) {
+      std::cout << "value dst: " << (int)dst.data.at(i) << std::endl;
     }
   };
 };

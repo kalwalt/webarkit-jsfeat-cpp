@@ -29,5 +29,12 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .value("COLOR_BGRA2GRAY", COLOR_BGRA2GRAY)
     .value("COLOR_BGR2GRAY", COLOR_BGR2GRAY);
 
+    value_object<Mat_t>("Mat_t")
+    .field("size", &Mat_t::size)
+    .field("cols", &Mat_t::cols)
+    .field("rows", &Mat_t::rows)
+    .field("channels", &Mat_t::channels)
+    .field("data", &Mat_t::data);
+
     function("toGrayscale", &toGrayscale, allow_raw_pointers());
 }
