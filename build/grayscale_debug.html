@@ -12,19 +12,26 @@
                 console.log(RGBA2GRAY);
                 var m = new Module.matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
                 //m.allocate();
-               
 
-                var some = [23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120];
-                var num = some.length;
-                var buf = Module._malloc(16);
-                var arr = new Uint8Array(num);
+
+                var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
+                //var lengthArray = some.length;
+                var nDataBytes = data.length * data.BYTES_PER_ELEMENT;
+                var dataPtr = Module._malloc(nDataBytes);
+
+                // Copy data to Emscripten heap (directly accessed from Module.HEAPU8)
+                var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
+                console.log(data);
+                dataHeap.set(new Uint8Array(data.buffer));
+                console.log(dataHeap);
+                /*var arr = new Uint8Array(num);
                 for (var i = 0; i < num; i++) {
                     arr[i] = some[i];
                 }
                 console.log(arr);
 
-                Module.HEAPU8.set(arr, buf);
-                console.log(buf);
+                Module.HEAPU8.set(arr, buf);*/
+                //console.log(buf);
 
                 //Module.toGrayscale(arr, 2, 2, m, 0);
 
@@ -32,20 +39,29 @@
                 Grayscale(buf, 2, 2, m, RGBA2GRAY);
                 m.delete();*/
 
-               
 
-                var Mat_t = { 
+                var data = new Module.vector_u_char();
+                var Mat_t = {
                     size: 4,
                     cols: 2,
                     rows: 2,
                     channels: 1,
-                    data: []
+                    data: data
                 }
 
 
-                var Grayscale_s = Module.cwrap('Grayscale_s', 'null', ['number', 'number', 'number', 'number', 'number']);
-                Grayscale_s(buf, 2, 2, Mat_t, RGBA2GRAY);
-                Module._free(buf);
+                /*var Grayscale_s = Module.cwrap('Grayscale_s', 'null', ['number', 'number', 'number', 'number', 'number']);
+                Grayscale_s(buf, 2, 2, Mat_t, RGBA2GRAY);*/
+
+                /*var Grayscale_t = Module.cwrap('Grayscale_t', 'number', ['number', 'number', 'number', 'number']);
+                var mt = Grayscale_t(dataHeap.byteOffset, 2, 2, RGBA2GRAY);
+                console.log(mt);*/
+                var Grayscale_t = Module._Grayscale_t(dataHeap.byteOffset, 2, 2, RGBA2GRAY);
+                console.log(Grayscale_t);
+                Module._free(dataHeap.byteOffset);
+
+
+
             }
         };
     </script>
