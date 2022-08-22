@@ -3,12 +3,22 @@
 
 #include <iostream>
 #include <matrix_t/matrix_t.h>
+#include <sys/types.h>
 #include <types/types.h>
 #include <vector>
 #include <iterator>
+#include <emscripten/val.h>
 
 namespace jsfeat {
 
+
+struct _Mat_t{
+  int size;
+  int cols;
+  int rows;
+  int channels;
+  emscripten::val data = emscripten::val(true);
+};
 struct Mat_t {
   int size;
   int cols;
@@ -263,6 +273,61 @@ public:
     for (int i = 0; i < dst.data.size(); i++) {
       std::cout << "value dst: " << (int)dst.data.at(i) << std::endl;
     }
+    return dst;
+  };
+
+  _Mat_t grayscale_tt(u_char *src, int w, int h, int code) {
+    _Mat_t dst;
+    // this is default image data representation in browser
+    if (!code) {
+      code = Colors::COLOR_RGBA2GRAY;
+    }
+    int videosize = w * h;
+    int x = 0;
+    int y = 0;
+    int i = 0;
+    int j = 0;
+    int ir = 0;
+    int jr = 0;
+    int coeff_r = 4899;
+    int coeff_g = 9617;
+    int coeff_b = 1868;
+    int cn = 4;
+
+    if (code == Colors::COLOR_BGRA2GRAY || code == Colors::COLOR_BGR2GRAY) {
+      coeff_r = 1868;
+      coeff_b = 4899;
+    }
+    if (code == Colors::COLOR_RGB2GRAY || code == Colors::COLOR_BGR2GRAY) {
+      cn = 3;
+    }
+    int cn2 = cn << 1;
+    int cn3 = (cn * 3) | 0;
+    std::cout << "cn3: " << cn3 << std::endl;
+
+    //dst->resize(w, h, 1);
+    //std::cout << "dst size is: " << dst.data.size() << std::endl;
+    // this should print a zero value
+    std::cout << "value: " << (int)src[0] << std::endl;
+
+    // code from jsartoolkit5
+    int q = 0;
+    int r;
+    int g;
+    int b;
+
+    for (int p = 0; p < videosize; p++) {
+      r = src[q + 0], g = src[q + 1], b = src[q + 2];
+      std::cout << "p is: " << p << std::endl;
+      //https://stackoverflow.com/a/596241/5843642
+      //dst.data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
+      //dst.data[p] = ((r + r + r + b + g + g + g + g) >> 3);
+      dst.data = emscripten:: val(true);
+      q += 4;
+    }
+    /*for (int i = 0; i < dst.data.size(); i++) {
+      std::cout << "value dst: " << (int)dst.data.at(i) << std::endl;
+    }*/
     return dst;
   };
 };

@@ -18,10 +18,14 @@ void Grayscale_s(u_char *src, int w, int h, Mat_t dst, int code) {
   grayscale_s(src, w, h, dst, code);
 }
 
-std::vector<u_char> Grayscale_t(u_char *src, int w, int h, int code) {
-  Mat_t m;
-  m = grayscale_t(src, w, h, code);
-  return m.data; 
+Mat_t Grayscale_t(int w, int h, int code) {
+  u_char some[] = { 23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120 };
+  return grayscale_t(some, w, h, code);
+}
+
+_Mat_t Grayscale_tt(int w, int h, int code) {
+  u_char some[] = { 23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120 };
+  return grayscale_tt(some, w, h, code);
 }
 
 }

@@ -53,11 +53,12 @@
                 /*var Grayscale_s = Module.cwrap('Grayscale_s', 'null', ['number', 'number', 'number', 'number', 'number']);
                 Grayscale_s(buf, 2, 2, Mat_t, RGBA2GRAY);*/
 
-                /*var Grayscale_t = Module.cwrap('Grayscale_t', 'number', ['number', 'number', 'number', 'number']);
+                /*var Grayscale_t = Module.cwrap('Grayscale_t', 'number', ['number', 'number', 'number', 'number'],[dataHeap.byteOffset]);
                 var mt = Grayscale_t(dataHeap.byteOffset, 2, 2, RGBA2GRAY);
                 console.log(mt);*/
-                var Grayscale_t = Module._Grayscale_t(dataHeap.byteOffset, 2, 2, RGBA2GRAY);
-                console.log(Grayscale_t);
+                //var Grayscale_t = Module.Grayscale_t(dataHeap.byteOffset, 2, 2, RGBA2GRAY);
+                var Grayscale_tt = Module.Grayscale_tt(2, 2, RGBA2GRAY);
+                console.log(Grayscale_tt);
                 Module._free(dataHeap.byteOffset);
 
 

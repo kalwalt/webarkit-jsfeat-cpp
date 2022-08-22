@@ -5,7 +5,7 @@ using namespace emscripten;
 
 
 EMSCRIPTEN_BINDINGS(webarkit) {
-    register_vector<Array<u_char>>("vector_u_char");
+    register_vector<std::vector<u_char>>("vector_u_char");
 
     class_<matrix_t>("matrix_t")
     .constructor<int, int, int, int>()
@@ -36,6 +36,16 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .field("channels", &Mat_t::channels)
     .field("data", &Mat_t::data);
 
+    value_object<_Mat_t>("_Mat_t")
+    .field("size", &_Mat_t::size)
+    .field("cols", &_Mat_t::cols)
+    .field("rows", &_Mat_t::rows)
+    .field("channels", &_Mat_t::channels)
+    .field("data", &_Mat_t::data);
+
+
     function("toGrayscale", &toGrayscale, allow_raw_pointers());
     //function("Grayscale_t", &Grayscale_t, allow_raw_pointers());
+    function("Grayscale_t", &Grayscale_t);
+    function("Grayscale_tt", &Grayscale_tt);
 }

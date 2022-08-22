@@ -66,5 +66,5 @@ if [ $DEBUG_EM ]; then
   echo "Building jsfeat with emscripten..."
   emcc -Isrc src/jsfeat.cpp -std=c++17 -fsanitize=undefined -r -o build/libjsfeat_debug.bc
   echo "Linking libs and final emscripten output."
-  emcc -Isrc build/libjsfeat_debug.bc -std=c++17 emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale,_Grayscale_s,_Grayscale_t -sEXPORTED_RUNTIME_METHODS=cwrap,getValue -g -O1 $MEMORY_OPTION -fsanitize=undefined -sASSERTIONS=1 --profiling -s DEMANGLE_SUPPORT=1 --bind -o build/grayscale_debug.js
+  emcc -Isrc build/libjsfeat_debug.bc -std=c++17 emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale,_Grayscale_s -sEXPORTED_RUNTIME_METHODS=cwrap -g -O1 $MEMORY_OPTION -fsanitize=undefined -sASSERTIONS=1 --profiling -s DEMANGLE_SUPPORT=1 --bind -o build/grayscale_debug.js
 fi
