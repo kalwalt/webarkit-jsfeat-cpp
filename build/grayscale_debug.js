@@ -1880,8 +1880,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  89388: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
- 89486: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  92700: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
+ 92798: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 
 
@@ -7345,9 +7345,6 @@ var _Grayscale = Module["_Grayscale"] = createExportWrapper("Grayscale");
 var _Grayscale_s = Module["_Grayscale_s"] = createExportWrapper("Grayscale_s");
 
 /** @type {function(...*):?} */
-var _Grayscale_t = Module["_Grayscale_t"] = createExportWrapper("Grayscale_t");
-
-/** @type {function(...*):?} */
 var ___getTypeName = Module["___getTypeName"] = createExportWrapper("__getTypeName");
 
 /** @type {function(...*):?} */
@@ -7438,7 +7435,7 @@ unexportedRuntimeFunction('intArrayToString', false);
 unexportedRuntimeFunction('ccall', false);
 Module["cwrap"] = cwrap;
 unexportedRuntimeFunction('setValue', false);
-Module["getValue"] = getValue;
+unexportedRuntimeFunction('getValue', false);
 unexportedRuntimeFunction('allocate', false);
 unexportedRuntimeFunction('UTF8ArrayToString', false);
 unexportedRuntimeFunction('UTF8ToString', false);
