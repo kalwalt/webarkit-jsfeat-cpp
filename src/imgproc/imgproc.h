@@ -1,23 +1,21 @@
 #ifndef IMGPROC_H
 #define IMGPROC_H
 
+#include <emscripten/val.h>
 #include <iostream>
 #include <matrix_t/matrix_t.h>
 #include <sys/types.h>
 #include <types/types.h>
 #include <vector>
-#include <iterator>
-#include <emscripten/val.h>
 
 namespace jsfeat {
 
-
-struct _Mat_t{
+struct _Mat_t {
   int size;
   int cols;
   int rows;
   int channels;
-  emscripten::val data = emscripten::val(true);
+  emscripten::val data = emscripten::val::null();
 };
 struct Mat_t {
   int size;
@@ -138,9 +136,9 @@ public:
     int cn3 = (cn * 3) | 0;
     std::cout << "cn3: " << cn3 << std::endl;
 
-    //dst.resize(w, h, 1);
-    //std::cout << "dst size is: " << dst.u8.size() << std::endl;
-    // this should print a zero value
+    // dst.resize(w, h, 1);
+    // std::cout << "dst size is: " << dst.u8.size() << std::endl;
+    //  this should print a zero value
     std::cout << "value: " << (int)src[0] << std::endl;
 
     // code from jsartoolkit5
@@ -153,7 +151,7 @@ public:
     int g;
     int b;
 
-    //std::cout << "data size: " << std::size(dst->data)  << std::endl;
+    // std::cout << "data size: " << std::size(dst->data)  << std::endl;
 
     for (int p = 0; p < videosize; p++) {
       r = src[q + 0];
@@ -162,7 +160,7 @@ public:
       std::cout << "p is: " << p << std::endl;
       dst->data[p] = (r + r + r + b + g + g + g + g) >> 3;
       // https://stackoverflow.com/a/596241/5843642
-      //dst.u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
+      // dst.u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
       q += 4;
     }
     /*for (int i = 0; i < dst.u8.size(); i++) {
@@ -198,7 +196,7 @@ public:
     int cn3 = (cn * 3) | 0;
     std::cout << "cn3: " << cn3 << std::endl;
 
-    //dst->resize(w, h, 1);
+    // dst->resize(w, h, 1);
     std::cout << "dst size is: " << dst.data.size() << std::endl;
     // this should print a zero value
     std::cout << "value: " << (int)src[0] << std::endl;
@@ -213,8 +211,8 @@ public:
       r = src[q + 0], g = src[q + 1], b = src[q + 2];
       std::cout << "p is: " << p << std::endl;
       // https://stackoverflow.com/a/596241/5843642
-      //dst.data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
-      dst.data.push_back ((r + r + r + b + g + g + g + g) >> 3);
+      // dst.data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
+      dst.data.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
     for (int i = 0; i < dst.data.size(); i++) {
@@ -251,7 +249,7 @@ public:
     int cn3 = (cn * 3) | 0;
     std::cout << "cn3: " << cn3 << std::endl;
 
-    //dst->resize(w, h, 1);
+    // dst->resize(w, h, 1);
     std::cout << "dst size is: " << dst.data.size() << std::endl;
     // this should print a zero value
     std::cout << "value: " << (int)src[0] << std::endl;
@@ -266,8 +264,8 @@ public:
       r = src[q + 0], g = src[q + 1], b = src[q + 2];
       std::cout << "p is: " << p << std::endl;
       // https://stackoverflow.com/a/596241/5843642
-      //dst.data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
-      dst.data.push_back ((r + r + r + b + g + g + g + g) >> 3);
+      // dst.data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
+      dst.data.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
     for (int i = 0; i < dst.data.size(); i++) {
@@ -278,6 +276,7 @@ public:
 
   _Mat_t grayscale_tt(u_char *src, int w, int h, int code) {
     _Mat_t dst;
+    std::vector<u_char> output;
     // this is default image data representation in browser
     if (!code) {
       code = Colors::COLOR_RGBA2GRAY;
@@ -305,9 +304,7 @@ public:
     int cn3 = (cn * 3) | 0;
     std::cout << "cn3: " << cn3 << std::endl;
 
-    //dst->resize(w, h, 1);
-    //std::cout << "dst size is: " << dst.data.size() << std::endl;
-    // this should print a zero value
+    // dst->resize(w, h, 1);
     std::cout << "value: " << (int)src[0] << std::endl;
 
     // code from jsartoolkit5
@@ -319,15 +316,15 @@ public:
     for (int p = 0; p < videosize; p++) {
       r = src[q + 0], g = src[q + 1], b = src[q + 2];
       std::cout << "p is: " << p << std::endl;
-      //https://stackoverflow.com/a/596241/5843642
-      //dst.data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
-      //dst.data[p] = ((r + r + r + b + g + g + g + g) >> 3);
-      dst.data = emscripten:: val(true);
+      // https://stackoverflow.com/a/596241/5843642
+      output.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
-    /*for (int i = 0; i < dst.data.size(); i++) {
-      std::cout << "value dst: " << (int)dst.data.at(i) << std::endl;
-    }*/
+    emscripten::val view{
+        emscripten::typed_memory_view(output.size(), output.data())};
+    auto result = emscripten::val::global("Uint8Array").new_(output.size());
+    result.call<void>("set", view);
+    dst.data = view;
     return dst;
   };
 };

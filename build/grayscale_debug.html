@@ -14,7 +14,7 @@
                 //m.allocate();
 
 
-                var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
+               /* var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
                 //var lengthArray = some.length;
                 var nDataBytes = data.length * data.BYTES_PER_ELEMENT;
                 var dataPtr = Module._malloc(nDataBytes);
@@ -23,7 +23,7 @@
                 var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
                 console.log(data);
                 dataHeap.set(new Uint8Array(data.buffer));
-                console.log(dataHeap);
+                console.log(dataHeap);*/
                 /*var arr = new Uint8Array(num);
                 for (var i = 0; i < num; i++) {
                     arr[i] = some[i];
@@ -32,8 +32,6 @@
 
                 Module.HEAPU8.set(arr, buf);*/
                 //console.log(buf);
-
-                //Module.toGrayscale(arr, 2, 2, m, 0);
 
                 /*var Grayscale = Module.cwrap('Grayscale', 'null', ['number', 'number', 'number', 'number', 'number']);
                 Grayscale(buf, 2, 2, m, RGBA2GRAY);
@@ -59,7 +57,7 @@
                 //var Grayscale_t = Module.Grayscale_t(dataHeap.byteOffset, 2, 2, RGBA2GRAY);
                 var Grayscale_tt = Module.Grayscale_tt(2, 2, RGBA2GRAY);
                 console.log(Grayscale_tt);
-                Module._free(dataHeap.byteOffset);
+                //Module._free(dataHeap.byteOffset);
 
 
 
