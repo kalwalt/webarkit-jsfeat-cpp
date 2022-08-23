@@ -1880,8 +1880,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  95996: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
- 96094: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  100540: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
+ 100638: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 
 
@@ -6287,6 +6287,15 @@ var ASM_CONSTS = {
       return nowIsMonotonic;
     }
 
+  function __emval_as(handle, returnType, destructorsRef) {
+      handle = Emval.toValue(handle);
+      returnType = requireRegisteredType(returnType, 'emval::as');
+      var destructors = [];
+      var rd = Emval.toHandle(destructors);
+      HEAP32[destructorsRef >> 2] = rd;
+      return returnType['toWireType'](destructors, handle);
+    }
+
   function __emval_allocateDestructors(destructorsRef) {
       var destructors = [];
       HEAP32[destructorsRef >> 2] = Emval.toHandle(destructors);
@@ -6395,6 +6404,12 @@ var ASM_CONSTS = {
       return returnId;
     }
 
+  function __emval_get_property(handle, key) {
+      handle = Emval.toValue(handle);
+      key = Emval.toValue(key);
+      return Emval.toHandle(handle[key]);
+    }
+
   function __emval_incref(handle) {
       if (handle > 4) {
         emval_handle_array[handle].refcount += 1;
@@ -6448,6 +6463,16 @@ var ASM_CONSTS = {
       }
   
       return newer(handle, argTypes, args);
+    }
+
+  function __emval_new_cstring(v) {
+      return Emval.toHandle(getStringOrSymbol(v));
+    }
+
+  function __emval_run_destructors(handle) {
+      var destructors = Emval.toValue(handle);
+      runDestructors(destructors);
+      __emval_decref(handle);
     }
 
   function __emval_take_value(type, argv) {
@@ -7462,12 +7487,16 @@ var asmLibraryArg = {
   "_embind_register_void": __embind_register_void,
   "_emscripten_date_now": __emscripten_date_now,
   "_emscripten_get_now_is_monotonic": __emscripten_get_now_is_monotonic,
+  "_emval_as": __emval_as,
   "_emval_call_void_method": __emval_call_void_method,
   "_emval_decref": __emval_decref,
   "_emval_get_global": __emval_get_global,
   "_emval_get_method_caller": __emval_get_method_caller,
+  "_emval_get_property": __emval_get_property,
   "_emval_incref": __emval_incref,
   "_emval_new": __emval_new,
+  "_emval_new_cstring": __emval_new_cstring,
+  "_emval_run_destructors": __emval_run_destructors,
   "_emval_take_value": __emval_take_value,
   "_mmap_js": __mmap_js,
   "_munmap_js": __munmap_js,
