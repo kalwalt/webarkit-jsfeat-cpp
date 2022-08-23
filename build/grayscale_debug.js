@@ -1880,8 +1880,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  100716: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
- 100814: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  100924: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
+ 101022: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 
 
@@ -5538,52 +5538,6 @@ var ASM_CONSTS = {
       );
     }
 
-  function heap32VectorToArray(count, firstElement) {
-      
-      var array = [];
-      for (var i = 0; i < count; i++) {
-          array.push(HEAP32[(firstElement >> 2) + i]);
-      }
-      return array;
-    }
-  function __embind_register_class_constructor(
-      rawClassType,
-      argCount,
-      rawArgTypesAddr,
-      invokerSignature,
-      invoker,
-      rawConstructor
-    ) {
-      assert(argCount > 0);
-      var rawArgTypes = heap32VectorToArray(argCount, rawArgTypesAddr);
-      invoker = embind__requireFunction(invokerSignature, invoker);
-      var args = [rawConstructor];
-      var destructors = [];
-  
-      whenDependentTypesAreResolved([], [rawClassType], function(classType) {
-        classType = classType[0];
-        var humanName = 'constructor ' + classType.name;
-  
-        if (undefined === classType.registeredClass.constructor_body) {
-          classType.registeredClass.constructor_body = [];
-        }
-        if (undefined !== classType.registeredClass.constructor_body[argCount - 1]) {
-          throw new BindingError("Cannot register multiple constructors with identical number of parameters (" + (argCount-1) + ") for class '" + classType.name + "'! Overload resolution is currently only performed using the parameter count, not actual type info!");
-        }
-        classType.registeredClass.constructor_body[argCount - 1] = () => {
-          throwUnboundTypeError('Cannot construct ' + classType.name + ' due to unbound types', rawArgTypes);
-        };
-  
-        whenDependentTypesAreResolved([], rawArgTypes, function(argTypes) {
-          // Insert empty slot for context type (argTypes[1]).
-          argTypes.splice(1, 0, null);
-          classType.registeredClass.constructor_body[argCount - 1] = craftInvokerFunction(humanName, argTypes, null, invoker, rawConstructor);
-          return [];
-        });
-        return [];
-      });
-    }
-
   function new_(constructor, argumentList) {
       if (!(constructor instanceof Function)) {
         throw new TypeError('new_ called with constructor type ' + typeof(constructor) + " which is not a function");
@@ -5705,6 +5659,105 @@ var ASM_CONSTS = {
       var invokerFunction = new_(Function, args1).apply(null, args2);
       return invokerFunction;
     }
+  
+  function heap32VectorToArray(count, firstElement) {
+      
+      var array = [];
+      for (var i = 0; i < count; i++) {
+          array.push(HEAP32[(firstElement >> 2) + i]);
+      }
+      return array;
+    }
+  function __embind_register_class_class_function(rawClassType,
+                                                    methodName,
+                                                    argCount,
+                                                    rawArgTypesAddr,
+                                                    invokerSignature,
+                                                    rawInvoker,
+                                                    fn) {
+      var rawArgTypes = heap32VectorToArray(argCount, rawArgTypesAddr);
+      methodName = readLatin1String(methodName);
+      rawInvoker = embind__requireFunction(invokerSignature, rawInvoker);
+      whenDependentTypesAreResolved([], [rawClassType], function(classType) {
+        classType = classType[0];
+        var humanName = classType.name + '.' + methodName;
+  
+        function unboundTypesHandler() {
+          throwUnboundTypeError('Cannot call ' + humanName + ' due to unbound types', rawArgTypes);
+        }
+  
+        if (methodName.startsWith("@@")) {
+          methodName = Symbol[methodName.substring(2)];
+        }
+  
+        var proto = classType.registeredClass.constructor;
+        if (undefined === proto[methodName]) {
+          // This is the first function to be registered with this name.
+          unboundTypesHandler.argCount = argCount-1;
+          proto[methodName] = unboundTypesHandler;
+        } else {
+          // There was an existing function with the same name registered. Set up
+          // a function overload routing table.
+          ensureOverloadTable(proto, methodName, humanName);
+          proto[methodName].overloadTable[argCount-1] = unboundTypesHandler;
+        }
+  
+        whenDependentTypesAreResolved([], rawArgTypes, function(argTypes) {
+          // Replace the initial unbound-types-handler stub with the proper
+          // function. If multiple overloads are registered, the function handlers
+          // go into an overload table.
+          var invokerArgsArray = [argTypes[0] /* return value */, null /* no class 'this'*/].concat(argTypes.slice(1) /* actual params */);
+          var func = craftInvokerFunction(humanName, invokerArgsArray, null /* no class 'this'*/, rawInvoker, fn);
+          if (undefined === proto[methodName].overloadTable) {
+            func.argCount = argCount-1;
+            proto[methodName] = func;
+          } else {
+            proto[methodName].overloadTable[argCount-1] = func;
+          }
+          return [];
+        });
+        return [];
+      });
+    }
+
+  function __embind_register_class_constructor(
+      rawClassType,
+      argCount,
+      rawArgTypesAddr,
+      invokerSignature,
+      invoker,
+      rawConstructor
+    ) {
+      assert(argCount > 0);
+      var rawArgTypes = heap32VectorToArray(argCount, rawArgTypesAddr);
+      invoker = embind__requireFunction(invokerSignature, invoker);
+      var args = [rawConstructor];
+      var destructors = [];
+  
+      whenDependentTypesAreResolved([], [rawClassType], function(classType) {
+        classType = classType[0];
+        var humanName = 'constructor ' + classType.name;
+  
+        if (undefined === classType.registeredClass.constructor_body) {
+          classType.registeredClass.constructor_body = [];
+        }
+        if (undefined !== classType.registeredClass.constructor_body[argCount - 1]) {
+          throw new BindingError("Cannot register multiple constructors with identical number of parameters (" + (argCount-1) + ") for class '" + classType.name + "'! Overload resolution is currently only performed using the parameter count, not actual type info!");
+        }
+        classType.registeredClass.constructor_body[argCount - 1] = () => {
+          throwUnboundTypeError('Cannot construct ' + classType.name + ' due to unbound types', rawArgTypes);
+        };
+  
+        whenDependentTypesAreResolved([], rawArgTypes, function(argTypes) {
+          // Insert empty slot for context type (argTypes[1]).
+          argTypes.splice(1, 0, null);
+          classType.registeredClass.constructor_body[argCount - 1] = craftInvokerFunction(humanName, argTypes, null, invoker, rawConstructor);
+          return [];
+        });
+        return [];
+      });
+    }
+
   function __embind_register_class_function(rawClassType,
                                               methodName,
                                               argCount,
@@ -7554,6 +7607,7 @@ var asmLibraryArg = {
   "_embind_register_bigint": __embind_register_bigint,
   "_embind_register_bool": __embind_register_bool,
   "_embind_register_class": __embind_register_class,
+  "_embind_register_class_class_function": __embind_register_class_class_function,
   "_embind_register_class_constructor": __embind_register_class_constructor,
   "_embind_register_class_function": __embind_register_class_function,
   "_embind_register_class_property": __embind_register_class_property,

@@ -3,9 +3,19 @@
 
 #include <cstdio>
 #include <vector>
+#include <emscripten/val.h>
 namespace jsfeat {
 typedef unsigned char u_char;
 template <typename T> using Array = std::vector<T>;
+thread_local const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
+
+struct _Mat_t {
+  int size;
+  int cols;
+  int rows;
+  int channels;
+  emscripten::val data = Uint8Array;
+};
 
 enum Types {
   U8_t = 0x0100,

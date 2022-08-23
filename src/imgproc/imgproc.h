@@ -1,22 +1,13 @@
 #ifndef IMGPROC_H
 #define IMGPROC_H
 
-#include <emscripten/val.h>
 #include <iostream>
 #include <matrix_t/matrix_t.h>
-#include <sys/types.h>
 #include <types/types.h>
 #include <vector>
 
 namespace jsfeat {
-thread_local const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
-struct _Mat_t {
-  int size;
-  int cols;
-  int rows;
-  int channels;
-  emscripten::val data = Uint8Array;
-};
+
 struct Mat_t {
   int size;
   int cols;
