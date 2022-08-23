@@ -8,13 +8,6 @@
 
 namespace jsfeat {
 
-struct Mat_t {
-  int size;
-  int cols;
-  int rows;
-  int channels;
-  std::vector<u_char> data;
-};
 class imgproc {
 public:
   int code;
@@ -329,7 +322,7 @@ public:
 
   _Mat_t grayscale_ttm(_Mat_t  src, int w, int h, int code) {
     _Mat_t dst;
-    std::vector<u_char> output;
+    matrix_t output(w, h, 0x0100 | 0x01, 0x0100);
     std::vector<u_char> input = emscripten::convertJSArrayToNumberVector<u_char>(src.data);
     // this is default image data representation in browser
     if (!code) {
@@ -371,16 +364,16 @@ public:
       r = input.at(q + 0), g = input.at(q + 1), b = input.at(q + 2);
       std::cout << "p is: " << p << std::endl;
       // https://stackoverflow.com/a/596241/5843642
-      output.push_back((r + r + r + b + g + g + g + g) >> 3);
+      output.dt->u8.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
-    std::cout << "output size: " << output.size() << std::endl;
-    for(int i = 0; i < output.size(); i++) {
-      std::cout << "output data value: " << (int)output.data()[i] << std::endl;
+    std::cout << "output size: " << output.size << std::endl;
+    for(int i = 0; i < output.size; i++) {
+      std::cout << "output data value: " << (int)output.dt->u8.data()[i] << std::endl;
     }
     emscripten::val view{
-        emscripten::typed_memory_view(output.size(), output.data())};
-    auto result = emscripten::val::global("Uint8Array").new_(output.size());
+        emscripten::typed_memory_view(output.dt->u8.size(), output.dt->u8.data())};
+    auto result = emscripten::val::global("Uint8Array").new_(output.dt->u8.size());
     result.call<void>("set", view);
     dst.data = view;
     dst.rows = h;
