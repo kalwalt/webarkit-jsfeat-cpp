@@ -10,10 +10,14 @@
                 console.log(Module.Types.U8_t.value);
                 var RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value
                 console.log(RGBA2GRAY);
-                var m = new Module.matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
-                console.log("matrix_t cols: ", m.cols);
-                m.allocate();
-                console.log(Module.matrix_t.get(m));
+                var m_1 = new Module.matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
+                var m_4 = new Module.matrix_t(2, 2, 0x0100 | 0x04, 0x0100);
+                console.log("matrix_t cols: ", m_1.cols);
+                m_1.allocate();
+                m_1.resize(2, 2, 1);
+                m_4.allocate();
+                m_4.resize(2, 2, 1);
+                console.log(Module.matrix_t.get(m_1));
 
                  var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
                 //var lengthArray = some.length;

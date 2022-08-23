@@ -86,13 +86,12 @@ public:
     std::cout << "Type inside resize: " << type << std::endl;
     std::cout << "Get data type size: " << get_data_type_size(type) << std::endl;
     std::cout << "size: " << size << std::endl;
-    int new_size = ((c * get_data_type_size(type) * ch) * r) - 1;
+    int new_size = ((c * get_data_type_size(type) * ch) * r);
     std::cout << "New size is: " << new_size << std::endl;
-    new_size = 4;
     if (dt->u8.empty()) {
       std::cout << "empty array!" << std::endl;
     }
-    if (new_size > size - 1) {
+    if (new_size > size) {
       cols = c;
       rows = r;
       channel = ch;
