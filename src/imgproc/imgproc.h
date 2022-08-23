@@ -309,9 +309,9 @@ public:
 
     // code from jsartoolkit5
     int q = 0;
-    int r;
-    int g;
-    int b;
+    u_char r;
+    u_char g;
+    u_char b;
 
     for (int p = 0; p < videosize; p++) {
       r = src[q + 0], g = src[q + 1], b = src[q + 2];
@@ -320,11 +320,17 @@ public:
       output.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
+    std::cout << "output size: " << output.size() << std::endl;
+    std::cout << "output data: " << output.data() << std::endl;
     emscripten::val view{
         emscripten::typed_memory_view(output.size(), output.data())};
     auto result = emscripten::val::global("Uint8Array").new_(output.size());
     result.call<void>("set", view);
     dst.data = view;
+    dst.rows = h;
+    dst.cols = w;
+    dst.channels = 1;
+    dst.size = videosize;
     return dst;
   };
 };
