@@ -47,38 +47,38 @@ public:
     std::cout << "cn3: " << cn3 << std::endl;
 
     dst->resize(w, h, 1);
-    std::cout << dst->u8.size() << std::endl;
-    std::cout << src->u8.size() << std::endl;
-    if (src->u8.empty()) {
+    std::cout << dst->dt->u8.size() << std::endl;
+    std::cout << src->dt->u8.size() << std::endl;
+    if (src->dt->u8.empty()) {
       std::cout << "vector is empty" << std::endl;
     }
     // this should print a zero value
-    std::cout << "value: " << (int)src->u8.at(0) << std::endl;
+    std::cout << "value: " << (int)src->dt->u8.at(0) << std::endl;
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       // probably we can do this in javascript but not in C++
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        dst->u8.at(jr) =
-            (src->u8.at(ir) * coeff_r + src->u8.at(ir + 1) * coeff_g +
-             src->u8.at(ir + 2) * coeff_b + 8192) >>
+        dst->dt->u8.at(jr) =
+            (src->dt->u8.at(ir) * coeff_r + src->dt->u8.at(ir + 1) * coeff_g +
+             src->dt->u8.at(ir + 2) * coeff_b + 8192) >>
             14;
-        dst->u8.at(jr + 1) =
-            (src->u8.at(ir + cn) * coeff_r + src->u8.at(ir + cn + 1) * coeff_g +
-             src->u8.at(ir + cn + 2) * coeff_b + 8192) >>
+        dst->dt->u8.at(jr + 1) =
+            (src->dt->u8.at(ir + cn) * coeff_r + src->dt->u8.at(ir + cn + 1) * coeff_g +
+             src->dt->u8.at(ir + cn + 2) * coeff_b + 8192) >>
             14;
-        dst->u8.at(jr + 2) = (src->u8.at(ir + cn2) * coeff_r +
-                              src->u8.at(ir + cn2 + 1) * coeff_g +
-                              src->u8.at(ir + cn2 + 2) * coeff_b + 8192) >>
+        dst->dt->u8.at(jr + 2) = (src->dt->u8.at(ir + cn2) * coeff_r +
+                              src->dt->u8.at(ir + cn2 + 1) * coeff_g +
+                              src->dt->u8.at(ir + cn2 + 2) * coeff_b + 8192) >>
                              14;
-        dst->u8.at(jr + 3) = (src->u8.at(ir + cn3) * coeff_r +
-                              src->u8.at(ir + cn3 + 1) * coeff_g +
-                              src->u8.at(ir + cn3 + 2) * coeff_b + 8192) >>
+        dst->dt->u8.at(jr + 3) = (src->dt->u8.at(ir + cn3) * coeff_r +
+                              src->dt->u8.at(ir + cn3 + 1) * coeff_g +
+                              src->dt->u8.at(ir + cn3 + 2) * coeff_b + 8192) >>
                              14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        dst->u8.at(jr) =
-            (src->u8.at(ir) * coeff_r + src->u8.at(ir + 1) * coeff_g +
-             src->u8.at(ir + 2) * coeff_b + 8192) >>
+        dst->dt->u8.at(jr) =
+            (src->dt->u8.at(ir) * coeff_r + src->dt->u8.at(ir + 1) * coeff_g +
+             src->dt->u8.at(ir + 2) * coeff_b + 8192) >>
             14;
       }
     }
@@ -94,8 +94,8 @@ public:
       dst->u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
       q += 4;
     }*/
-    for (int i = 0; i < dst->u8.size(); i++) {
-      std::cout << "value dst: " << (int)dst->u8.at(i) << std::endl;
+    for (int i = 0; i < dst->dt->u8.size(); i++) {
+      std::cout << "value dst: " << (int)dst->dt->u8.at(i) << std::endl;
     }
   };
 
@@ -264,7 +264,7 @@ public:
     }
     return dst;
   };
-
+#ifdef __EMSCRIPTEN__
   _Mat_t grayscale_tt(u_char *src, int w, int h, int code) {
     _Mat_t dst;
     std::vector<u_char> output;
@@ -389,6 +389,7 @@ public:
     dst.size = videosize;
     return dst;
   };
+#endif
 };
 } // namespace jsfeat
 

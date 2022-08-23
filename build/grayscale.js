@@ -2961,52 +2961,6 @@ var ASM_CONSTS = {
       );
     }
 
-  function heap32VectorToArray(count, firstElement) {
-      
-      var array = [];
-      for (var i = 0; i < count; i++) {
-          array.push(HEAP32[(firstElement >> 2) + i]);
-      }
-      return array;
-    }
-  function __embind_register_class_constructor(
-      rawClassType,
-      argCount,
-      rawArgTypesAddr,
-      invokerSignature,
-      invoker,
-      rawConstructor
-    ) {
-      assert(argCount > 0);
-      var rawArgTypes = heap32VectorToArray(argCount, rawArgTypesAddr);
-      invoker = embind__requireFunction(invokerSignature, invoker);
-      var args = [rawConstructor];
-      var destructors = [];
-  
-      whenDependentTypesAreResolved([], [rawClassType], function(classType) {
-        classType = classType[0];
-        var humanName = 'constructor ' + classType.name;
-  
-        if (undefined === classType.registeredClass.constructor_body) {
-          classType.registeredClass.constructor_body = [];
-        }
-        if (undefined !== classType.registeredClass.constructor_body[argCount - 1]) {
-          throw new BindingError("Cannot register multiple constructors with identical number of parameters (" + (argCount-1) + ") for class '" + classType.name + "'! Overload resolution is currently only performed using the parameter count, not actual type info!");
-        }
-        classType.registeredClass.constructor_body[argCount - 1] = () => {
-          throwUnboundTypeError('Cannot construct ' + classType.name + ' due to unbound types', rawArgTypes);
-        };
-  
-        whenDependentTypesAreResolved([], rawArgTypes, function(argTypes) {
-          // Insert empty slot for context type (argTypes[1]).
-          argTypes.splice(1, 0, null);
-          classType.registeredClass.constructor_body[argCount - 1] = craftInvokerFunction(humanName, argTypes, null, invoker, rawConstructor);
-          return [];
-        });
-        return [];
-      });
-    }
-
   function new_(constructor, argumentList) {
       if (!(constructor instanceof Function)) {
         throw new TypeError('new_ called with constructor type ' + typeof(constructor) + " which is not a function");
@@ -3128,6 +3082,105 @@ var ASM_CONSTS = {
       var invokerFunction = new_(Function, args1).apply(null, args2);
       return invokerFunction;
     }
+  
+  function heap32VectorToArray(count, firstElement) {
+      
+      var array = [];
+      for (var i = 0; i < count; i++) {
+          array.push(HEAP32[(firstElement >> 2) + i]);
+      }
+      return array;
+    }
+  function __embind_register_class_class_function(rawClassType,
+                                                    methodName,
+                                                    argCount,
+                                                    rawArgTypesAddr,
+                                                    invokerSignature,
+                                                    rawInvoker,
+                                                    fn) {
+      var rawArgTypes = heap32VectorToArray(argCount, rawArgTypesAddr);
+      methodName = readLatin1String(methodName);
+      rawInvoker = embind__requireFunction(invokerSignature, rawInvoker);
+      whenDependentTypesAreResolved([], [rawClassType], function(classType) {
+        classType = classType[0];
+        var humanName = classType.name + '.' + methodName;
+  
+        function unboundTypesHandler() {
+          throwUnboundTypeError('Cannot call ' + humanName + ' due to unbound types', rawArgTypes);
+        }
+  
+        if (methodName.startsWith("@@")) {
+          methodName = Symbol[methodName.substring(2)];
+        }
+  
+        var proto = classType.registeredClass.constructor;
+        if (undefined === proto[methodName]) {
+          // This is the first function to be registered with this name.
+          unboundTypesHandler.argCount = argCount-1;
+          proto[methodName] = unboundTypesHandler;
+        } else {
+          // There was an existing function with the same name registered. Set up
+          // a function overload routing table.
+          ensureOverloadTable(proto, methodName, humanName);
+          proto[methodName].overloadTable[argCount-1] = unboundTypesHandler;
+        }
+  
+        whenDependentTypesAreResolved([], rawArgTypes, function(argTypes) {
+          // Replace the initial unbound-types-handler stub with the proper
+          // function. If multiple overloads are registered, the function handlers
+          // go into an overload table.
+          var invokerArgsArray = [argTypes[0] /* return value */, null /* no class 'this'*/].concat(argTypes.slice(1) /* actual params */);
+          var func = craftInvokerFunction(humanName, invokerArgsArray, null /* no class 'this'*/, rawInvoker, fn);
+          if (undefined === proto[methodName].overloadTable) {
+            func.argCount = argCount-1;
+            proto[methodName] = func;
+          } else {
+            proto[methodName].overloadTable[argCount-1] = func;
+          }
+          return [];
+        });
+        return [];
+      });
+    }
+
+  function __embind_register_class_constructor(
+      rawClassType,
+      argCount,
+      rawArgTypesAddr,
+      invokerSignature,
+      invoker,
+      rawConstructor
+    ) {
+      assert(argCount > 0);
+      var rawArgTypes = heap32VectorToArray(argCount, rawArgTypesAddr);
+      invoker = embind__requireFunction(invokerSignature, invoker);
+      var args = [rawConstructor];
+      var destructors = [];
+  
+      whenDependentTypesAreResolved([], [rawClassType], function(classType) {
+        classType = classType[0];
+        var humanName = 'constructor ' + classType.name;
+  
+        if (undefined === classType.registeredClass.constructor_body) {
+          classType.registeredClass.constructor_body = [];
+        }
+        if (undefined !== classType.registeredClass.constructor_body[argCount - 1]) {
+          throw new BindingError("Cannot register multiple constructors with identical number of parameters (" + (argCount-1) + ") for class '" + classType.name + "'! Overload resolution is currently only performed using the parameter count, not actual type info!");
+        }
+        classType.registeredClass.constructor_body[argCount - 1] = () => {
+          throwUnboundTypeError('Cannot construct ' + classType.name + ' due to unbound types', rawArgTypes);
+        };
+  
+        whenDependentTypesAreResolved([], rawArgTypes, function(argTypes) {
+          // Insert empty slot for context type (argTypes[1]).
+          argTypes.splice(1, 0, null);
+          classType.registeredClass.constructor_body[argCount - 1] = craftInvokerFunction(humanName, argTypes, null, invoker, rawConstructor);
+          return [];
+        });
+        return [];
+      });
+    }
+
   function __embind_register_class_function(rawClassType,
                                               methodName,
                                               argCount,
@@ -3186,6 +3239,89 @@ var ASM_CONSTS = {
   
           return [];
         });
+        return [];
+      });
+    }
+
+  function validateThis(this_, classType, humanName) {
+      if (!(this_ instanceof Object)) {
+        throwBindingError(humanName + ' with invalid "this": ' + this_);
+      }
+      if (!(this_ instanceof classType.registeredClass.constructor)) {
+        throwBindingError(humanName + ' incompatible with "this" of type ' + this_.constructor.name);
+      }
+      if (!this_.$$.ptr) {
+        throwBindingError('cannot call emscripten binding method ' + humanName + ' on deleted object');
+      }
+  
+      // todo: kill this
+      return upcastPointer(this_.$$.ptr,
+                           this_.$$.ptrType.registeredClass,
+                           classType.registeredClass);
+    }
+  function __embind_register_class_property(classType,
+                                              fieldName,
+                                              getterReturnType,
+                                              getterSignature,
+                                              getter,
+                                              getterContext,
+                                              setterArgumentType,
+                                              setterSignature,
+                                              setter,
+                                              setterContext) {
+      fieldName = readLatin1String(fieldName);
+      getter = embind__requireFunction(getterSignature, getter);
+  
+      whenDependentTypesAreResolved([], [classType], function(classType) {
+        classType = classType[0];
+        var humanName = classType.name + '.' + fieldName;
+        var desc = {
+          get: function() {
+            throwUnboundTypeError('Cannot access ' + humanName + ' due to unbound types', [getterReturnType, setterArgumentType]);
+          },
+          enumerable: true,
+          configurable: true
+        };
+        if (setter) {
+          desc.set = () => {
+            throwUnboundTypeError('Cannot access ' + humanName + ' due to unbound types', [getterReturnType, setterArgumentType]);
+          };
+        } else {
+          desc.set = (v) => {
+            throwBindingError(humanName + ' is a read-only property');
+          };
+        }
+  
+        Object.defineProperty(classType.registeredClass.instancePrototype, fieldName, desc);
+  
+        whenDependentTypesAreResolved(
+          [],
+          (setter ? [getterReturnType, setterArgumentType] : [getterReturnType]),
+      function(types) {
+          var getterReturnType = types[0];
+          var desc = {
+            get: function() {
+              var ptr = validateThis(this, classType, humanName + ' getter');
+              return getterReturnType['fromWireType'](getter(getterContext, ptr));
+            },
+            enumerable: true
+          };
+  
+          if (setter) {
+            setter = embind__requireFunction(setterSignature, setter);
+            var setterArgumentType = types[1];
+            desc.set = function(v) {
+              var ptr = validateThis(this, classType, humanName + ' setter');
+              var destructors = [];
+              setter(setterContext, ptr, setterArgumentType['toWireType'](destructors, v));
+              runDestructors(destructors);
+            };
+          }
+  
+          Object.defineProperty(classType.registeredClass.instancePrototype, fieldName, desc);
+          return [];
+        });
+  
         return [];
       });
     }
@@ -3701,11 +3837,192 @@ var ASM_CONSTS = {
       });
     }
 
+  function __emval_as(handle, returnType, destructorsRef) {
+      handle = Emval.toValue(handle);
+      returnType = requireRegisteredType(returnType, 'emval::as');
+      var destructors = [];
+      var rd = Emval.toHandle(destructors);
+      HEAP32[destructorsRef >> 2] = rd;
+      return returnType['toWireType'](destructors, handle);
+    }
+
+  function __emval_allocateDestructors(destructorsRef) {
+      var destructors = [];
+      HEAP32[destructorsRef >> 2] = Emval.toHandle(destructors);
+      return destructors;
+    }
+  
+  var emval_symbols = {};
+  function getStringOrSymbol(address) {
+      var symbol = emval_symbols[address];
+      if (symbol === undefined) {
+        return readLatin1String(address);
+      }
+      return symbol;
+    }
+  
+  var emval_methodCallers = [];
+  function __emval_call_void_method(caller, handle, methodName, args) {
+      caller = emval_methodCallers[caller];
+      handle = Emval.toValue(handle);
+      methodName = getStringOrSymbol(methodName);
+      caller(handle, methodName, null, args);
+    }
+
+
+  function emval_get_global() {
+      if (typeof globalThis == 'object') {
+        return globalThis;
+      }
+      return (function(){
+        return Function;
+      })()('return this')();
+    }
+  function __emval_get_global(name) {
+      if (name===0) {
+        return Emval.toHandle(emval_get_global());
+      } else {
+        name = getStringOrSymbol(name);
+        return Emval.toHandle(emval_get_global()[name]);
+      }
+    }
+
+  function __emval_addMethodCaller(caller) {
+      var id = emval_methodCallers.length;
+      emval_methodCallers.push(caller);
+      return id;
+    }
+  
+  function __emval_lookupTypes(argCount, argTypes) {
+      var a = new Array(argCount);
+      for (var i = 0; i < argCount; ++i) {
+        a[i] = requireRegisteredType(HEAP32[(argTypes >> 2) + i],
+                                     "parameter " + i);
+      }
+      return a;
+    }
+  
+  var emval_registeredMethods = [];
+  function __emval_get_method_caller(argCount, argTypes) {
+      var types = __emval_lookupTypes(argCount, argTypes);
+      var retType = types[0];
+      var signatureName = retType.name + "_$" + types.slice(1).map(function (t) { return t.name; }).join("_") + "$";
+      var returnId = emval_registeredMethods[signatureName];
+      if (returnId !== undefined) {
+        return returnId;
+      }
+  
+      var params = ["retType"];
+      var args = [retType];
+  
+      var argsList = ""; // 'arg0, arg1, arg2, ... , argN'
+      for (var i = 0; i < argCount - 1; ++i) {
+        argsList += (i !== 0 ? ", " : "") + "arg" + i;
+        params.push("argType" + i);
+        args.push(types[1 + i]);
+      }
+  
+      var functionName = makeLegalFunctionName("methodCaller_" + signatureName);
+      var functionBody =
+          "return function " + functionName + "(handle, name, destructors, args) {\n";
+  
+      var offset = 0;
+      for (var i = 0; i < argCount - 1; ++i) {
+          functionBody +=
+          "    var arg" + i + " = argType" + i + ".readValueFromPointer(args" + (offset ? ("+"+offset) : "") + ");\n";
+          offset += types[i + 1]['argPackAdvance'];
+      }
+      functionBody +=
+          "    var rv = handle[name](" + argsList + ");\n";
+      for (var i = 0; i < argCount - 1; ++i) {
+          if (types[i + 1]['deleteObject']) {
+              functionBody +=
+              "    argType" + i + ".deleteObject(arg" + i + ");\n";
+          }
+      }
+      if (!retType.isVoid) {
+          functionBody +=
+          "    return retType.toWireType(destructors, rv);\n";
+      }
+      functionBody +=
+          "};\n";
+  
+      params.push(functionBody);
+      var invokerFunction = new_(Function, params).apply(null, args);
+      returnId = __emval_addMethodCaller(invokerFunction);
+      emval_registeredMethods[signatureName] = returnId;
+      return returnId;
+    }
+
+  function __emval_get_property(handle, key) {
+      handle = Emval.toValue(handle);
+      key = Emval.toValue(key);
+      return Emval.toHandle(handle[key]);
+    }
 
   function __emval_incref(handle) {
       if (handle > 4) {
         emval_handle_array[handle].refcount += 1;
       }
+    }
+
+  function craftEmvalAllocator(argCount) {
+      /*This function returns a new function that looks like this:
+      function emval_allocator_3(constructor, argTypes, args) {
+          var argType0 = requireRegisteredType(HEAP32[(argTypes >> 2)], "parameter 0");
+          var arg0 = argType0['readValueFromPointer'](args);
+          var argType1 = requireRegisteredType(HEAP32[(argTypes >> 2) + 1], "parameter 1");
+          var arg1 = argType1['readValueFromPointer'](args + 8);
+          var argType2 = requireRegisteredType(HEAP32[(argTypes >> 2) + 2], "parameter 2");
+          var arg2 = argType2['readValueFromPointer'](args + 16);
+          var obj = new constructor(arg0, arg1, arg2);
+          return Emval.toHandle(obj);
+      } */
+      var argsList = "";
+      for (var i = 0; i < argCount; ++i) {
+        argsList += (i!==0?", ":"")+"arg"+i; // 'arg0, arg1, ..., argn'
+      }
+  
+      var functionBody =
+          "return function emval_allocator_"+argCount+"(constructor, argTypes, args) {\n";
+  
+      for (var i = 0; i < argCount; ++i) {
+          functionBody +=
+              "var argType"+i+" = requireRegisteredType(Module['HEAP32'][(argTypes >>> 2) + "+i+"], \"parameter "+i+"\");\n" +
+              "var arg"+i+" = argType"+i+".readValueFromPointer(args);\n" +
+              "args += argType"+i+"['argPackAdvance'];\n";
+      }
+      functionBody +=
+          "var obj = new constructor("+argsList+");\n" +
+          "return valueToHandle(obj);\n" +
+          "}\n";
+  
+      /*jshint evil:true*/
+      return (new Function("requireRegisteredType", "Module", "valueToHandle", functionBody))(
+          requireRegisteredType, Module, Emval.toHandle);
+    }
+  
+  var emval_newers = {};
+  function __emval_new(handle, argCount, argTypes, args) {
+      handle = Emval.toValue(handle);
+  
+      var newer = emval_newers[argCount];
+      if (!newer) {
+        newer = craftEmvalAllocator(argCount);
+        emval_newers[argCount] = newer;
+      }
+  
+      return newer(handle, argTypes, args);
+    }
+
+  function __emval_new_cstring(v) {
+      return Emval.toHandle(getStringOrSymbol(v));
+    }
+
+  function __emval_run_destructors(handle) {
+      var destructors = Emval.toValue(handle);
+      runDestructors(destructors);
+      __emval_decref(handle);
     }
 
   function __emval_take_value(type, argv) {
@@ -6777,8 +7094,10 @@ var asmLibraryArg = {
   "_embind_register_bigint": __embind_register_bigint,
   "_embind_register_bool": __embind_register_bool,
   "_embind_register_class": __embind_register_class,
+  "_embind_register_class_class_function": __embind_register_class_class_function,
   "_embind_register_class_constructor": __embind_register_class_constructor,
   "_embind_register_class_function": __embind_register_class_function,
+  "_embind_register_class_property": __embind_register_class_property,
   "_embind_register_emval": __embind_register_emval,
   "_embind_register_enum": __embind_register_enum,
   "_embind_register_enum_value": __embind_register_enum_value,
@@ -6791,8 +7110,16 @@ var asmLibraryArg = {
   "_embind_register_value_object": __embind_register_value_object,
   "_embind_register_value_object_field": __embind_register_value_object_field,
   "_embind_register_void": __embind_register_void,
+  "_emval_as": __emval_as,
+  "_emval_call_void_method": __emval_call_void_method,
   "_emval_decref": __emval_decref,
+  "_emval_get_global": __emval_get_global,
+  "_emval_get_method_caller": __emval_get_method_caller,
+  "_emval_get_property": __emval_get_property,
   "_emval_incref": __emval_incref,
+  "_emval_new": __emval_new,
+  "_emval_new_cstring": __emval_new_cstring,
+  "_emval_run_destructors": __emval_run_destructors,
   "_emval_take_value": __emval_take_value,
   "abort": _abort,
   "emscripten_memcpy_big": _emscripten_memcpy_big,

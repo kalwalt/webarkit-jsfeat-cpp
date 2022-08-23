@@ -10,7 +10,7 @@ class data_t {
     Array<float> f32;
     Array<double> f64;
 
-    data_t(int size_in_bytes, buffer?: any)) {
+    data_t(int size_in_bytes) {
         size = ((size_in_bytes + 7) | 0) & -8;
     }
 };

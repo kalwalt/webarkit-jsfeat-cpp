@@ -3,10 +3,13 @@
 
 #include <cstdio>
 #include <vector>
+#ifdef __EMSCRIPTEN__
 #include <emscripten/val.h>
+#endif
 namespace jsfeat {
 typedef unsigned char u_char;
 template <typename T> using Array = std::vector<T>;
+#ifdef __EMSCRIPTEN__
 thread_local const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
 
 struct _Mat_t {
@@ -16,6 +19,7 @@ struct _Mat_t {
   int channels;
   emscripten::val data = Uint8Array;
 };
+#endif
 
 enum Types {
   U8_t = 0x0100,
