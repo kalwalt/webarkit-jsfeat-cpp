@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <iostream>
 #include <types/types.h>
+#include <node_utils/data_t.h>
 
 namespace jsfeat {
 class matrix_t {
@@ -17,6 +18,7 @@ public:
   int size;
   u_char *data;
   Array<u_char> u8;
+  data_t *dt;
 
   matrix_t(int c, int r, int data_type, int data_buffer) {
     cols = c;
@@ -31,6 +33,7 @@ public:
            rows; //(cols * rows);
     printf("size is: %i\n", size);
     data = new u_char[size*channel];
+    dt = new data_t((cols * get_data_type_size(type) * channel) * rows);
   };
 
   int getCols() const { return cols; };
@@ -55,11 +58,11 @@ public:
       // u8.assign(size - 1, 0);
       std::cout << "size parameter: " << size << std::endl;
       for (int i = 0; i < size; i++) {
-        u8.push_back(0);
+        dt->u8.push_back(0);
       }
-      std::cout << "size is: " << u8.size() << std::endl;
+      std::cout << "size is: " << dt->u8.size() << std::endl;
       std::cout << "allocated" << std::endl;
-      std::cout << (int)u8.at(0) << std::endl;
+      std::cout << (int)dt->u8.at(0) << std::endl;
       // data = _array.data();
       // std::cout << (int)data[0] << std::endl;
     }
@@ -86,7 +89,7 @@ public:
     int new_size = ((c * get_data_type_size(type) * ch) * r) - 1;
     std::cout << "New size is: " << new_size << std::endl;
     new_size = 4;
-    if (u8.empty()) {
+    if (dt->u8.empty()) {
       std::cout << "empty array!" << std::endl;
     }
     if (new_size > size - 1) {
@@ -100,7 +103,7 @@ public:
       channel = ch;
     }
   }
-
+#ifdef __EMSCRIPTEN__
   static _Mat_t get(const matrix_t& m) {
     _Mat_t output;
     output.cols = m.cols;
@@ -108,7 +111,7 @@ public:
     output.channels = m.channel;
     output.size = m.size;
     return output;};
-
+#endif
 private:
   Array<int> _data_type_size;
   int get_data_type(int type) { return (type & 0xFF00); }
@@ -116,7 +119,7 @@ private:
   int get_data_type_size(int type) {
     return _data_type_size[(type & 0xFF00) >> 8];
   }
-  void assign_data() { data = u8.data(); }
+  void assign_data() { data = dt->u8.data(); }
 };
 } // namespace jsfeat
 
