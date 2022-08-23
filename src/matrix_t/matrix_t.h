@@ -14,6 +14,7 @@ public:
   int rows;
   int type;
   int channel;
+  int size;
   u_char *data;
   Array<u_char> u8;
 
@@ -100,8 +101,15 @@ public:
     }
   }
 
+  static _Mat_t get(const matrix_t& m) {
+    _Mat_t output;
+    output.cols = m.cols;
+    output.rows = m.rows;
+    output.channels = m.channel;
+    output.size = m.size;
+    return output;};
+
 private:
-  int size;
   Array<int> _data_type_size;
   int get_data_type(int type) { return (type & 0xFF00); }
   int get_channel(int type) { return (type & 0xFF); };
