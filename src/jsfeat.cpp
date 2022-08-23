@@ -22,3 +22,8 @@ _Mat_t grayscale_tt(u_char *src, int w, int h, int code) {
     imgproc img;
     return img.grayscale_tt(src, w, h, code);
 };
+
+_Mat_t grayscale_ttm(_Mat_t src, int w, int h, int code) { 
+    imgproc img;
+    return img.grayscale_ttm(src, w, h, code);
+};

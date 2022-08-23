@@ -28,6 +28,10 @@ _Mat_t Grayscale_tt(int w, int h, int code) {
   return grayscale_tt(some, w, h, code);
 }
 
+_Mat_t Grayscale_ttm(_Mat_t src, int w, int h, int code) {
+  return grayscale_ttm(src, w, h, code);
+}
+
 }
 
 #include "bindings.cpp"

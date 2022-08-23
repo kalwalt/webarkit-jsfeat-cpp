@@ -14,9 +14,9 @@
                 //m.allocate();
 
 
-               /* var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
+                 var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
                 //var lengthArray = some.length;
-                var nDataBytes = data.length * data.BYTES_PER_ELEMENT;
+                /*var nDataBytes = data.length * data.BYTES_PER_ELEMENT;
                 var dataPtr = Module._malloc(nDataBytes);
 
                 // Copy data to Emscripten heap (directly accessed from Module.HEAPU8)
@@ -38,7 +38,7 @@
                 m.delete();*/
 
 
-                var data = new Module.vector_u_char();
+                //var data = new Module.vector_u_char();
                 var Mat_t = {
                     size: 4,
                     cols: 2,
@@ -57,7 +57,11 @@
                 //var Grayscale_t = Module.Grayscale_t(dataHeap.byteOffset, 2, 2, RGBA2GRAY);
                 var Grayscale_tt = Module.Grayscale_tt(2, 2, RGBA2GRAY);
                 console.log(Grayscale_tt);
+                var Grayscale_ttm = Module.Grayscale_ttm(Mat_t, 2, 2, RGBA2GRAY);
+                console.log(Grayscale_ttm);
                 //Module._free(dataHeap.byteOffset);
+
+
 
 
 

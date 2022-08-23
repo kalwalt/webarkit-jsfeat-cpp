@@ -48,4 +48,5 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     //function("Grayscale_t", &Grayscale_t, allow_raw_pointers());
     function("Grayscale_t", &Grayscale_t);
     function("Grayscale_tt", &Grayscale_tt);
+    function("Grayscale_ttm", &Grayscale_ttm);
 }
