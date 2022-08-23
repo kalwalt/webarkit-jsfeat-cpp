@@ -10,7 +10,11 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     class_<matrix_t>("matrix_t")
     .constructor<int, int, int, int>()
     .function("allocate", &matrix_t::allocate)
-    .function("resize", &matrix_t::resize);
+    .function("resize", &matrix_t::resize)
+    .property("cols", &matrix_t::getCols, &matrix_t::setCols)
+    .property("rows", &matrix_t::getRows, &matrix_t::setRows)
+    .property("type", &matrix_t::getType, &matrix_t::setType)
+    .property("channel", &matrix_t::getChannel, &matrix_t::setChannel);
 
     enum_<Types>("Types")
     .value("U8_t", U8_t)

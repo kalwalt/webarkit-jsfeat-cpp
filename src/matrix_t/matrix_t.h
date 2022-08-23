@@ -32,6 +32,22 @@ public:
     data = new u_char[size*channel];
   };
 
+  int getCols() const { return cols; };
+
+  void setCols(int c) {cols = c;};
+
+  int getRows() const { return rows; };
+
+  void setRows(int r) {rows = r;};
+
+  int getType() const { return type; };
+
+  void setType(int _type) { type = _type;};
+
+  int getChannel() const { return channel; };
+
+  void setChannel(int _channel) { channel = _channel; };
+
   void allocate() {
     if (type == Types::U8_t) {
       // printf("type is : %i\n", type);
