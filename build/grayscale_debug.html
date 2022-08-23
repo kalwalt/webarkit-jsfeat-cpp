@@ -11,8 +11,8 @@
                 var RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value
                 console.log(RGBA2GRAY);
                 var m = new Module.matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
-                //m.allocate();
-
+                console.log("matrix_t cols: ", m.cols);
+                m.allocate();
 
                  var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
                 //var lengthArray = some.length;
