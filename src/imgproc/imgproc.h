@@ -321,7 +321,9 @@ public:
       q += 4;
     }
     std::cout << "output size: " << output.size() << std::endl;
-    std::cout << "output data: " << output.data() << std::endl;
+    for(int i = 0; i < output.size(); i++) {
+      std::cout << "output data value: " << (int)output.data()[i] << std::endl;
+    }
     emscripten::val view{
         emscripten::typed_memory_view(output.size(), output.data())};
     auto result = emscripten::val::global("Uint8Array").new_(output.size());
