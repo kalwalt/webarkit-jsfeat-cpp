@@ -54,8 +54,6 @@ public:
 
   void allocate() {
     if (type == Types::U8_t) {
-      // printf("type is : %i\n", type);
-      // u8.assign(size - 1, 0);
       std::cout << "size parameter: " << size << std::endl;
       for (int i = 0; i < size; i++) {
         dt->u8.push_back(0);
@@ -63,8 +61,6 @@ public:
       std::cout << "size is: " << dt->u8.size() << std::endl;
       std::cout << "allocated" << std::endl;
       std::cout << (int)dt->u8.at(0) << std::endl;
-      // data = _array.data();
-      // std::cout << (int)data[0] << std::endl;
     }
   }
 
@@ -88,9 +84,6 @@ public:
     std::cout << "size: " << size << std::endl;
     int new_size = ((c * get_data_type_size(type) * ch) * r);
     std::cout << "New size is: " << new_size << std::endl;
-    if (dt->u8.empty()) {
-      std::cout << "empty array!" << std::endl;
-    }
     if (new_size > size) {
       cols = c;
       rows = r;

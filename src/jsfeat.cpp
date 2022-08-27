@@ -27,3 +27,8 @@ _Mat_t grayscale_ttm(_Mat_t src, int w, int h, int code) {
     imgproc img;
     return img.grayscale_ttm(src, w, h, code);
 };
+
+_Mat_t grayscale_jsfeat(_Mat_t src, int w, int h, int code) { 
+    imgproc img;
+    return img.grayscale_jsfeat(src, w, h, code);
+};

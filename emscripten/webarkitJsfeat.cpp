@@ -32,6 +32,11 @@ _Mat_t Grayscale_ttm(_Mat_t src, int w, int h, int code) {
   return grayscale_ttm(src, w, h, code);
 }
 
+_Mat_t Grayscale_jsfeat(_Mat_t src, int w, int h, int code) {
+  return grayscale_jsfeat(src, w, h, code);
+}
+
+
 }
 
 #include "bindings.cpp"
