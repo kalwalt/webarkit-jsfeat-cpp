@@ -13,3 +13,5 @@ Mat_t grayscale_t(u_char *src, int w, int h, int code);
 _Mat_t grayscale_tt(u_char *src, int w, int h, int code);
 
 _Mat_t grayscale_ttm(_Mat_t src, int w, int h, int code);
+
+_Mat_t grayscale_jsfeat(_Mat_t src, int w, int h, int code);

@@ -1,0 +1,50 @@
+<html>
+
+<body>
+    <img id="img" src="pinball.jpg">
+    <canvas id="canvas" width="1637" height="2048"></canvas>
+    <canvas id="dst" width="1637" height="2048"></canvas>
+
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var canvasDst = document.getElementById('dst');
+        var ctxDst = canvasDst.getContext('2d');
+        var img = document.getElementById('img');
+        var data;
+        img.addEventListener('load', (e) => {
+            ctx.drawImage(img, 0, 0);
+            data = ctx.getImageData(0, 0, img.width, img.height);
+        });
+        var Module = {
+            onRuntimeInitialized: function () {
+                console.log(Module)
+                const RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value
+                var Mat_t = {
+                    size: 4,
+                    cols: 2,
+                    rows: 2,
+                    channels: 1,
+                    data: data.data
+                }
+                console.log(Mat_t);
+                var Grayscale_jsfeat = Module.Grayscale_jsfeat(Mat_t, img.width, img.height, RGBA2GRAY);
+                console.log(Grayscale_jsfeat);
+                const imageData = ctxDst.createImageData(img.width, img.height);
+                var inputData = Grayscale_jsfeat.data;
+                for (let i = 0; i < imageData.data.length; i += 4) {
+                    // Modify pixel data
+                    imageData.data[i + 0] = inputData[i + 0];  // R value
+                    imageData.data[i + 1] = inputData[i + 1];  // G value
+                    imageData.data[i + 2] = inputData[i + 2];  // B value
+                    imageData.data[i + 3] = inputData[i + 3];  // A value
+                }
+                ctxDst.putImageData(imageData, 0, 0);
+            }
+        };
+    </script>
+    <script src="../build/grayscale_debug.js"></script>
+
+</body>
+
+</html>
