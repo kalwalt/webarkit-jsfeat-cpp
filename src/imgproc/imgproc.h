@@ -362,15 +362,15 @@ public:
 
     for (int p = 0; p < videosize; p++) {
       r = input.at(q + 0), g = input.at(q + 1), b = input.at(q + 2);
-      std::cout << "p is: " << p << std::endl;
+      //std::cout << "p is: " << p << std::endl;
       // https://stackoverflow.com/a/596241/5843642
       output.dt->u8.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
     std::cout << "output size: " << output.size << std::endl;
-    for(int i = 0; i < output.size; i++) {
+    /*for(int i = 0; i < output.size; i++) {
       std::cout << "output data value: " << (int)output.dt->u8.data()[i] << std::endl;
-    }
+    }*/
     emscripten::val view{
         emscripten::typed_memory_view(output.dt->u8.size(), output.dt->u8.data())};
     auto result = emscripten::val::global("Uint8Array").new_(output.dt->u8.size());
