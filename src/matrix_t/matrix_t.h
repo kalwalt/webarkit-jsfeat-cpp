@@ -4,8 +4,8 @@
 #include <cstddef>
 #include <cstdio>
 #include <iostream>
-#include <types/types.h>
 #include <node_utils/data_t.h>
+#include <types/types.h>
 
 namespace jsfeat {
 class matrix_t {
@@ -27,26 +27,26 @@ public:
     printf("type is : %i\n", type);
     channel = get_channel(data_type) | 0;
     printf("channel is : %i\n", channel);
-    _data_type_size.assign({-1, 1,  4,  -1, 4,  -1, -1, -1, 8,
-                       -1, -1, -1, -1, -1, -1, -1, 8});
+    _data_type_size.assign(
+        {-1, 1, 4, -1, 4, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, 8});
     size = (cols * get_data_type_size(data_type) * channel) *
            rows; //(cols * rows);
     printf("size is: %i\n", size);
-    data = new u_char[size*channel];
+    data = new u_char[size * channel];
     dt = new data_t((cols * get_data_type_size(type) * channel) * rows);
   };
 
   int getCols() const { return cols; };
 
-  void setCols(int c) {cols = c;};
+  void setCols(int c) { cols = c; };
 
   int getRows() const { return rows; };
 
-  void setRows(int r) {rows = r;};
+  void setRows(int r) { rows = r; };
 
   int getType() const { return type; };
 
-  void setType(int _type) { type = _type;};
+  void setType(int _type) { type = _type; };
 
   int getChannel() const { return channel; };
 
@@ -61,6 +61,30 @@ public:
       std::cout << "size is: " << dt->u8.size() << std::endl;
       std::cout << "allocated" << std::endl;
       std::cout << (int)dt->u8.at(0) << std::endl;
+    } else if (type == Types::S32_t) {
+      std::cout << "size parameter: " << size << std::endl;
+      for (int i = 0; i < size; i++) {
+        dt->i32.push_back(0);
+      }
+      std::cout << "size is: " << dt->i32.size() << std::endl;
+      std::cout << "allocated" << std::endl;
+      std::cout << (int)dt->i32.at(0) << std::endl;
+    } else if (type == Types::F32_t) {
+      std::cout << "size parameter: " << size << std::endl;
+      for (int i = 0; i < size; i++) {
+        dt->f32.push_back(0.0);
+      }
+      std::cout << "size is: " << dt->f32.size() << std::endl;
+      std::cout << "allocated" << std::endl;
+      std::cout << (float)dt->f32.at(0) << std::endl;
+    } else if (type == Types::F64_t) {
+      std::cout << "size parameter: " << size << std::endl;
+      for (int i = 0; i < size; i++) {
+        dt->f64.push_back(0.0);
+      }
+      std::cout << "size is: " << dt->f64.size() << std::endl;
+      std::cout << "allocated" << std::endl;
+      std::cout << (float)dt->f64.at(0) << std::endl;
     }
   }
 
@@ -80,7 +104,8 @@ public:
     std::cout << "channel: " << ch << std::endl;
     // relocate buffer only if new size doesnt fit
     std::cout << "Type inside resize: " << type << std::endl;
-    std::cout << "Get data type size: " << get_data_type_size(type) << std::endl;
+    std::cout << "Get data type size: " << get_data_type_size(type)
+              << std::endl;
     std::cout << "size: " << size << std::endl;
     int new_size = ((c * get_data_type_size(type) * ch) * r);
     std::cout << "New size is: " << new_size << std::endl;
@@ -96,13 +121,14 @@ public:
     }
   }
 #ifdef __EMSCRIPTEN__
-  static _Mat_t get(const matrix_t& m) {
+  static _Mat_t get(const matrix_t &m) {
     _Mat_t output;
     output.cols = m.cols;
     output.rows = m.rows;
     output.channels = m.channel;
     output.size = m.size;
-    return output;};
+    return output;
+  };
 #endif
 private:
   Array<int> _data_type_size;
