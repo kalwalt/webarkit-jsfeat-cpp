@@ -21,9 +21,9 @@
                 console.log(Module)
                 const RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value
                 var Mat_t = {
-                    size: 4,
-                    cols: 2,
-                    rows: 2,
+                    size: img.width * img.height,
+                    cols: img.width,
+                    rows: img.height,
                     channels: 1,
                     data: data.data
                 }
