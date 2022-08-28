@@ -326,38 +326,19 @@ public:
   _Mat_t grayscale_ttm(_Mat_t src, int w, int h, int code) {
     _Mat_t dst;
     matrix_t output(w, h, 0x0100 | 0x01, 0x0100);
-    output.allocate();
+    if (output.dt->u8.empty()) {
+      output.allocate();
+    }
     std::vector<u_char> input =
         emscripten::convertJSArrayToNumberVector<u_char>(src.data);
     // this is default image data representation in browser
     if (!code) {
       code = Colors::COLOR_RGBA2GRAY;
     }
-    int videosize = w * h;
-    int x = 0;
-    int y = 0;
-    int i = 0;
-    int j = 0;
-    int ir = 0;
-    int jr = 0;
-    int coeff_r = 4899;
-    int coeff_g = 9617;
-    int coeff_b = 1868;
-    int cn = 4;
 
-    if (code == Colors::COLOR_BGRA2GRAY || code == Colors::COLOR_BGR2GRAY) {
-      coeff_r = 1868;
-      coeff_b = 4899;
-    }
-    if (code == Colors::COLOR_RGB2GRAY || code == Colors::COLOR_BGR2GRAY) {
-      cn = 3;
-    }
-    int cn2 = cn << 1;
-    int cn3 = (cn * 3) | 0;
-    //std::cout << "cn3: " << cn3 << std::endl;
+    int videosize = w * h;
 
     output.resize(w, h, 1);
-    //std::cout << "value: " << (int)input.at(0) << std::endl;
 
     // code from jsartoolkit5
     int q = 0;
@@ -367,16 +348,10 @@ public:
 
     for (int p = 0; p < videosize; p++) {
       r = input.at(q + 0), g = input.at(q + 1), b = input.at(q + 2);
-      // std::cout << "p is: " << p << std::endl;
       //  https://stackoverflow.com/a/596241/5843642
       output.dt->u8.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
-    //std::cout << "output size: " << output.size << std::endl;
-    /*for(int i = 0; i < output.size; i++) {
-      std::cout << "output data value: " << (int)output.dt->u8.data()[i] <<
-    std::endl;
-    }*/
     emscripten::val view{emscripten::typed_memory_view(output.dt->u8.size(),
                                                        output.dt->u8.data())};
     auto result =
@@ -393,7 +368,9 @@ public:
   _Mat_t grayscale_jsfeat(_Mat_t src, int w, int h, int code) {
     _Mat_t dst;
     matrix_t output(w, h, 0x0100 | 0x01, 0x0100);
-    output.allocate();
+    if (output.dt->u8.empty()) {
+      output.allocate();
+    }
     std::vector<u_char> input =
         emscripten::convertJSArrayToNumberVector<u_char>(src.data);
     // this is default image data representation in browser
