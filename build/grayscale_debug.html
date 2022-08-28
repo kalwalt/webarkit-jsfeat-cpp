@@ -19,6 +19,18 @@
                 m_4.resize(2, 2, 1);
                 console.log(Module.matrix_t.get(m_1));
 
+                var m_i32 = new Module.matrix_t(2, 2, 0x0200 | 0x01, 0x0100);
+                m_i32.allocate();
+                console.log(m_i32);
+
+                var m_f32 = new Module.matrix_t(2, 2, 0x0400 | 0x01, 0x0100);
+                m_f32.allocate();
+                console.log(m_f32);
+
+                var m_f64 = new Module.matrix_t(2, 2, 0x1000 | 0x01, 0x0100);
+                m_f64.allocate();
+                console.log(m_f64);
+
                  var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
                 //var lengthArray = some.length;
                 /*var nDataBytes = data.length * data.BYTES_PER_ELEMENT;
