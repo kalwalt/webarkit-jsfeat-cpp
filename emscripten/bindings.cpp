@@ -11,6 +11,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .constructor<int, int, int, int>()
     .function("allocate", &matrix_t::allocate)
     .function("resize", &matrix_t::resize)
+    .function("getPointer", &matrix_t::getPointer)
     .property("cols", &matrix_t::getCols, &matrix_t::setCols)
     .property("rows", &matrix_t::getRows, &matrix_t::setRows)
     .property("type", &matrix_t::getType, &matrix_t::setType)
