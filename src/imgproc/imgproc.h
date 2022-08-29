@@ -150,6 +150,7 @@ public:
       // dst.u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
       q += 4;
     }
+    std::cout << "Grayscale works!" << std::endl;
     /*for (int i = 0; i < dst.u8.size(); i++) {
       std::cout << "value dst: " << (int)dst.u8.at(i) << std::endl;
     }*/

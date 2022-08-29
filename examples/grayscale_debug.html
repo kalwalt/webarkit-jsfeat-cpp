@@ -42,6 +42,22 @@
                     channels: 1,
                     data: data
                 }
+                var m = new Module.matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
+                m.allocate();
+                var some = [23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120];
+                var num = some.length;
+                var buf = Module._malloc(100);
+                var arr = new Uint8Array(num);
+                for (var i = 0; i < num; i++) {
+                    arr[i] = some[i];
+                }
+
+                Module.HEAPU8.set(arr, buf);
+
+                //Module.toGrayscale(arr, 2, 2, m, 0);
+
+                var Grayscale = Module.cwrap("Grayscale", 'number', ['number', 'number', 'number', 'number', 'number']);
+                Grayscale(buf, 2, 2, m.getPointer(), 0);
 
                 var Grayscale_tt = Module.Grayscale_tt(2, 2, RGBA2GRAY);
                 console.log(Grayscale_tt);
