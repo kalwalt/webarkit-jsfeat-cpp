@@ -120,6 +120,9 @@ public:
       channel = ch;
     }
   }
+
+  auto getPointer() { return (int)this; }
+
 #ifdef __EMSCRIPTEN__
   static _Mat_t get(const matrix_t &m) {
     _Mat_t output;

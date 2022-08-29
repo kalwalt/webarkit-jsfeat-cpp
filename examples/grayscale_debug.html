@@ -1,0 +1,56 @@
+<html>
+
+<body>
+
+    <script>
+
+        var Module = {
+            onRuntimeInitialized: function () {
+                console.log(Module)
+                console.log(Module.Types.U8_t.value);
+                var RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value
+                console.log(RGBA2GRAY);
+                var m_1 = new Module.matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
+                var m_4 = new Module.matrix_t(2, 2, 0x0100 | 0x04, 0x0100);
+                console.log("matrix_t cols: ", m_1.cols);
+                m_1.allocate();
+                m_1.resize(2, 2, 1);
+                m_4.allocate();
+                m_4.resize(2, 2, 1);
+                console.log(Module.matrix_t.get(m_1));
+
+                var m_i32 = new Module.matrix_t(2, 2, 0x0200 | 0x01, 0x0100);
+                m_i32.allocate();
+                console.log(m_i32);
+                console.log(m_i32.$$.ptr);
+                console.log(m_i32.getPointer());
+
+                var m_f32 = new Module.matrix_t(2, 2, 0x0400 | 0x01, 0x0100);
+                m_f32.allocate();
+                console.log(m_f32);
+
+                var m_f64 = new Module.matrix_t(2, 2, 0x1000 | 0x01, 0x0100);
+                m_f64.allocate();
+                console.log(m_f64);
+
+                var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
+     
+                var Mat_t = {
+                    size: 4,
+                    cols: 2,
+                    rows: 2,
+                    channels: 1,
+                    data: data
+                }
+
+                var Grayscale_tt = Module.Grayscale_tt(2, 2, RGBA2GRAY);
+                console.log(Grayscale_tt);
+                var Grayscale_ttm = Module.Grayscale_ttm(Mat_t, 2, 2, RGBA2GRAY);
+                console.log(Grayscale_ttm);
+            }
+        };
+    </script>
+    <script src="../build/grayscale_debug.js"></script>
+</body>
+
+</html>
