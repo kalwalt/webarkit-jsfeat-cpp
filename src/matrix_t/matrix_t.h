@@ -121,7 +121,7 @@ public:
     }
   }
 
-  auto getPointer() { return (int)this; }
+  auto getPointer() { return reinterpret_cast<int>(this); }
 
 #ifdef __EMSCRIPTEN__
   static _Mat_t get(const matrix_t &m) {
