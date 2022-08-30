@@ -22,14 +22,11 @@ public:
     cols = c;
     rows = r;
     type = get_data_type(data_type) | 0;
-    printf("type is : %i\n", type);
     channel = get_channel(data_type) | 0;
-    printf("channel is : %i\n", channel);
     _data_type_size.assign(
         {-1, 1, 4, -1, 4, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, 8});
     size = (cols * get_data_type_size(data_type) * channel) *
            rows; //(cols * rows);
-    printf("size is: %i\n", size);
     dt = new data_t((cols * get_data_type_size(type) * channel) * rows);
   };
 
@@ -51,37 +48,21 @@ public:
 
   void allocate() {
     if (type == Types::U8_t) {
-      std::cout << "size parameter: " << size << std::endl;
       for (int i = 0; i < size; i++) {
         dt->u8.push_back(0);
       }
-      std::cout << "size is: " << dt->u8.size() << std::endl;
-      std::cout << "allocated" << std::endl;
-      std::cout << (int)dt->u8.at(0) << std::endl;
     } else if (type == Types::S32_t) {
-      std::cout << "size parameter: " << size << std::endl;
       for (int i = 0; i < size; i++) {
         dt->i32.push_back(0);
       }
-      std::cout << "size is: " << dt->i32.size() << std::endl;
-      std::cout << "allocated" << std::endl;
-      std::cout << (int)dt->i32.at(0) << std::endl;
     } else if (type == Types::F32_t) {
-      std::cout << "size parameter: " << size << std::endl;
       for (int i = 0; i < size; i++) {
         dt->f32.push_back(0.0);
       }
-      std::cout << "size is: " << dt->f32.size() << std::endl;
-      std::cout << "allocated" << std::endl;
-      std::cout << (float)dt->f32.at(0) << std::endl;
     } else if (type == Types::F64_t) {
-      std::cout << "size parameter: " << size << std::endl;
       for (int i = 0; i < size; i++) {
         dt->f64.push_back(0.0);
       }
-      std::cout << "size is: " << dt->f64.size() << std::endl;
-      std::cout << "allocated" << std::endl;
-      std::cout << (float)dt->f64.at(0) << std::endl;
     }
   }
 
@@ -89,14 +70,8 @@ public:
     if (!ch) {
       ch = channel;
     }
-    std::cout << "channel: " << ch << std::endl;
     // relocate buffer only if new size doesnt fit
-    std::cout << "Type inside resize: " << type << std::endl;
-    std::cout << "Get data type size: " << get_data_type_size(type)
-              << std::endl;
-    std::cout << "size: " << size << std::endl;
     int new_size = ((c * get_data_type_size(type) * ch) * r);
-    std::cout << "New size is: " << new_size << std::endl;
     if (new_size > size) {
       cols = c;
       rows = r;
