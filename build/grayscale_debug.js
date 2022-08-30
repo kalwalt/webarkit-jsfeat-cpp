@@ -1880,8 +1880,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  136460: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
- 136558: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  141836: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
+ 141934: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 
 
@@ -7667,6 +7667,9 @@ var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__w
 
 /** @type {function(...*):?} */
 var _Grayscale = Module["_Grayscale"] = createExportWrapper("Grayscale");
+
+/** @type {function(...*):?} */
+var _Grayscale_m = Module["_Grayscale_m"] = createExportWrapper("Grayscale_m");
 
 /** @type {function(...*):?} */
 var _Grayscale_s = Module["_Grayscale_s"] = createExportWrapper("Grayscale_s");
