@@ -1,9 +1,6 @@
 #ifndef MATRIX_T_H
 #define MATRIX_T_H
 
-#include <cstddef>
-#include <cstdio>
-#include <iostream>
 #include <node_utils/data_t.h>
 #include <types/types.h>
 
