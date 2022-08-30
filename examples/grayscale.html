@@ -25,7 +25,7 @@
                 //Module.toGrayscale(arr, 2, 2, m, 0);
 
                 var Grayscale = Module.cwrap("Grayscale", 'number', ['number', 'number', 'number', 'number', 'number']);
-                Grayscale(buf, 2, 2, m, 0);
+                Grayscale(buf, 2, 2, m.getPointer(), 0);
                 m.delete();
 
                 Module._free(buf);

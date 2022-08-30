@@ -145,7 +145,7 @@ public:
       g = src[q + 1];
       b = src[q + 2];
       std::cout << "p is: " << p << std::endl;
-      dst->data[p] = (r + r + r + b + g + g + g + g) >> 3;
+      dst->dt->u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
       // https://stackoverflow.com/a/596241/5843642
       // dst.u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
       q += 4;

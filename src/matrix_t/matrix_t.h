@@ -16,8 +16,6 @@ public:
   int type;
   int channel;
   int size;
-  u_char *data;
-  Array<u_char> u8;
   data_t *dt;
 
   matrix_t(int c, int r, int data_type, int data_buffer) {
@@ -32,7 +30,6 @@ public:
     size = (cols * get_data_type_size(data_type) * channel) *
            rows; //(cols * rows);
     printf("size is: %i\n", size);
-    data = new u_char[size * channel];
     dt = new data_t((cols * get_data_type_size(type) * channel) * rows);
   };
 
@@ -88,15 +85,6 @@ public:
     }
   }
 
-  template <typename T> void fill(T *data) {
-    if (type == Types::U8_t) {
-      assign_data();
-      for (int i = 0; i < size - 1; i++) {
-        this->data[i] = data[i];
-      };
-    }
-  }
-
   void resize(int c, int r, int ch) {
     if (!ch) {
       ch = channel;
@@ -140,7 +128,6 @@ private:
   int get_data_type_size(int type) {
     return _data_type_size[(type & 0xFF00) >> 8];
   }
-  void assign_data() { data = dt->u8.data(); }
 };
 } // namespace jsfeat
 
