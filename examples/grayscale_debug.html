@@ -16,7 +16,7 @@
                 m_1.allocate();
                 m_1.resize(2, 2, 1);
                 m_4.allocate();
-                m_4.resize(2, 2, 1);
+                //m_4.resize(2, 2, 1);
                 console.log(Module.matrix_t.get(m_1));
 
                 var m_i32 = new Module.matrix_t(2, 2, 0x0200 | 0x01, 0x0100);
@@ -44,6 +44,7 @@
                 }
                 var m = new Module.matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
                 m.allocate();
+                console.log(m);
                 var some = [23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120];
                 var num = some.length;
                 var buf = Module._malloc(100);
@@ -58,6 +59,9 @@
 
                 var Grayscale = Module.cwrap("Grayscale", 'number', ['number', 'number', 'number', 'number', 'number']);
                 Grayscale(buf, 2, 2, m.getPointer(), 0);
+
+                var Grayscale_m = Module.cwrap("Grayscale_m", 'number', ['number', 'number', 'number', 'number', 'number']);
+                Grayscale_m(m_4.getPointer(), 2, 2, m_1.getPointer(), 0);
 
                 var Grayscale_tt = Module.Grayscale_tt(2, 2, RGBA2GRAY);
                 console.log(Grayscale_tt);
