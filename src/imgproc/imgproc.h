@@ -10,7 +10,6 @@ namespace jsfeat {
 
 class imgproc {
 public:
-  int code;
   void grayscale_m(matrix_t *src, int w, int h, matrix_t *dst, int code) {
     // this is default image data representation in browser
     if (!code) {
@@ -37,16 +36,12 @@ public:
     }
     int cn2 = cn << 1;
     int cn3 = (cn * 3) | 0;
-    std::cout << "cn3: " << cn3 << std::endl;
 
     dst->resize(w, h, 1);
-    std::cout << dst->dt->u8.size() << std::endl;
-    std::cout << src->dt->u8.size() << std::endl;
+
     if (src->dt->u8.empty()) {
       std::cout << "vector is empty" << std::endl;
     }
-    // this should print a zero value
-    std::cout << "value: " << (int)src->dt->u8.at(0) << std::endl;
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       // probably we can do this in javascript but not in C++
@@ -90,6 +85,7 @@ public:
       dst->u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
       q += 4;
     }*/
+    // Only for testing. It will be deleted in the future.
     for (int i = 0; i < dst->dt->u8.size(); i++) {
       std::cout << "value dst: " << (int)dst->dt->u8.at(i) << std::endl;
     }
@@ -121,12 +117,8 @@ public:
     }
     int cn2 = cn << 1;
     int cn3 = (cn * 3) | 0;
-    std::cout << "cn3: " << cn3 << std::endl;
 
-    // dst.resize(w, h, 1);
-    // std::cout << "dst size is: " << dst.u8.size() << std::endl;
-    //  this should print a zero value
-    std::cout << "value: " << (int)src[0] << std::endl;
+    dst->resize(w, h, 1);
 
     // code from jsartoolkit5
     int q = 0;
@@ -138,16 +130,15 @@ public:
     int g;
     int b;
 
-    // std::cout << "data size: " << std::size(dst->data)  << std::endl;
-
     for (int p = 0; p < videosize; p++) {
       r = src[q + 0];
       g = src[q + 1];
       b = src[q + 2];
+
       std::cout << "p is: " << p << std::endl;
-      dst->dt->u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
       // https://stackoverflow.com/a/596241/5843642
-      // dst.u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
+      dst->dt->u8.at(p) = (r + r + r + b + g + g + g + g) >> 3;
+     
       q += 4;
     }
     std::cout << "Grayscale works!" << std::endl;
@@ -182,12 +173,8 @@ public:
     }
     int cn2 = cn << 1;
     int cn3 = (cn * 3) | 0;
-    std::cout << "cn3: " << cn3 << std::endl;
 
     // dst->resize(w, h, 1);
-    std::cout << "dst size is: " << dst.data.size() << std::endl;
-    // this should print a zero value
-    std::cout << "value: " << (int)src[0] << std::endl;
 
     // code from jsartoolkit5
     int q = 0;
@@ -199,7 +186,6 @@ public:
       r = src[q + 0], g = src[q + 1], b = src[q + 2];
       std::cout << "p is: " << p << std::endl;
       // https://stackoverflow.com/a/596241/5843642
-      // dst.data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
       dst.data.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
@@ -235,12 +221,8 @@ public:
     }
     int cn2 = cn << 1;
     int cn3 = (cn * 3) | 0;
-    std::cout << "cn3: " << cn3 << std::endl;
 
     // dst->resize(w, h, 1);
-    std::cout << "dst size is: " << dst.data.size() << std::endl;
-    // this should print a zero value
-    std::cout << "value: " << (int)src[0] << std::endl;
 
     // code from jsartoolkit5
     int q = 0;
@@ -252,7 +234,6 @@ public:
       r = src[q + 0], g = src[q + 1], b = src[q + 2];
       std::cout << "p is: " << p << std::endl;
       // https://stackoverflow.com/a/596241/5843642
-      // dst.data.at(p) = (r + r + r + b + g + g + g + g) >> 3;
       dst.data.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
@@ -290,10 +271,8 @@ public:
     }
     int cn2 = cn << 1;
     int cn3 = (cn * 3) | 0;
-    std::cout << "cn3: " << cn3 << std::endl;
 
     // dst->resize(w, h, 1);
-    std::cout << "value: " << (int)src[0] << std::endl;
 
     // code from jsartoolkit5
     int q = 0;
