@@ -29,16 +29,9 @@ public:
     size = (cols * get_data_type_size(data_type) * channel) *
            rows; //(cols * rows);
     dt = new data_t((cols * get_data_type_size(type) * channel) * rows);
-    std::cout << (data_buffer.typeOf().as<std::string>()) << std::endl;
     if (isType(data_buffer, "object")) {
-      setData(data_buffer);
-      printf("Ok!\n");
-      emscripten::val console = emscripten::val::global("console");
-      console.call<void>("log", data_buffer);
+      fillData(data_buffer);
     } else {
-      printf("Error! data_buffer is not an object!\n");
-      emscripten::val console = emscripten::val::global("console");
-      console.call<void>("log", data_buffer);
       allocate();
     }
   };
@@ -116,13 +109,19 @@ private:
   int get_data_type_size(int type) {
     return _data_type_size[(type & 0xFF00) >> 8];
   }
-  void setData(emscripten::val data_buffer) {
+  void fillData(emscripten::val data_buffer) {
     if (type == Types::U8_t) {
-        dt->u8 = emscripten::convertJSArrayToNumberVector<u_char>(data_buffer);
+      dt->u8 = emscripten::convertJSArrayToNumberVector<u_char>(data_buffer);
       // we show values only for testing...
       for (int i = 0; i < dt->u8.size(); i++) {
         std::cout << "data from matrix_t: " << (int)dt->u8.at(i) << std::endl;
       }
+    } else if (type == Types::S32_t) {
+      dt->i32 = emscripten::convertJSArrayToNumberVector<int>(data_buffer);
+    } else if (type == Types::F32_t) {
+      dt->f32 = emscripten::convertJSArrayToNumberVector<float>(data_buffer);
+    } else if (type == Types::F64_t) {
+      dt->f64 = emscripten::convertJSArrayToNumberVector<double>(data_buffer);
     }
   }
   bool isType(emscripten::val value, const std::string &type) {
