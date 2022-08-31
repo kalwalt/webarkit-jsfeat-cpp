@@ -1,0 +1,18 @@
+<html>
+
+<body>
+
+    <script>
+
+        var Module = {
+            onRuntimeInitialized: function () {
+                // test if the matrix_t is filled with data
+                var data = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
+                var m = new Module.matrix_t(2, 2, 0x0100 | 0x01, data);
+            }
+        };
+    </script>
+    <script src="../build/grayscale_debug.js"></script>
+</body>
+
+</html>

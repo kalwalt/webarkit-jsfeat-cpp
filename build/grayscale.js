@@ -4031,6 +4031,11 @@ var ASM_CONSTS = {
       return Emval.toHandle(v);
     }
 
+  function __emval_typeof(handle) {
+      handle = Emval.toValue(handle);
+      return Emval.toHandle(typeof handle);
+    }
+
   function _abort() {
       abort('native code called abort()');
     }
@@ -7121,6 +7126,7 @@ var asmLibraryArg = {
   "_emval_new_cstring": __emval_new_cstring,
   "_emval_run_destructors": __emval_run_destructors,
   "_emval_take_value": __emval_take_value,
+  "_emval_typeof": __emval_typeof,
   "abort": _abort,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
   "emscripten_resize_heap": _emscripten_resize_heap,
@@ -7197,10 +7203,10 @@ var stackAlloc = Module["stackAlloc"] = createExportWrapper("stackAlloc");
 var ___cxa_is_pointer_type = Module["___cxa_is_pointer_type"] = createExportWrapper("__cxa_is_pointer_type");
 
 /** @type {function(...*):?} */
-var dynCall_viijii = Module["dynCall_viijii"] = createExportWrapper("dynCall_viijii");
+var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
 
 /** @type {function(...*):?} */
-var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
+var dynCall_viijii = Module["dynCall_viijii"] = createExportWrapper("dynCall_viijii");
 
 /** @type {function(...*):?} */
 var dynCall_iiiiij = Module["dynCall_iiiiij"] = createExportWrapper("dynCall_iiiiij");
