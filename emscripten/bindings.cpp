@@ -8,7 +8,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     register_vector<std::vector<u_char>>("vector_u_char");
 
     class_<matrix_t>("matrix_t")
-    .constructor<int, int, int, int>()
+    .constructor<int, int, int, emscripten::val>()
     .function("allocate", &matrix_t::allocate)
     .function("resize", &matrix_t::resize)
     .function("getPointer", &matrix_t::getPointer)

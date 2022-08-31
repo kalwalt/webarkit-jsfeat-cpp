@@ -142,9 +142,9 @@ public:
       q += 4;
     }
     std::cout << "Grayscale works!" << std::endl;
-    /*for (int i = 0; i < dst.u8.size(); i++) {
-      std::cout << "value dst: " << (int)dst.u8.at(i) << std::endl;
-    }*/
+    for (int i = 0; i < dst->dt->u8.size(); i++) {
+      std::cout << "value dst: " << (int)dst->dt->u8.at(i) << std::endl;
+    }
   };
 
   void grayscale_s(u_char *src, int w, int h, Mat_t dst, int code) {
@@ -305,7 +305,8 @@ public:
 
   _Mat_t grayscale_ttm(_Mat_t src, int w, int h, int code) {
     _Mat_t dst;
-    matrix_t output(w, h, 0x0100 | 0x01, 0x0100);
+    emscripten::val some = emscripten::val("null");
+    matrix_t output(w, h, 0x0100 | 0x01, some);
     if (output.dt->u8.empty()) {
       output.allocate();
     }
@@ -347,7 +348,8 @@ public:
 
   _Mat_t grayscale_jsfeat(_Mat_t src, int w, int h, int code) {
     _Mat_t dst;
-    matrix_t output(w, h, 0x0100 | 0x01, 0x0100);
+    emscripten::val some = emscripten::val("null");
+    matrix_t output(w, h, 0x0100 | 0x01, some);
     if (output.dt->u8.empty()) {
       output.allocate();
     }
