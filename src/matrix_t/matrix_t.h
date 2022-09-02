@@ -25,11 +25,7 @@ public:
     rows = r;
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
-    _data_type_size.assign(
-        {-1, 1, 4, -1, 4, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, 8});
-    //size = (cols * get_data_type_size(type) * channel) * rows; //(cols * rows);
     size = (cols * channel) * rows;
-    //dt = new data_t((cols * get_data_type_size(type) * channel) * rows);
     dt = new data_t(size);
     if (isType(data_buffer, "object")) {
       fillData(data_buffer);
@@ -103,8 +99,7 @@ public:
       ch = channel;
     }
     // relocate buffer only if new size doesnt fit
-    //int new_size = ((c * get_data_type_size(type) * ch) * r);
-    int new_size = (cols * channel) * rows;
+    int new_size = (c * ch) * r;
     if (new_size > size) {
       cols = c;
       rows = r;
@@ -138,12 +133,8 @@ public:
   };
 #endif
 private:
-  Array<int> _data_type_size;
   int get_data_type(int type) { return (type & 0xFF00); }
   int get_channel(int type) { return (type & 0xFF); };
-  int get_data_type_size(int type) {
-    return _data_type_size[(type & 0xFF00) >> 8];
-  }
   void fillData(emscripten::val data_buffer) {
     if (type == Types::U8_t) {
       dt->u8 = emscripten::convertJSArrayToNumberVector<u_char>(data_buffer);

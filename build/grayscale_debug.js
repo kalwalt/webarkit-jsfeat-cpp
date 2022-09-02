@@ -1880,8 +1880,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  155116: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
- 155214: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  153820: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
+ 153918: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 
 
