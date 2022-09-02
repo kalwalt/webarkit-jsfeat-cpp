@@ -26,7 +26,7 @@ public:
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
-    dt = new data_t(size);
+    dt = new data_t();
     if (isType(data_buffer, "object")) {
       fillData(data_buffer);
     } else {
