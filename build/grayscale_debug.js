@@ -1880,8 +1880,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  151404: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
- 151502: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  151340: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
+ 151438: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 
 
@@ -7670,6 +7670,9 @@ var asmLibraryArg = {
 var asm = createWasm();
 /** @type {function(...*):?} */
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
+
+/** @type {function(...*):?} */
+var _toGrayscale = Module["_toGrayscale"] = createExportWrapper("toGrayscale");
 
 /** @type {function(...*):?} */
 var _Grayscale = Module["_Grayscale"] = createExportWrapper("Grayscale");

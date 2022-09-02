@@ -62,11 +62,14 @@
 
                 var Grayscale_m = Module.cwrap("Grayscale_m", 'number', ['number', 'number', 'number', 'number', 'number']);
                 Grayscale_m(m_4.getPointer(), 2, 2, m_1.getPointer(), 0);
-
+                
                 var Grayscale_tt = Module.Grayscale_tt(2, 2, RGBA2GRAY);
                 console.log(Grayscale_tt);
                 var Grayscale_ttm = Module.Grayscale_ttm(Mat_t, 2, 2, RGBA2GRAY);
                 console.log(Grayscale_ttm);
+
+                var toGrayscale = Module.cwrap("toGrayscale", 'number', ['number', 'number', 'number', 'number', 'number']);
+                toGrayscale(buf, 2, 2, m.getPointer(), 0);
             }
         };
     </script>
