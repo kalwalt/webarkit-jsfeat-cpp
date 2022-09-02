@@ -16,6 +16,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .property("rows", &matrix_t::getRows, &matrix_t::setRows)
     .property("type", &matrix_t::getType, &matrix_t::setType)
     .property("channel", &matrix_t::getChannel, &matrix_t::setChannel)
+    .property("data", &matrix_t::getData)
     .class_function("get", &matrix_t::get);
 
     enum_<Types>("Types")
