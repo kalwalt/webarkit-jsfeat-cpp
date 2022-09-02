@@ -7144,6 +7144,9 @@ var asm = createWasm();
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
 
 /** @type {function(...*):?} */
+var _toGrayscale = Module["_toGrayscale"] = createExportWrapper("toGrayscale");
+
+/** @type {function(...*):?} */
 var _Grayscale = Module["_Grayscale"] = createExportWrapper("Grayscale");
 
 /** @type {function(...*):?} */

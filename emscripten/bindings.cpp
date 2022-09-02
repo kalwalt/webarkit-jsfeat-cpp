@@ -51,7 +51,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .field("data", &_Mat_t::data);
 
 
-    function("toGrayscale", &toGrayscale, allow_raw_pointers());
+    //function("toGrayscale", &toGrayscale);
     //function("Grayscale_t", &Grayscale_t, allow_raw_pointers());
     function("Grayscale_t", &Grayscale_t);
     function("Grayscale_tt", &Grayscale_tt);
