@@ -1880,8 +1880,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  149852: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
- 149950: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
+  138956: function() {return withBuiltinMalloc(function () { return allocateUTF8(Module['UBSAN_OPTIONS'] || 0); });},  
+ 139054: function() {var setting = Module['printWithColors']; if (setting != null) { return setting; } else { return ENVIRONMENT_IS_NODE && process.stderr.isTTY; }}
 };
 
 
@@ -6617,11 +6617,6 @@ var ASM_CONSTS = {
       return Emval.toHandle(v);
     }
 
-  function __emval_typeof(handle) {
-      handle = Emval.toValue(handle);
-      return Emval.toHandle(typeof handle);
-    }
-
   function __mmap_js(addr, len, prot, flags, fd, off, allocated, builtin) {
   try {
   
@@ -7641,7 +7636,6 @@ var asmLibraryArg = {
   "_emval_new_cstring": __emval_new_cstring,
   "_emval_run_destructors": __emval_run_destructors,
   "_emval_take_value": __emval_take_value,
-  "_emval_typeof": __emval_typeof,
   "_mmap_js": __mmap_js,
   "_munmap_js": __munmap_js,
   "abort": _abort,
