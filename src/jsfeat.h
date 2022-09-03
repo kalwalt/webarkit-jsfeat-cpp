@@ -10,8 +10,6 @@ void grayscale_m(matrix_t *src, int w, int h, matrix_t *dst, int code);
 
 void grayscale_s(u_char *src, int w, int h, Mat_t dst, int code);
 
-Mat_t grayscale_t(u_char *src, int w, int h, int code);
-
 _Mat_t grayscale_tt(u_char *src, int w, int h, int code);
 
 _Mat_t grayscale_ttm(_Mat_t src, int w, int h, int code);

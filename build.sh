@@ -59,12 +59,12 @@ if [ $BUILD_EM ]; then
   echo "Building jsfeat with emscripten..."
   emcc -Isrc src/jsfeat.cpp -r -o build/libjsfeat.bc
   echo "Linking libs and final emscripten output."
-  emcc -Isrc build/libjsfeat.bc emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_toGrayscale,_Grayscale,_Grayscale_m,_Grayscale_s -sEXPORTED_RUNTIME_METHODS=cwrap $MEMORY_OPTION --bind -o build/grayscale.js
+  emcc -Isrc build/libjsfeat.bc emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale,_Grayscale_m,_Grayscale_s -sEXPORTED_RUNTIME_METHODS=cwrap $MEMORY_OPTION --bind -o build/grayscale.js
 fi
 
 if [ $DEBUG_EM ]; then
   echo "Building jsfeat with emscripten..."
   emcc -Isrc src/jsfeat.cpp -fsanitize=undefined -r -o build/libjsfeat_debug.bc
   echo "Linking libs and final emscripten output."
-  emcc -Isrc build/libjsfeat_debug.bc emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_toGrayscale,_Grayscale,_Grayscale_m,_Grayscale_s -sEXPORTED_RUNTIME_METHODS=cwrap -g -O1 $MEMORY_OPTION -fsanitize=undefined -sASSERTIONS=1 --profiling -s DEMANGLE_SUPPORT=1 --bind -o build/grayscale_debug.js
+  emcc -Isrc build/libjsfeat_debug.bc emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale,_Grayscale_m,_Grayscale_s -sEXPORTED_RUNTIME_METHODS=cwrap -g -O1 $MEMORY_OPTION -fsanitize=undefined -sASSERTIONS=1 --profiling -s DEMANGLE_SUPPORT=1 --bind -o build/grayscale_debug.js
 fi
