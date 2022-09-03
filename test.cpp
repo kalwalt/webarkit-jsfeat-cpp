@@ -20,8 +20,8 @@ int main() {
   matrix_t *dst = new matrix_t(2, 2, 0x0100 | 0x01, 0x0100);
   src->allocate();
   u_char some[] = { 23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120 };
-  src->data = some;
-  src->fill(some);
+  //src->data = some;
+  //src->fill(some);
   dst->allocate();
   imgproc img;
   img.grayscale_m(src, 2, 2, dst, Colors::COLOR_RGBA2GRAY);

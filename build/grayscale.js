@@ -4031,11 +4031,6 @@ var ASM_CONSTS = {
       return Emval.toHandle(v);
     }
 
-  function __emval_typeof(handle) {
-      handle = Emval.toValue(handle);
-      return Emval.toHandle(typeof handle);
-    }
-
   function _abort() {
       abort('native code called abort()');
     }
@@ -7126,7 +7121,6 @@ var asmLibraryArg = {
   "_emval_new_cstring": __emval_new_cstring,
   "_emval_run_destructors": __emval_run_destructors,
   "_emval_take_value": __emval_take_value,
-  "_emval_typeof": __emval_typeof,
   "abort": _abort,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
   "emscripten_resize_heap": _emscripten_resize_heap,
