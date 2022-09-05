@@ -1,7 +1,6 @@
 #ifndef MATRIX_T_H
 #define MATRIX_T_H
 
-#include <cstddef>
 #ifdef __EMSCRIPTEN__
 #include <emscripten/val.h>
 #endif

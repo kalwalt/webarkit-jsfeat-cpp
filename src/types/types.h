@@ -7,18 +7,12 @@
 #include <emscripten/val.h>
 #endif
 namespace jsfeat {
+
 typedef unsigned char u_char;
 template <typename T> using Array = std::vector<T>;
-struct Mat_t {
-  int size;
-  int cols;
-  int rows;
-  int channels;
-  std::vector<u_char> data;
-};
+
 #ifdef __EMSCRIPTEN__
 thread_local const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
-
 struct _Mat_t {
   int size;
   int cols;
