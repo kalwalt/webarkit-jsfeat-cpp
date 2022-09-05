@@ -13,6 +13,7 @@
                 var m_u8 = new Module.matrix_t(2, 2, 0x0100 | 0x01, data_u8);
                 console.log(m_u8);
                 console.log(m_u8.data);
+                console.log(Module.matrix_t.get(m_u8));
                 var data_i32 = new Int32Array ([333, 20, 12, 800]);
                 var m_i32 = new Module.matrix_t(2, 2, 0x0200 | 0x01, data_i32);
                 console.log(m_i32);

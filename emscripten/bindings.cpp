@@ -42,8 +42,4 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .field("rows", &_Mat_t::rows)
     .field("channels", &_Mat_t::channels)
     .field("data", &_Mat_t::data);
-
-    function("Grayscale_tt", &Grayscale_tt);
-    function("Grayscale_ttm", &Grayscale_ttm);
-    function("Grayscale_jsfeat", &Grayscale_jsfeat);
 }

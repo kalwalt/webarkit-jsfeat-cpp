@@ -19,25 +19,20 @@
         var Module = {
             onRuntimeInitialized: function () {
                 console.log(Module)
-                const RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value
-                var Mat_t = {
-                    size: img.width * img.height,
-                    cols: img.width,
-                    rows: img.height,
-                    channels: 1,
-                    data: data.data
-                }
-                console.log(Mat_t);
-                var Grayscale_jsfeat = Module.Grayscale_jsfeat(Mat_t, img.width, img.height, RGBA2GRAY);
-                console.log(Grayscale_jsfeat);
+                const RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value;
+                const U8_t = Module.Types.U8_t.value;
+                const C1_t = Module.Types.C1_t.value;
+    
+                var m_1 = new Module.matrix_t(img.width, img.height, U8_t | C1_t, 0);
+                m_1.allocate();
+                var buf = Module._malloc(img.width*img.height*4);
+                console.log(data);
+                Module.HEAPU8.set(data.data, buf);
+                Module.Grayscale(buf, img.width, img.height, m_1.getPointer(), RGBA2GRAY);
                 const imageData = ctxDst.createImageData(img.width, img.height);
-                var inputData = Grayscale_jsfeat.data;
-                for (let i = 0; i < imageData.data.length; i += 4) {
-                    // Modify pixel data
-                    imageData.data[i + 0] = inputData[i + 0];  // R value
-                    imageData.data[i + 1] = inputData[i + 1];  // G value
-                    imageData.data[i + 2] = inputData[i + 2];  // B value
-                    imageData.data[i + 3] = inputData[i + 3];  // A value
+                var inputData = m_1.data;
+                for (let i = 0; i < imageData.data.length; i++) {
+                    imageData.data[i] = inputData[i];
                 }
                 ctxDst.putImageData(imageData, 0, 0);
             }

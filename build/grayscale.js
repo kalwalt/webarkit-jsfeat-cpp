@@ -19,7 +19,7 @@ var Module = typeof Module != 'undefined' ? Module : {};
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// {{PRE_JSES}}
+
 
 // Sometimes an existing Module object exists with properties
 // meant to overwrite the default module functionality. Here
@@ -3508,23 +3508,6 @@ var ASM_CONSTS = {
       });
     }
 
-  function __embind_register_function(name, argCount, rawArgTypesAddr, signature, rawInvoker, fn) {
-      var argTypes = heap32VectorToArray(argCount, rawArgTypesAddr);
-      name = readLatin1String(name);
-  
-      rawInvoker = embind__requireFunction(signature, rawInvoker);
-  
-      exposePublicSymbol(name, function() {
-          throwUnboundTypeError('Cannot call ' + name + ' due to unbound types', argTypes);
-      }, argCount - 1);
-  
-      whenDependentTypesAreResolved([], argTypes, function(argTypes) {
-          var invokerArgsArray = [argTypes[0] /* return value */, null /* no class 'this'*/].concat(argTypes.slice(1) /* actual params */);
-          replacePublicSymbol(name, craftInvokerFunction(name, invokerArgsArray, null /* no class 'this'*/, rawInvoker, fn), argCount - 1);
-          return [];
-      });
-    }
-
   function integerReadValueFromPointer(name, shift, signed) {
       // integers are quite common, so generate very specialized functions
       switch (shift) {
@@ -3837,15 +3820,6 @@ var ASM_CONSTS = {
       });
     }
 
-  function __emval_as(handle, returnType, destructorsRef) {
-      handle = Emval.toValue(handle);
-      returnType = requireRegisteredType(returnType, 'emval::as');
-      var destructors = [];
-      var rd = Emval.toHandle(destructors);
-      HEAP32[destructorsRef >> 2] = rd;
-      return returnType['toWireType'](destructors, handle);
-    }
-
   function __emval_allocateDestructors(destructorsRef) {
       var destructors = [];
       HEAP32[destructorsRef >> 2] = Emval.toHandle(destructors);
@@ -3954,12 +3928,6 @@ var ASM_CONSTS = {
       return returnId;
     }
 
-  function __emval_get_property(handle, key) {
-      handle = Emval.toValue(handle);
-      key = Emval.toValue(key);
-      return Emval.toHandle(handle[key]);
-    }
-
   function __emval_incref(handle) {
       if (handle > 4) {
         emval_handle_array[handle].refcount += 1;
@@ -4013,16 +3981,6 @@ var ASM_CONSTS = {
       }
   
       return newer(handle, argTypes, args);
-    }
-
-  function __emval_new_cstring(v) {
-      return Emval.toHandle(getStringOrSymbol(v));
-    }
-
-  function __emval_run_destructors(handle) {
-      var destructors = Emval.toValue(handle);
-      runDestructors(destructors);
-      __emval_decref(handle);
     }
 
   function __emval_take_value(type, argv) {
@@ -7102,7 +7060,6 @@ var asmLibraryArg = {
   "_embind_register_enum": __embind_register_enum,
   "_embind_register_enum_value": __embind_register_enum_value,
   "_embind_register_float": __embind_register_float,
-  "_embind_register_function": __embind_register_function,
   "_embind_register_integer": __embind_register_integer,
   "_embind_register_memory_view": __embind_register_memory_view,
   "_embind_register_std_string": __embind_register_std_string,
@@ -7110,16 +7067,12 @@ var asmLibraryArg = {
   "_embind_register_value_object": __embind_register_value_object,
   "_embind_register_value_object_field": __embind_register_value_object_field,
   "_embind_register_void": __embind_register_void,
-  "_emval_as": __emval_as,
   "_emval_call_void_method": __emval_call_void_method,
   "_emval_decref": __emval_decref,
   "_emval_get_global": __emval_get_global,
   "_emval_get_method_caller": __emval_get_method_caller,
-  "_emval_get_property": __emval_get_property,
   "_emval_incref": __emval_incref,
   "_emval_new": __emval_new,
-  "_emval_new_cstring": __emval_new_cstring,
-  "_emval_run_destructors": __emval_run_destructors,
   "_emval_take_value": __emval_take_value,
   "abort": _abort,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
@@ -7142,9 +7095,6 @@ var _Grayscale = Module["_Grayscale"] = createExportWrapper("Grayscale");
 
 /** @type {function(...*):?} */
 var _Grayscale_m = Module["_Grayscale_m"] = createExportWrapper("Grayscale_m");
-
-/** @type {function(...*):?} */
-var _Grayscale_s = Module["_Grayscale_s"] = createExportWrapper("Grayscale_s");
 
 /** @type {function(...*):?} */
 var ___getTypeName = Module["___getTypeName"] = createExportWrapper("__getTypeName");
@@ -7688,3 +7638,4 @@ run();
 
 
 
+Module["Grayscale"] = Module.cwrap("Grayscale", 'null', ['number', 'number', 'number', 'number', 'number']);

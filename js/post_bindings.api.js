@@ -1,0 +1,1 @@
+Module["Grayscale"] = Module.cwrap("Grayscale", 'null', ['number', 'number', 'number', 'number', 'number']);
