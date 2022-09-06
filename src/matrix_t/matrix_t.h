@@ -149,6 +149,7 @@ public:
     output.rows = m.rows;
     output.channels = m.channel;
     output.size = m.size;
+    output.data = m.data;
     return output;
   };
 #endif

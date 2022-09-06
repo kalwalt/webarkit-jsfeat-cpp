@@ -1,7 +1,6 @@
 #ifndef IMGPROC_H
 #define IMGPROC_H
 
-#include <iostream>
 #include <matrix_t/matrix_t.h>
 #include <types/types.h>
 #include <vector>
@@ -40,7 +39,8 @@ public:
     dst->resize(w, h, 1);
 
     if (src->dt->u8.empty()) {
-      std::cout << "vector is empty" << std::endl;
+      // we will re-add this with the new log system
+      // std::cout << "vector is empty" << std::endl;
     }
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
@@ -133,7 +133,6 @@ public:
             14;
       }
     }
-    std::cout << "Grayscale works!" << std::endl;
   };
 };
 } // namespace jsfeat
