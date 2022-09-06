@@ -31,6 +31,7 @@
                 Module.Grayscale(buf, img.width, img.height, m_1.getPointer(), RGBA2GRAY);
                 const imageData = ctxDst.createImageData(img.width, img.height);
                 var inputData = m_1.data;
+                console.log(inputData);
                 for (let i = 0; i < imageData.data.length; i++) {
                     imageData.data[i] = inputData[i];
                 }

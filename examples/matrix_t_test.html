@@ -6,11 +6,12 @@
 
         var Module = {
             onRuntimeInitialized: function () {
-                console.log(Module)
+                console.log(Module);
+                const U8_t = Module.Types.U8_t.value;
+                const C1_t = Module.Types.C1_t.value;
                 // test if the matrix_t is filled with data
                 var data_u8 = new Uint8Array ([23, 20, 12, 24, 212, 220, 120, 46, 78, 92, 35, 12, 120, 120, 120, 120]);
-                //console.log(data_u8);
-                var m_u8 = new Module.matrix_t(2, 2, 0x0100 | 0x01, data_u8);
+                var m_u8 = new Module.matrix_t(4, 4, U8_t | C1_t, data_u8);
                 console.log(m_u8);
                 console.log(m_u8.data);
                 console.log(Module.matrix_t.get(m_u8));
