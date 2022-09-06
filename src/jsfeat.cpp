@@ -4,6 +4,7 @@ using namespace jsfeat;
 
 
 void grayscale(u_char *src, int w, int h, matrix_t *dst, int code) { 
+    JSLOGi("Starting grayscale function..");
     imgproc img;
     img.grayscale(src, w, h, dst, code);
 };

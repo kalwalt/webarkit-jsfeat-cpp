@@ -4,6 +4,7 @@
 #include <matrix_t/matrix_t.h>
 #include <types/types.h>
 #include <vector>
+#include <jslog/jslog.h>
 
 namespace jsfeat {
 
@@ -39,8 +40,7 @@ public:
     dst->resize(w, h, 1);
 
     if (src->dt->u8.empty()) {
-      // we will re-add this with the new log system
-      // std::cout << "vector is empty" << std::endl;
+      JSLOGe("vector is empty");
     }
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
