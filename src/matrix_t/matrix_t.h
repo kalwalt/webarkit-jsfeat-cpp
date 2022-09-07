@@ -4,10 +4,10 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten/val.h>
 #endif
-#include <iostream>
 #include <node_utils/data_t.h>
 #include <string>
 #include <types/types.h>
+#include <jslog/jslog.h>
 
 namespace jsfeat {
 class matrix_t {
@@ -32,7 +32,7 @@ public:
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
     dt = new data_t();
-#ifdef __EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
     if (isType(data_buffer, "object")) {
       fillData(data_buffer);
     } else {
@@ -43,7 +43,7 @@ public:
 
   ~matrix_t() {
 #ifdef DEBUG_EM
-    std::cout << "deleting matrix_t" << std::endl;
+    JSLOGd("deleting matrix_t");
 #endif
     delete dt;
   }
@@ -156,7 +156,7 @@ public:
 private:
   int get_data_type(int type) { return (type & 0xFF00); }
   int get_channel(int type) { return (type & 0xFF); };
-#ifdef __EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
   void fillData(emscripten::val data_buffer) {
     if (type == Types::U8_t) {
       dt->u8 = emscripten::convertJSArrayToNumberVector<u_char>(data_buffer);

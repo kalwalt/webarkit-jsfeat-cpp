@@ -2,6 +2,7 @@
 #define DATA_T_H
 
 #include <types/types.h>
+#include <jslog/jslog.h>
 
 namespace jsfeat {
 class data_t {
@@ -13,7 +14,7 @@ public:
   data_t() {}
   ~data_t() {
 #ifdef DEBUG_EM
-    std::cout << "deleting data_t" << std::endl;
+    JSLOGd("deleting data_t");
 #endif
   }
 };
