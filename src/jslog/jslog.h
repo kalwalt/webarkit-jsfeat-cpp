@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <vector>
 
 enum JSLogLevel {
   JS_LOG_LEVEL_DEBUG = 0,
@@ -29,7 +30,6 @@ inline int jsLogLevel = JS_LOG_LEVEL_DEFAULT;
 
 inline void jsLogv(const char *tag, const int logLevel, const char *format, va_list ap) {
   va_list ap2;
-  char *buf = NULL;
   size_t len;
   const char *logLevelStrings[] = {"debug", "info", "warning", "error"};
   const size_t logLevelStringsCount =
@@ -59,20 +59,17 @@ inline void jsLogv(const char *tag, const int logLevel, const char *format, va_l
     logLevelStringLen = 0;
   }
 
-  buf = (char *)malloc((logLevelStringLen + len + 1) *
-                       sizeof(char)); // +1 for nul-term.
+  std::vector<char> buf(1+std::vsnprintf(nullptr, 0, format, ap));
 
   if (logLevelStringLen > 0) {
-    std::snprintf(buf, logLevelStringLen + 1, "JSLOG [%s] ",
+    std::snprintf(buf.data(), logLevelStringLen + 1, "JSLOG [%s] ",
                   logLevelStrings[logLevel]);
   }
 
-  std::vsnprintf(buf + logLevelStringLen, len + 1, format, ap);
+  std::vsnprintf(buf.data() + logLevelStringLen, len + 1, format, ap);
   len += logLevelStringLen;
 
-  std::fprintf(stderr, "%s\n", buf);
-
-  free(buf);
+  std::fprintf(stderr, "%s\n", buf.data());
 }
 
 inline void jsLog(const char *tag, const int logLevel, const char *format,
