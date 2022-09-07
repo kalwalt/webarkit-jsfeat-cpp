@@ -149,7 +149,7 @@ public:
     output.rows = m.rows;
     output.channels = m.channel;
     output.size = m.size;
-    output.data = m.data;
+    output.data = m.getData();
     return output;
   };
 #endif
