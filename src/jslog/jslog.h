@@ -2,6 +2,7 @@
 #define JSLOG_H
 
 #include <cstdio>
+#include <iostream>
 
 enum JSLogLevel {
   JS_LOG_LEVEL_DEBUG = 0,
@@ -11,7 +12,7 @@ enum JSLogLevel {
   JS_LOG_LEVEL_REL_INFO
 };
 
-#define JS_LOG_LEVEL_DEFAULT JS_LOG_LEVEL_INFO
+#define JS_LOG_LEVEL_DEFAULT JS_LOG_LEVEL_DEBUG
 inline int jsLogLevel = JS_LOG_LEVEL_DEFAULT;
 
 #ifdef DEBUG_EM
@@ -52,7 +53,7 @@ inline void jsLogv(const char *tag, const int logLevel, const char *format, va_l
   // Add characters required for logLevelString.
   if (logLevel >= 0 && logLevel < (int)logLevelStringsCount) {
     logLevelStringLen =
-        3 + strlen(logLevelStrings[logLevel]); // +3 for brackets and a space,
+        9 + strlen(logLevelStrings[logLevel]); // +3 for brackets and a space,
                                                // e.g. "[debug] ".
   } else {
     logLevelStringLen = 0;
@@ -62,7 +63,7 @@ inline void jsLogv(const char *tag, const int logLevel, const char *format, va_l
                        sizeof(char)); // +1 for nul-term.
 
   if (logLevelStringLen > 0) {
-    std::snprintf(buf, logLevelStringLen + 1, "[%s] ",
+    std::snprintf(buf, logLevelStringLen + 1, "JSLOG [%s] ",
                   logLevelStrings[logLevel]);
   }
 
