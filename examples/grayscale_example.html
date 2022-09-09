@@ -5,41 +5,40 @@
     <canvas id="canvas" width="1637" height="2048"></canvas>
     <canvas id="dst" width="1637" height="2048"></canvas>
 
-    <script>
+    <script type="module">
+        import jsfeatCpp from "./../build/jsfeatcpp_debug.js"
+        const jsfeat = await jsfeatCpp();
+        console.log(jsfeat);
+
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
         var canvasDst = document.getElementById('dst');
         var ctxDst = canvasDst.getContext('2d');
         var img = document.getElementById('img');
-        var data;
-        img.addEventListener('load', (e) => {
-            ctx.drawImage(img, 0, 0);
-            data = ctx.getImageData(0, 0, img.width, img.height);
-        });
-        var Module = {
-            onRuntimeInitialized: function () {
-                console.log(Module)
-                const RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value;
-                const U8_t = Module.Types.U8_t.value;
-                const C1_t = Module.Types.C1_t.value;
-    
-                var m_1 = new Module.matrix_t(img.width, img.height, U8_t | C1_t, 0);
-                m_1.allocate();
-                var buf = Module._malloc(img.width*img.height*4);
-                console.log(data);
-                Module.HEAPU8.set(data.data, buf);
-                Module.Grayscale(buf, img.width, img.height, m_1.getPointer(), RGBA2GRAY);
-                const imageData = ctxDst.createImageData(img.width, img.height);
-                var inputData = m_1.data;
-                console.log(inputData);
-                for (let i = 0; i < imageData.data.length; i++) {
-                    imageData.data[i] = inputData[i];
-                }
-                ctxDst.putImageData(imageData, 0, 0);
+        ctx.drawImage(img, 0, 0);
+        var data = ctx.getImageData(0, 0, img.width, img.height);
+
+        const RGBA2GRAY = jsfeat.Colors.COLOR_RGBA2GRAY.value;
+        const U8_t = jsfeat.Types.U8_t.value;
+        const C1_t = jsfeat.Types.C1_t.value;
+
+        var m_1 = new jsfeat.matrix_t(img.width, img.height, U8_t | C1_t, 0);
+        m_1.allocate();
+        var buf = jsfeat._malloc(img.width * img.height * 4);
+        console.log(data);
+        if (data) {
+            jsfeat.HEAPU8.set(data.data, buf);
+            jsfeat.Grayscale(buf, img.width, img.height, m_1.getPointer(), RGBA2GRAY);
+            const imageData = ctxDst.createImageData(img.width, img.height);
+            var inputData = m_1.data;
+            console.log(inputData);
+            for (let i = 0; i < imageData.data.length; i++) {
+                imageData.data[i] = inputData[i];
             }
-        };
+            ctxDst.putImageData(imageData, 0, 0);
+        }
+
     </script>
-    <script src="../build/grayscale_debug.js"></script>
 
 </body>
 
