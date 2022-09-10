@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 function usage {
     echo "Usage: $(basename $0) [--debug] ( linux | emscripten )"
     exit 1
@@ -18,7 +19,7 @@ do
             ;;
         emscripten) BUILD_EM=1
             ;;
-        --debug_em) DEBUG_EM=1
+        --clean-em) CLEAN_EM=1
             ;;
         --*) echo "bad option $1"
             usage
@@ -53,20 +54,25 @@ if [ $BUILD_LINUX ] ; then
   g++ -Isrc test.cpp -g -o test_d
 fi
 
-MEMORY_OPTION=' -s TOTAL_MEMORY=268435456 -s ALLOW_MEMORY_GROWTH=1 '
-ES6_BUILD=' -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 -sEXPORT_NAME=jsfeatCpp -s MODULARIZE=1 '
-SINGLE_FILE=' -s SINGLE_FILE=1 '
-
-if [ $BUILD_EM ]; then
-  echo "Building jsfeat with emscripten..."
-  emcc -Isrc src/jsfeat.cpp -r -o build/libjsfeat.bc
-  echo "Linking libs and final emscripten output."
-  emcc -Isrc build/libjsfeat.bc emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale,_Grayscale_m -sEXPORTED_RUNTIME_METHODS=cwrap $MEMORY_OPTION --post-js js/post_bindings.api.js --bind $ES6_BUILD $SINGLE_FILE -o build/jsfeatcpp.js
+if [ $BUILD_EM ]; then 
+  echo "Entering in build folder"
+  cd build
+  echo "Building jsfeatcpp.js  with emscripten (emcmake)..."
+  emcmake cmake .. -DCMAKE_BUILD_TYPE="Release"
+  echo "Running command make..."
+  make
+  echo "Building jsfeatcpp_debug.js  with emscripten (emcmake)..."
+  emcmake cmake .. -DCMAKE_BUILD_TYPE="Debug"
+  echo "Running command make..."
+  make
+  echo "Build completed."
 fi
 
-if [ $DEBUG_EM ]; then
-  echo "Building jsfeat with emscripten..."
-  emcc -DDEBUG_EM -Isrc src/jsfeat.cpp -r -o build/libjsfeat_debug.bc
-  echo "Linking libs and final emscripten output."
-  emcc -Isrc build/libjsfeat_debug.bc -DDEBUG_EM emscripten/webarkitJsfeat.cpp -sEXPORTED_FUNCTIONS=_Grayscale,_Grayscale_m -sEXPORTED_RUNTIME_METHODS=cwrap -g -O0 $MEMORY_OPTION -sASSERTIONS=1 --profiling -s DEMANGLE_SUPPORT=1 --post-js js/post_bindings.api.js --bind $ES6_BUILD $SINGLE_FILE -o build/jsfeatcpp_debug.js
+if [ $CLEAN_EM ]; then
+  echo "Entering in build folder"
+  cd build
+  echo "Cleaning build folder."
+  rm -rf CMakeCache.txt CMakeFiles cmake_install.cmake Makefile
+  rm -rf ./jsfeatcpp.js ./jsfeatcpp_debug.js
+  echo "Removed files."
 fi
