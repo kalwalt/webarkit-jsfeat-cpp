@@ -1,1 +1,2 @@
 Module["Grayscale"] = Module.cwrap("Grayscale", 'null', ['number', 'number', 'number', 'number', 'number']);
+Module["Grayscale_m"] = Module.cwrap("Grayscale_m", 'null', ['number', 'number', 'number', 'number', 'number']);
