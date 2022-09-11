@@ -25,10 +25,11 @@
 
         var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8_t | C1_t, 0);
         m_u8.allocate();
+        var imgproc = new jsfeat.imgproc();
 
         if (data) {
             var m_src = new jsfeat.matrix_t(img.width, img.height, U8_t | C4_t, data.data);
-            jsfeat.Grayscale_m(m_src.getPointer(), img.width, img.height, m_u8.getPointer(), RGBA2GRAY);
+            imgproc.grayscale_m(m_src.getPointer(), img.width, img.height, m_u8.getPointer(), RGBA2GRAY);
             const imageData = ctxDst.createImageData(img.width, img.height);
             var inputData = m_u8.data;
             console.log(inputData);

@@ -18,6 +18,11 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .property("data", &matrix_t::getData)
     .class_function("get", &matrix_t::get);
 
+    class_<imgproc>("imgproc")
+    .constructor<>()
+    .function("grayscale", &imgproc::grayscale, allow_raw_pointer<u_char>(),  allow_raw_pointer<matrix_t>())
+    .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<matrix_t>(),  allow_raw_pointer<matrix_t>());;
+
     enum_<Types>("Types")
     .value("U8_t", U8_t)
     .value("S32_t", S32_t)
