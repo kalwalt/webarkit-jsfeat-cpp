@@ -22,15 +22,16 @@
         const U8_t = jsfeat.Types.U8_t.value;
         const C1_t = jsfeat.Types.C1_t.value;
 
-        var m_1 = new jsfeat.matrix_t(img.width, img.height, U8_t | C1_t, 0);
-        m_1.allocate();
+        var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8_t | C1_t, 0);
+        m_u8.allocate();
         var buf = jsfeat._malloc(img.width * img.height * 4);
+        var imgproc = new jsfeat.imgproc();
         console.log(data);
         if (data) {
             jsfeat.HEAPU8.set(data.data, buf);
-            jsfeat.Grayscale(buf, img.width, img.height, m_1.getPointer(), RGBA2GRAY);
+            imgproc.grayscale(buf, img.width, img.height, m_u8.getPointer(), RGBA2GRAY);
             const imageData = ctxDst.createImageData(img.width, img.height);
-            var inputData = m_1.data;
+            var inputData = m_u8.data;
             console.log(inputData);
             for (let i = 0; i < imageData.data.length; i++) {
                 imageData.data[i] = inputData[i];
