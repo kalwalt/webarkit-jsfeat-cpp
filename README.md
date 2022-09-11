@@ -25,6 +25,7 @@ Take a look at our examples in the examples folder:
 
 - matrix_t_test.html
 - grayscale_example.html
+- grayscale_m_example.html
 
 Both examples use the debug version of the lib but, of course you can use the non-debug version as well.
 
