@@ -1,7 +1,9 @@
 #ifndef JSLOG_H
 #define JSLOG_H
 
+#include <cstdarg>
 #include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <vector>
 

@@ -81,11 +81,10 @@ public:
   };
 
 #ifdef __EMSCRIPTEN__
-  void grayscale(emscripten::val src, int w, int h, uintptr_t dst, int code) {
-    auto ptrSrc = emscripten::convertJSArrayToNumberVector<u_char>(src);
+  void grayscale(emscripten::val inputSrc, int w, int h, uintptr_t dst, int code) {
+    auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
 #else
-  void grayscale(uintptr_t src, int w, int h, uintptr_t dst, int code) {
-    auto ptrSrc = reinterpret_cast<u_char*>(src);
+  void grayscale(u_char* src, int w, int h, uintptr_t dst, int code) {
 #endif
     auto ptrDst = reinterpret_cast<matrix_t*>(dst);
     // this is default image data representation in browser
@@ -119,29 +118,29 @@ public:
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
         ptrDst->dt->u8.at(jr) =
-            (ptrSrc[ir] * coeff_r + ptrSrc[ir + 1] * coeff_g +
-             ptrSrc[ir + 2] * coeff_b + 8192) >>
+            (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+             src[ir + 2] * coeff_b + 8192) >>
             14;
         ptrDst->dt->u8.at(jr + 1) =
-            (ptrSrc[ir + cn] * coeff_r +
-             ptrSrc[ir + cn + 1] * coeff_g +
-             ptrSrc[ir + cn + 2] * coeff_b + 8192) >>
+            (src[ir + cn] * coeff_r +
+             src[ir + cn + 1] * coeff_g +
+             src[ir + cn + 2] * coeff_b + 8192) >>
             14;
         ptrDst->dt->u8.at(jr + 2) =
-            (ptrSrc[ir + cn2] * coeff_r +
-             ptrSrc[ir + cn2 + 1] * coeff_g +
-             ptrSrc[ir + cn2 + 2] * coeff_b + 8192) >>
+            (src[ir + cn2] * coeff_r +
+             src[ir + cn2 + 1] * coeff_g +
+             src[ir + cn2 + 2] * coeff_b + 8192) >>
             14;
         ptrDst->dt->u8.at(jr + 3) =
-            (ptrSrc[ir + cn3] * coeff_r +
-             ptrSrc[ir + cn3 + 1] * coeff_g +
-             ptrSrc[ir + cn3 + 2] * coeff_b + 8192) >>
+            (src[ir + cn3] * coeff_r +
+             src[ir + cn3 + 1] * coeff_g +
+             src[ir + cn3 + 2] * coeff_b + 8192) >>
             14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
         ptrDst->dt->u8.at(jr) =
-            (ptrSrc[ir] * coeff_r + ptrSrc[ir + 1] * coeff_g +
-             ptrSrc[ir + 2] * coeff_b + 8192) >>
+            (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+             src[ir + 2] * coeff_b + 8192) >>
             14;
       }
     }

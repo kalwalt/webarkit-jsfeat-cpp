@@ -24,6 +24,6 @@ int main() {
   //src->fill(some);
   dst->allocate();
   imgproc img;
-  img.grayscale_m(src, 2, 2, dst, Colors::COLOR_RGBA2GRAY);
-  img.grayscale(some, 2, 2, dst, Colors::COLOR_RGBA2GRAY);
+  img.grayscale_m((uintptr_t)src, 2, 2, (uintptr_t)dst, Colors::COLOR_RGBA2GRAY);
+  img.grayscale(some, 2, 2, (uintptr_t)dst, Colors::COLOR_RGBA2GRAY);
 }
