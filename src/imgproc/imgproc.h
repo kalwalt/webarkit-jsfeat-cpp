@@ -1,9 +1,12 @@
 #ifndef IMGPROC_H
 #define IMGPROC_H
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/val.h>
+#endif
 #include <matrix_t/matrix_t.h>
 #include <types/types.h>
-//#include <vector>
 #include <jslog/jslog.h>
 
 namespace jsfeat {
@@ -77,8 +80,13 @@ public:
     }
   };
 
+#ifdef __EMSCRIPTEN__
+  void grayscale(emscripten::val src, int w, int h, uintptr_t dst, int code) {
+    auto ptrSrc = emscripten::convertJSArrayToNumberVector<u_char>(src);
+#else
   void grayscale(uintptr_t src, int w, int h, uintptr_t dst, int code) {
     auto ptrSrc = reinterpret_cast<u_char*>(src);
+#endif
     auto ptrDst = reinterpret_cast<matrix_t*>(dst);
     // this is default image data representation in browser
     if (!code) {
