@@ -20,7 +20,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
 
     class_<imgproc>("imgproc")
     .constructor<>()
-    .function("grayscale", &imgproc::grayscale, allow_raw_pointer<u_char>(),  allow_raw_pointer<matrix_t>())
+    .function("grayscale", &imgproc::grayscale, allow_raw_pointer<matrix_t>())
     .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<matrix_t>(),  allow_raw_pointer<matrix_t>());;
 
     enum_<Types>("Types")
