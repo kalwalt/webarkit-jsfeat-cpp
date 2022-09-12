@@ -24,11 +24,9 @@
 
         var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8_t | C1_t, 0);
         m_u8.allocate();
-        //var buf = jsfeat._malloc(img.width * img.height * 4);
         var imgproc = new jsfeat.imgproc();
-        console.log(data);
+
         if (data) {
-            //jsfeat.HEAPU8.set(data.data, buf);
             imgproc.grayscale(data.data, img.width, img.height, m_u8.getPointer(), RGBA2GRAY);
             const imageData = ctxDst.createImageData(img.width, img.height);
             var inputData = m_u8.data;
