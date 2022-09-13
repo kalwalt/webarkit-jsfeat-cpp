@@ -7,7 +7,7 @@
 #include <jslog/jslog.h>
 #include <keypoint_t/keypoint_t.h>
 #include <matrix_t/matrix_t.h>
-//#include <emscripten/val.h>
+#include <emscripten/val.h>
 #include <types/types.h>
 
 namespace jsfeat {
@@ -21,10 +21,10 @@ public:
     patch_img->allocate();
   }
 
-  void describe(uintptr_t inputSrc, uintptr_t inputCorners, int count,
+  void describe(uintptr_t inputSrc, emscripten::val inputCorners, int count,
                 uintptr_t inputDescriptors) {
     auto src = reinterpret_cast<matrix_t *>(inputSrc);
-    auto corners = reinterpret_cast<keypoint_t *>(inputCorners);
+    auto corners = emscripten::vecFromJSArray<keypoint_t>(inputCorners);
     auto descriptors = reinterpret_cast<matrix_t *>(inputDescriptors);
     int DESCR_SIZE = 32; // bytes;
     int i = 0, b = 0, px = 0.0, py = 0.0, angle = 0.0;
