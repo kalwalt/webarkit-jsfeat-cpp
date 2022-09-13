@@ -26,7 +26,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
 
     class_<orb>("orb")
     .constructor<>()
-    .function("describe", &orb::describe, allow_raw_pointer<matrix_t>(), allow_raw_pointer<keypoint_t>(), allow_raw_pointer<matrix_t>());
+    .function("describe", &orb::describe, allow_raw_pointer<matrix_t>(), allow_raw_pointer<matrix_t>());
 
     class_<keypoint_t>("keypoint_t")
     .constructor<int, int, int, int, float>()
