@@ -24,8 +24,13 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<matrix_t>(),  allow_raw_pointer<matrix_t>())
     .function("warp_affine", &imgproc::warp_affine, allow_raw_pointer<matrix_t>());
 
+    class_<orb>("orb")
+    .constructor<>()
+    .function("describe", &orb::describe, allow_raw_pointer<matrix_t>(), allow_raw_pointer<keypoint_t>(), allow_raw_pointer<matrix_t>());
+
     class_<keypoint_t>("keypoint_t")
     .constructor<int, int, int, int, float>()
+    .function("getPointer", &keypoint_t::getPointer)
     .property("x", &keypoint_t::getX, &keypoint_t::setX)
     .property("y", &keypoint_t::getY, &keypoint_t::setY)
     .property("score", &keypoint_t::getScore, &keypoint_t::setScore)

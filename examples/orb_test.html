@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="description" content="A JavaScript Computer Vision Library">
+    <title>JSFeatNext - JavaScript Computer Vision Library.</title>
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Droid+Sans:regular,bold|Inconsolata|PT+Sans:400,700">
+    <!--<link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/jsfeat.css">-->
+
+</head>
+
+<body>
+    <video id="webcam" width="640" height="480" style="display:none;"></video>
+    <div style=" width:640px;height:480px;margin: 10px auto;">
+        <canvas id="canvas" width="640" height="480"></canvas>
+        <div id="no_rtc" class="alert alert-error" style="display:none;"></div>
+        <div id="log" class="alert alert-info"></div>
+    </div>
+
+    <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="../dist/jsfeatNext.js"></script>
+    <script type="text/javascript" src="js/compatibility.js"></script>
+    <script type="text/javascript" src="js/profiler.js"></script>
+    <script type="text/javascript" src="js/dat.gui.min.js"></script>-->
+    <script type="module">
+
+        import jsfeatCpp from "./../build/jsfeatcpp_debug.js"
+        var jsfeat = await jsfeatCpp();
+        var orb = new jsfeat.orb()
+        console.log(orb);
+        var screen_corners = [];
+        var num_corners = 20;
+        var img_u8_smooth = new jsfeat.matrix_t(640, 480, jsfeat.U8_t | jsfeat.C1_t, 0);
+        var screen_descriptors = new jsfeat.matrix_t(32, 500, jsfeat.U8_t | jsfeat.C1_t, 0);
+        var i = 640 * 480;
+        while (--i >= 0) {
+            screen_corners[i] = new jsfeat.keypoint_t(0, 0, 0, 0, -1);
+            
+        }
+        console.log(screen_corners);
+        orb.describe(img_u8_smooth.getPointer(), screen_corners, num_corners, screen_descriptors.getPointer());
+    </script>
+</body>
+
+</html>
