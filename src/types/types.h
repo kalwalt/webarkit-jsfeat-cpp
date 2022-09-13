@@ -13,6 +13,7 @@ template <typename T> using Array = std::vector<T>;
 
 #ifdef __EMSCRIPTEN__
 thread_local const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
+thread_local const emscripten::val Float32Array = emscripten::val::global("Float32Array");
 struct _Mat_t {
   int size;
   int cols;
