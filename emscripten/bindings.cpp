@@ -21,7 +21,16 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     class_<imgproc>("imgproc")
     .constructor<>()
     .function("grayscale", &imgproc::grayscale, allow_raw_pointer<matrix_t>())
-    .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<matrix_t>(),  allow_raw_pointer<matrix_t>());;
+    .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<matrix_t>(),  allow_raw_pointer<matrix_t>())
+    .function("warp_affine", &imgproc::warp_affine, allow_raw_pointer<matrix_t>());
+
+    class_<keypoint_t>("keypoint_t")
+    .constructor<int, int, int, int, float>()
+    .property("x", &keypoint_t::getX, &keypoint_t::setX)
+    .property("y", &keypoint_t::getY, &keypoint_t::setY)
+    .property("score", &keypoint_t::getScore, &keypoint_t::setScore)
+    .property("level", &keypoint_t::getLevel, &keypoint_t::setLevel)
+    .property("angle", &keypoint_t::getAngle, &keypoint_t::setAngle);
 
     enum_<Types>("Types")
     .value("U8_t", U8_t)
