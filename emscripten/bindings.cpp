@@ -22,11 +22,21 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .constructor<>()
     .function("grayscale", &imgproc::grayscale, allow_raw_pointer<matrix_t>())
     .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<matrix_t>(),  allow_raw_pointer<matrix_t>())
+    .function("pyrdown", &imgproc::pyrdown, allow_raw_pointer<matrix_t>())
     .function("warp_affine", &imgproc::warp_affine, allow_raw_pointer<matrix_t>());
 
     class_<orb>("orb")
     .constructor<>()
     .function("describe", &orb::describe, allow_raw_pointer<matrix_t>(), allow_raw_pointer<matrix_t>());
+
+    class_<pyramid_t>("pyramid_t")
+    .constructor<int>()
+    .function("allocate", &pyramid_t::allocate)
+    .function("build", &pyramid_t::build, allow_raw_pointer<matrix_t>())
+    .function("getPointer", &pyramid_t::getPointer)
+    .function("getPointer_matrix", &pyramid_t::getPointer_matrix)
+    .property("levels", &pyramid_t::getLevels)
+    .property("data", &pyramid_t::getData);
 
     class_<keypoint_t>("keypoint_t")
     .constructor<int, int, int, int, float>()

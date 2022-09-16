@@ -141,7 +141,86 @@ public:
       }
     }
   };
-  void warp_affine_internal(matrix_t* src, matrix_t* dst, matrix_t* transform, int fill_value) {
+  void pyrdown(uintptr_t inputSrc, uintptr_t inputDst, int sx, int sy) {
+    auto dst = reinterpret_cast<matrix_t *>(inputDst);
+    auto src = reinterpret_cast<matrix_t *>(inputSrc);
+    if (!sx ) {
+      sx = 0;
+    }
+    if (!sy) {
+      sy = 0;
+    }
+
+    int w = src->cols, h = src->rows;
+    int w2 = w >> 1, h2 = h >> 1;
+    int _w2 = w2 - (sx << 1), _h2 = h2 - (sy << 1);
+    int x = 0, y = 0, sptr = sx + sy * w, sline = 0, dptr = 0, dline = 0;
+
+    dst->resize(w2, h2, src->channel);
+
+    u_char* src_d = src->dt->u8.data();
+    //u_char* dst_d = dst->dt->u8.data();
+
+    for (y = 0; y < _h2; ++y) {
+      sline = sptr;
+      dline = dptr;
+      for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
+        dst->dt->u8.at(dline) = (src_d[sline] + src_d[sline + 1] + src_d[sline + w] +
+                        src_d[sline + w + 1] + 2) >>
+                       2;
+        dst->dt->u8.at(dline + 1) = (src_d[sline + 2] + src_d[sline + 3] +
+                            src_d[sline + w + 2] + src_d[sline + w + 3] + 2) >>
+                           2;
+      }
+      for (; x < _w2; ++x, ++dline, sline += 2) {
+        dst->dt->u8.at(dline) = (src_d[sline] + src_d[sline + 1] + src_d[sline + w] +
+                        src_d[sline + w + 1] + 2) >>
+                       2;
+      }
+      sptr += w << 1;
+      dptr += w2;
+    }
+  };
+  void pyrdown_internal(matrix_t *src, matrix_t *dst, int sx=0, int sy=0) {
+    if (!sx ) {
+      sx = 0;
+    }
+    if (!sy) {
+      sy = 0;
+    }
+
+    int w = src->cols, h = src->rows;
+    int w2 = w >> 1, h2 = h >> 1;
+    int _w2 = w2 - (sx << 1), _h2 = h2 - (sy << 1);
+    int x = 0, y = 0, sptr = sx + sy * w, sline = 0, dptr = 0, dline = 0;
+
+    dst->resize(w2, h2, src->channel);
+
+    u_char* src_d = src->dt->u8.data();
+    u_char* dst_d = dst->dt->u8.data();
+
+    for (y = 0; y < _h2; ++y) {
+      sline = sptr;
+      dline = dptr;
+      for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
+        dst_d[dline] = (src_d[sline] + src_d[sline + 1] + src_d[sline + w] +
+                        src_d[sline + w + 1] + 2) >>
+                       2;
+        dst_d[dline + 1] = (src_d[sline + 2] + src_d[sline + 3] +
+                            src_d[sline + w + 2] + src_d[sline + w + 3] + 2) >>
+                           2;
+      }
+      for (; x < _w2; ++x, ++dline, sline += 2) {
+        dst_d[dline] = (src_d[sline] + src_d[sline + 1] + src_d[sline + w] +
+                        src_d[sline + w + 1] + 2) >>
+                       2;
+      }
+      sptr += w << 1;
+      dptr += w2;
+    }
+  };
+  void warp_affine_internal(matrix_t *src, matrix_t *dst, matrix_t *transform,
+                            int fill_value) {
     if (!fill_value) {
       fill_value = 0;
     }
@@ -180,8 +259,7 @@ public:
           b = ys - iys;
           off = src_width * iys + ixs;
 
-          p0 = src->dt->u8[off] +
-               a * (src->dt->u8[off + 1] - src->dt->u8[off]);
+          p0 = src->dt->u8[off] + a * (src->dt->u8[off + 1] - src->dt->u8[off]);
           p1 = src->dt->u8[off + src_width] +
                a * (src->dt->u8[off + src_width + 1] -
                     src->dt->u8[off + src_width]);
