@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JsfeatCpp video pyrdown example</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <video id="video" autoplay loop muted playsinline></video>
+    <canvas id="canvas"></canvas>
+
+    <script>
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        window.addEventListener('jsfeatCpp-loaded', function (e) {
+            var jsfeatCpp = Module;
+            var imgproc = new jsfeatCpp.imgproc();
+            const U8_t = Module.Types.U8_t.value;
+            const C1_t = Module.Types.C1_t.value;
+            const COLOR_RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value;
+            var img_pyr = new jsfeatCpp.pyramid_t(4);
+            console.log(img_pyr);
+            img_pyr.allocate(640, 480, U8_t | C1_t);
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                var hint = {
+                    audio: false,
+                    video: true
+                };
+                if (window.innerWidth < 800) {
+                    var width = (window.innerWidth < window.innerHeight) ? 240 : 360;
+                    var height = (window.innerWidth < window.innerHeight) ? 360 : 240;
+
+                    var aspectRatio = window.innerWidth / window.innerHeight;
+
+                    console.log(width, height);
+
+                    hint = {
+                        audio: false,
+                        video: {
+                            facingMode: 'environment',
+                            width: { min: width, max: width }
+                        },
+                    };
+
+                    console.log(hint);
+                }
+
+                navigator.mediaDevices.getUserMedia(hint).then(function (stream) {
+                    video.srcObject = stream;
+                    video.addEventListener('loadedmetadata', function () {
+                        video.play();
+
+                        console.log('video', video, video.videoWidth, video.videoHeight);
+
+                        var canvasWidth = video.videoWidth;
+                        var canvasHeight = video.videoHeight;
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+                        process();
+                    });
+                });
+                function moveBytes(src, dest, width, height) {
+                    var i, j = 0;
+                    for (i = 0; i < width * height * 4;) {
+                        dest[i++] = src[j];
+                        dest[i++] = src[j];
+                        dest[i++] = src[j++];
+                        dest[i++] = 255;
+                    }
+                }
+                function render_mono_image(src, dst, sw, sh, dw) {
+                var alpha = (0xff << 24);
+                for (var i = 0; i < sh; ++i) {
+                    for (var j = 0; j < sw; ++j) {
+                        var pix = src[i * sw + j];
+                        dst[i * dw + j] = alpha | (pix << 16) | (pix << 8) | pix;
+                    }
+                }
+            }
+                function process() {
+                    var width = 640, height = 480;
+                    ctx.drawImage(video, 0, 0, width, height);
+                    var image_data = ctx.getImageData(0, 0, width, height);
+                    imgproc.grayscale(image_data.data, width, height, img_pyr.getPointer_matrix(0), COLOR_RGBA2GRAY);
+                    var i = 2, a = img_pyr.getPointer_matrix(0), b = img_pyr.getPointer_matrix(1);
+                    img_pyr.build(img_pyr.getPointer_matrix(0), true);
+                    /*imgproc.pyrdown(a, b, 0, 0);
+                    for (; i < img_pyr.levels; ++i) {
+                        a = b;
+                        b = img_pyr.getPointer_matrix(i);
+                        imgproc.pyrdown(a, b, 0, 0);
+                    }*/
+
+                    var data_u32 = new Uint32Array(image_data.data.buffer);
+                    var dim = {
+                        cols: [640, 320, 160, 80],
+                        rows: [480, 240, 120, 60]
+                    }
+                    for (i = 0; i < img_pyr.levels; ++i) {
+                        //render_mono_image(img_pyr.data[i], data_u32, dim.cols[i], dim.rows[i], 640);
+                        moveBytes(img_pyr.data[i], image_data.data, dim.cols[i], dim.rows[i]);
+                    }
+                    ctx.putImageData(image_data, 0, 0);
+                    requestAnimationFrame(process);
+                }
+            }
+        })
+
+    </script>
+    <script src="../build/jsfeatcpp.js"></script>
+</body>
+
+</html>

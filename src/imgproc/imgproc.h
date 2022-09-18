@@ -158,23 +158,23 @@ public:
 
     dst->resize(w2, h2, src->channel);
 
-    u_char* src_d = src->dt->u8.data();
+    //u_char* src_d = src->dt->u8.data();
     //u_char* dst_d = dst->dt->u8.data();
 
     for (y = 0; y < _h2; ++y) {
       sline = sptr;
       dline = dptr;
       for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
-        dst->dt->u8.at(dline) = (src_d[sline] + src_d[sline + 1] + src_d[sline + w] +
-                        src_d[sline + w + 1] + 2) >>
+        dst->dt->u8.at(dline) = (src->dt->u8.at(sline) + src->dt->u8.at(sline + 1) + src->dt->u8.at(sline + w) +
+                        src->dt->u8.at(sline + w + 1) + 2) >>
                        2;
-        dst->dt->u8.at(dline + 1) = (src_d[sline + 2] + src_d[sline + 3] +
-                            src_d[sline + w + 2] + src_d[sline + w + 3] + 2) >>
+        dst->dt->u8.at(dline + 1) = (src->dt->u8.at(sline + 2) + src->dt->u8.at(sline + 3) +
+                            src->dt->u8.at(sline + w + 2) + src->dt->u8.at(sline + w + 3) + 2) >>
                            2;
       }
       for (; x < _w2; ++x, ++dline, sline += 2) {
-        dst->dt->u8.at(dline) = (src_d[sline] + src_d[sline + 1] + src_d[sline + w] +
-                        src_d[sline + w + 1] + 2) >>
+        dst->dt->u8.at(dline) = (src->dt->u8.at(sline) + src->dt->u8.at(sline + 1) + src->dt->u8.at(sline + w) +
+                        src->dt->u8.at(sline + w + 1) + 2) >>
                        2;
       }
       sptr += w << 1;
