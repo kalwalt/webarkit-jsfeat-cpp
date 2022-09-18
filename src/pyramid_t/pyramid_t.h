@@ -25,7 +25,8 @@ public:
         this->mt[i]->allocate();
     }
   }
-  void build(matrix_t *input, bool skip_first_level) {
+  void build(uintptr_t inputSrc, bool skip_first_level) {
+    auto input = reinterpret_cast<matrix_t *>(inputSrc);
     if (!skip_first_level) {
       skip_first_level = true;
     }
@@ -64,7 +65,7 @@ public:
             emscripten::typed_memory_view(mt[i]->dt->u8.size(), mt[i]->dt->u8.data())};
         auto result = emscripten::val::global("Uint8Array").new_(mt[i]->dt->u8.size());
         result.call<void>("set", view);
-        data.call<void>("push", view);
+        data.call<void>("push", result);
     }
     return data;
   }
