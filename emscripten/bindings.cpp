@@ -35,6 +35,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .function("build", &pyramid_t::build, allow_raw_pointer<matrix_t>())
     .function("getPointer", &pyramid_t::getPointer)
     .function("getPointer_matrix", &pyramid_t::getPointer_matrix)
+    .function("getMatrixData", &pyramid_t::getMatrixData)
     .property("levels", &pyramid_t::getLevels)
     .property("data", &pyramid_t::getData);
 

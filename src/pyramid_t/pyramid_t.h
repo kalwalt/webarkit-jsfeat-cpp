@@ -57,6 +57,19 @@ public:
     return this->levels;
   }
 
+  emscripten::val getMatrixData() const { 
+    emscripten::val obj = emscripten::val::object();
+    emscripten::val cols = emscripten::val::array();
+    emscripten::val rows = emscripten::val::array();
+    for (int i = 0; i < this->levels; i++){
+      cols.call<void>("push", mt[i]->cols);
+      rows.call<void>("push", mt[i]->rows);
+    }
+    obj.set("cols", cols);
+    obj.set("rows", rows);
+    return obj;
+    }
+
   emscripten::val getData() const {
     emscripten::val data = emscripten::val::array();
  
