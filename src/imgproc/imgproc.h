@@ -338,6 +338,21 @@ public:
       }
     }
   }
+  void resample(uintptr_t inputSrc, uintptr_t inputDst, int nw, int nh) {
+    auto src = reinterpret_cast<matrix_t *>(inputSrc);
+    auto dst = reinterpret_cast<matrix_t *>(inputDst);
+    int h = src->rows, w = src->cols;
+    if (h > nh && w > nw) {
+      dst->resize(nw, nh, src->channel);
+      // using the fast alternative (fix point scale, 0x100 to avoid overflow)
+      if (src->type & Types::U8_t && dst->type & Types::U8_t &&
+          h * w / (nh * nw) < 0x100) {
+        _resample_u8(src, dst, nw, nh);
+      } else {
+        _resample(src, dst, nw, nh);
+      }
+    }
+  };
   void resample(matrix_t *src, matrix_t *dst, int nw, int nh) {
     int h = src->rows, w = src->cols;
     if (h > nh && w > nw) {
@@ -355,31 +370,19 @@ public:
 private:
 // a is src matrix, b is dst matrix
   void _resample_u8(matrix_t *src, matrix_t *dst, int nw, int nh) {
-    //assert(a->cols > 0 && b->cols > 0);
+    int h = src->rows, w = src->cols;
     assert(src->cols > 0 && dst->cols > 0);
-    //jsfeat_int_alpha *xofs =
-    //    (jsfeat_int_alpha *)alloca(sizeof(jsfeat_int_alpha) * a->cols * 2);
-    /*jsfeat_int_alpha *xofs =
-        (jsfeat_int_alpha *)alloca(sizeof(jsfeat_int_alpha) * src->cols * 2);*/
     Array<jsfeat_int_alpha> xofs(src->cols * 2);
     int ch = jsfeat_clamp(this->get_channel(src->type), 1, 4);
-    //int ch = std::clamp(this->get_channel(src->type), 1, 4);
-    //double scale_x = (double)a->cols / b->cols;
     double scale_x = (double)src->cols / dst->cols;
-    //double scale_y = (double)a->rows / b->rows;
     double scale_y = (double)src->rows / dst->rows;
     // double scale = 1.f / (scale_x * scale_y);
     unsigned int inv_scale_256 = (int)(scale_x * scale_y * 0x10000);
-    int dx, dy, sx, sy, i, k;
-    //for (dx = 0, k = 0; dx < b->cols; dx++) {
+    int dx, dy, sx, sy, i, k, a, b;
     for (dx = 0, k = 0; dx < dst->cols; dx++) {
       double fsx1 = dx * scale_x, fsx2 = fsx1 + scale_x;
       int sx1 = (int)(fsx1 + 1.0 - 1e-6), sx2 = (int)(fsx2);
-      //sx1 = ccv_min(sx1, a->cols - 1);
-      //sx1 = ccv_min(sx1, src->cols - 1);
       sx1 = std::min(sx1, src->cols - 1);
-      //sx2 = ccv_min(sx2, a->cols - 1);
-      //sx2 = ccv_min(sx2, src->cols - 1);
       sx2 = std::min(sx2, src->cols - 1);
 
       if (sx1 > fsx1) {
@@ -401,51 +404,36 @@ private:
       }
     }
     int xofs_count = k;
-    /*unsigned int *buf =
-        (unsigned int *)alloca(b->cols * ch * sizeof(unsigned int));
-    unsigned int *buf =
-        (unsigned int *)alloca(dst->cols * ch * sizeof(unsigned int));*/
     Array<u_int> buf(dst->cols * ch);
-    /*unsigned int *sum =
-        (unsigned int *)alloca(b->cols * ch * sizeof(unsigned int));
-    unsigned int *sum =
-        (unsigned int *)alloca(dst->cols * ch * sizeof(unsigned int));*/
     Array<u_int> sum(dst->cols * ch);
-    //for (dx = 0; dx < b->cols * ch; dx++)
-    for (dx = 0; dx < dst->cols * ch; dx++)
-      buf[dx] = sum[dx] = 0;
+    for (dx = 0; dx < dst->cols * ch; dx++) {
+       buf[dx] = sum[dx] = 0;
+    } 
     dy = 0;
-    //for (sy = 0; sy < a->rows; sy++) {
     for (sy = 0; sy < src->rows; sy++) {
-      //unsigned char *a_ptr = a->data.u8 + a->step * sy;
-     //unsigned char *a_ptr = src->dt->u8 + 1 * sy;
+      a = w * sy;
       Array<u_char> a_ptr = dst->dt->u8;
       for (k = 0; k < xofs_count; k++) {
         int dxn = xofs[k].di;
         unsigned int alpha = xofs[k].alpha;
         for (i = 0; i < ch; i++)
-          buf[dxn + i] += a_ptr[xofs[k].si + i] * alpha;
+          buf[dxn + i] += a_ptr[a + xofs[k].si + i] * alpha;
       }
-      //if ((dy + 1) * scale_y <= sy + 1 || sy == a->rows - 1) {
       if ((dy + 1) * scale_y <= sy + 1 || sy == src->rows - 1) {
-        //unsigned int beta = (int)(ccv_max(sy + 1 - (dy + 1) * scale_y, 0.f) * 256);
         unsigned int beta =
             (int)((std::max(sy + 1 - (dy + 1) * scale_y, 0.)) * 256);
         unsigned int beta1 = 256 - beta;
-        //unsigned char *b_ptr = b->data.u8 + b->step * dy;
-        //unsigned char *b_ptr = dst->data.u8 + 1 * dy;
-        Array<u_char> b_ptr = dst->dt->u8;// + 1 * dy;
+        b = nw * dy;
+        Array<u_char> b_ptr = dst->dt->u8;// + b->step  * dy;
         if (beta <= 0) {
-          //for (dx = 0; dx < b->cols * ch; dx++) {
           for (dx = 0; dx < dst->cols * ch; dx++) {
-            b_ptr[dx] =
+            b_ptr[b + dx] =
                 jsfeat_clamp(sum[dx] + buf[dx] * 256 / inv_scale_256, 0, 255);
             sum[dx] = buf[dx] = 0;
           }
         } else {
-          //for (dx = 0; dx < b->cols * ch; dx++) {
           for (dx = 0; dx < dst->cols * ch; dx++) {
-            b_ptr[dx] =
+            b_ptr[b + dx] =
                 jsfeat_clamp((sum[dx] + buf[dx] * beta1) / inv_scale_256, 0, 255);
             sum[dx] = buf[dx] * beta;
             buf[dx] = 0;
@@ -453,7 +441,6 @@ private:
         }
         dy++;
       } else {
-        //for (dx = 0; dx < b->cols * ch; dx++) {
         for (dx = 0; dx < dst->cols * ch; dx++) {
           sum[dx] += buf[dx] * 256;
           buf[dx] = 0;
