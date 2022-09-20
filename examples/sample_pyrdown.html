@@ -115,7 +115,7 @@
 
                 img_pyr = new Module.pyramid_t(4);
                 console.log(img_pyr);
-                img_pyr.allocate(640, 480, Module.Types.U8_t.value | Module.Types.C1_t.value);
+                //img_pyr.allocate(640, 480, Module.Types.U8_t.value | Module.Types.C1_t.value);
 
                 stat.add("grayscale");
                 stat.add("pyrdown");
@@ -125,39 +125,55 @@
                 compatibility.requestAnimationFrame(tick);
                 stat.new_frame();
                 if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                    ctx.drawImage(video, 0, 0, 640, 480);
-                    var imageData = ctx.getImageData(0, 0, 640, 480);
+                    var width = 640, height = 480;
+                    ctx.drawImage(video, 0, 0, width, height);
+                    var imageData = ctx.getImageData(0, 0, width, height);
 
                     stat.start("grayscale");
+
+                    var test_m = new Module.matrix_t(640, 480, Module.Types.U8_t.value | Module.Types.C1_t.value, 0)
                     
-                    imgproc.grayscale(imageData.data, 640, 480, img_pyr.getPointer_matrix(0),0);
+                    //imgproc.grayscale(imageData.data, 640, 480, img_pyr.getPointer_matrix(0), Module.Colors.COLOR_RGBA2GRAY.value);
+                    imgproc.grayscale(imageData.data, 640, 480, test_m.getPointer(), Module.Colors.COLOR_RGBA2GRAY.value);
+                    //console.log(img_pyr.data[0]);
 
                     stat.stop("grayscale");
 
-                    stat.start("pyrdown");
+                    //stat.start("pyrdown");
                     // you do the same by executing img_pyr.build(img_pyr.data[0], true);
                     //var i = 2, a = img_pyr.data[0], b = img_pyr.data[1];
-                    var i = 2, a = img_pyr.getPointer_matrix(0), b = img_pyr.getPointer_matrix(1);
-                    imgproc.pyrdown(a, b, 0, 0);
-                    for (; i < img_pyr.levels; ++i) {
-                        a = b;
-                        b = img_pyr.getPointer_matrix(i);
+                    var i = 2//, a = img_pyr.getPointer_matrix(0), b = img_pyr.getPointer_matrix(1);
+                    //imgproc.pyrdown(a, b, 0, 0);
+                    /*for (; i < img_pyr.levels; ++i) {
+                        //a = b;
+                        //b = img_pyr.getPointer_matrix(i);
                         //console.log(b)
-                        imgproc.pyrdown(a, b, 0, 0);
-                    }
-                    stat.stop("pyrdown");
+                        //imgproc.pyrdown(a, b, 0, 0);
+                    }*/
+                    //stat.stop("pyrdown");
 
                     // render result back to canvas
                     //var data_u32 = new Uint32Array(imageData.data.buffer);
-                    for (i = 0; i < img_pyr.levels; ++i) {
+                    //for (i = 0; i < img_pyr.levels; ++i) {
                         //render_mono_image(img_pyr.data[i].data, data_u32, img_pyr.data[i].cols, img_pyr.data[i].rows, 640);
-                    }
+                    //}
+                    moveBytes(test_m.data, imageData.data, width, height);
 
                     ctx.putImageData(imageData, 0, 0);
 
                     $('#log').html(stat.log());
                 }
             }
+
+            function moveBytes(src, dest, width, height) {
+                    var i, j = 0;
+                    for (i = 0; i < width * height * 4;) {
+                        dest[i++] = src[j];
+                        dest[i++] = src[j];
+                        dest[i++] = src[j++];
+                        dest[i++] = 255;
+                    }
+                }
 
             function render_mono_image(src, dst, sw, sh, dw) {
                 var alpha = (0xff << 24);
