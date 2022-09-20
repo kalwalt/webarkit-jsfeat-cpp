@@ -9,6 +9,7 @@
 namespace jsfeat {
 
 typedef unsigned char u_char;
+typedef unsigned int u_int;
 template <typename T> using Array = std::vector<T>;
 
 #ifdef __EMSCRIPTEN__
