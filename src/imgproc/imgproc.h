@@ -367,6 +367,53 @@ public:
     }
   };
 
+  void gaussian_blur(matrix_t *src, matrix_t *dst, int kernel_size, int sigma) {
+                // mixed javascript and C++ code, will be implemented in a future...
+                /*if (!sigma) { sigma = 0.0; }
+                if (!kernel_size) { kernel_size = 0; }
+                kernel_size = kernel_size == 0 ? (std::max(1, (4.0 * sigma + 1.0 - 1e-8)) * 2 + 1)|0 : kernel_size;
+                int half_kernel = kernel_size >> 1;
+                int w = src->cols, h = src->rows;
+                int data_type = src->type, is_u8 = data_type & Types::U8_t;
+
+                dst->resize(w, h, src->channel);
+
+                u_char* src_d = src->dt->u8.data();
+                u_char* dst_d = dst->dt->u8.data();
+                //var buf,filter,buf_sz=(kernel_size + Math.max(h, w))|0;
+                int buf_sz=(kernel_size + std::max(h, w))|0;
+                //var buf_node = jsfeat.cache.get_buffer(buf_sz<<2);
+                //var filt_node = jsfeat.cache.get_buffer(kernel_size<<2);
+
+                if(is_u8) {
+                    //buf = buf_node.i32;
+                    Array<int> buf(buf_sz<<2);
+                    //filter = filt_node.i32;
+                    Array<int> filter(kernel_size<<2);               
+                } else if(data_type & Types::S32_t) {
+                    //buf = buf_node.i32;
+                    Array<int> buf(buf_sz<<2);
+                    //filter = filt_node.f32;
+                    Array<float> filter(kernel_size<<2); 
+                } else {
+                    //buf = buf_node.f32;
+                    Array<float> buf(buf_sz<<2);
+                    //filter = filt_node.f32;
+                    Array<float> filter(kernel_size<<2); 
+                }
+
+                jsfeat.math.get_gaussian_kernel(kernel_size, sigma, filter, data_type);
+
+                if(is_u8) {
+                    _convol_u8(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
+                } else {
+                    _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
+                }
+
+                jsfeat.cache.put_buffer(buf_node);
+                jsfeat.cache.put_buffer(filt_node);*/
+            };
+
 private:
 // a is src matrix, b is dst matrix
   void _resample_u8(matrix_t *src, matrix_t *dst, int nw, int nh) {
@@ -449,7 +496,9 @@ private:
     }
   }
 
-  void _resample(matrix_t *src, matrix_t *dst, int nw, int nh) {}
+  void _resample(matrix_t *src, matrix_t *dst, int nw, int nh) {
+    // to be implemented!
+  }
   int get_channel(int type) { return (type & 0xFF); };
 }; // class imgproc
 
