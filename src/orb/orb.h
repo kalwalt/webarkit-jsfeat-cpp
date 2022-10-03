@@ -145,10 +145,10 @@ private:
     H->dt->f32.at(3) = sine;
     H->dt->f32.at(4) = cosine;
     H->dt->f32.at(5) = ((-sine - cosine) * psize * 0.5 + py);
-    for (int i = 0; i < 9; i++) {
+    /*for (int i = 0; i < 9; i++) {
       std::cout << i << ' ' << H->dt->f32.at(i) << std::endl;
       // JSLOGi("%d %d", i, H->dt->f32.at(i));
-    }
+    }*/
     proc->warp_affine_internal(src, dst, H, 128);
   };
 };
