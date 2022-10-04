@@ -23,7 +23,7 @@
         const C1_t = jsfeat.Types.C1_t.value;
         const C4_t = jsfeat.Types.C4_t.value;
 
-        var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8_t | C1_t, 0);
+        var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8_t | C1_t);
         m_u8.allocate();
         var imgproc = new jsfeat.imgproc();
 

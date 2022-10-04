@@ -136,7 +136,7 @@
                     var sc_inc = Math.sqrt(2.0); // magic number ;)
                     var jsCppOrb = new jsfeatCpp.orb();
                     var lev0_img = new jsfeat.matrix_t(img_u8.cols, img_u8.rows, jsfeat.U8_t | jsfeat.C1_t);
-                    var lev_img = new jsfeatCpp.matrix_t(img_u8.cols, img_u8.rows, jsfeat.U8_t | jsfeat.C1_t, 0);
+                    var lev_img = new jsfeatCpp.matrix_t(img_u8.cols, img_u8.rows, jsfeat.U8_t | jsfeat.C1_t);
                     var new_width = 0, new_height = 0;
                     var lev_corners, lev_descr;
                     var corners_num = 0;
@@ -161,7 +161,7 @@
                             lev_corners[i] = new jsfeatCpp.keypoint_t(0, 0, 0, 0, -1);
                         }
 
-                        pattern_descriptors[lev] = new jsfeatCpp.matrix_t(32, max_per_level, jsfeat.U8_t | jsfeat.C1_t, 0);
+                        pattern_descriptors[lev] = new jsfeatCpp.matrix_t(32, max_per_level, jsfeat.U8_t | jsfeat.C1_t);
                     }
 
                     // do the first level
@@ -216,9 +216,9 @@
 
                 img_u8 = new jsfeat.matrix_t(640, 480, jsfeat.U8_t | jsfeat.C1_t);
                 // after blur
-                img_u8_smooth = new jsfeatCpp.matrix_t(640, 480, jsfeat.U8_t | jsfeat.C1_t, 0);
+                img_u8_smooth = new jsfeatCpp.matrix_t(640, 480, jsfeat.U8_t | jsfeat.C1_t);
                 // we wll limit to 500 strongest points
-                screen_descriptors = new jsfeatCpp.matrix_t(32, 500, jsfeat.U8_t | jsfeat.C1_t, 0);
+                screen_descriptors = new jsfeatCpp.matrix_t(32, 500, jsfeat.U8_t | jsfeat.C1_t);
                 pattern_descriptors = [];
 
                 screen_corners = [];

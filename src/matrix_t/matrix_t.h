@@ -4,10 +4,10 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten/val.h>
 #endif
+#include <jslog/jslog.h>
 #include <node_utils/data_t.h>
 #include <string>
 #include <types/types.h>
-#include <jslog/jslog.h>
 
 namespace jsfeat {
 class matrix_t : public data_t {
@@ -22,22 +22,34 @@ public:
   emscripten::val data = emscripten::val::null();
 
   matrix_t(int c, int r, int data_type, emscripten::val data_buffer) {
-#else
-  matrix_t(int c, int r, int data_type, int data_buffer) {
-#endif
     cols = c;
     rows = r;
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
-#ifdef __EMSCRIPTEN__
     if (isType(data_buffer, "object")) {
       fillData(data_buffer);
     } else {
       allocate();
     }
-#endif
   };
+  matrix_t(int c, int r, int data_type) {
+    cols = c;
+    rows = r;
+    type = get_data_type(data_type) | 0;
+    channel = get_channel(data_type) | 0;
+    size = (cols * channel) * rows;
+    allocate();
+  };
+#else
+  matrix_t(int c, int r, int data_type) {
+    cols = c;
+    rows = r;
+    type = get_data_type(data_type) | 0;
+    channel = get_channel(data_type) | 0;
+    size = (cols * channel) * rows;
+  };
+#endif
 
   ~matrix_t() {
 #ifdef DEBUG_EM
@@ -63,8 +75,7 @@ public:
 #ifdef __EMSCRIPTEN__
   emscripten::val getData() const {
     if (type == Types::U8_t) {
-      emscripten::val view{
-          emscripten::typed_memory_view(u8.size(), u8.data())};
+      emscripten::val view{emscripten::typed_memory_view(u8.size(), u8.data())};
       auto result = emscripten::val::global("Uint8Array").new_(u8.size());
       result.call<void>("set", view);
       return view;
@@ -77,15 +88,13 @@ public:
     } else if (type == Types::F32_t) {
       emscripten::val view{
           emscripten::typed_memory_view(f32.size(), f32.data())};
-      auto result =
-          emscripten::val::global("Float32Array").new_(f32.size());
+      auto result = emscripten::val::global("Float32Array").new_(f32.size());
       result.call<void>("set", view);
       return view;
     } else if (type == Types::F64_t) {
       emscripten::val view{
           emscripten::typed_memory_view(f64.size(), f64.data())};
-      auto result =
-          emscripten::val::global("Float64Array").new_(f64.size());
+      auto result = emscripten::val::global("Float64Array").new_(f64.size());
       result.call<void>("set", view);
       return view;
     }
