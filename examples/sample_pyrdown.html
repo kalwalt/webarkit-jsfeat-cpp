@@ -131,13 +131,13 @@
 
                     stat.start("grayscale");
 
-                    var test_m = new Module.matrix_t(640, 480, Module.Types.U8_t.value | Module.Types.C1_t.value, 0)
+                    var test_m = new Module.matrix_t(640, 480, Module.Types.U8_t.value | Module.Types.C1_t.value)
                     
                     //imgproc.grayscale(imageData.data, 640, 480, img_pyr.getPointer_matrix(0), Module.Colors.COLOR_RGBA2GRAY.value);
                     imgproc.grayscale(imageData.data, 640, 480, test_m.getPointer(), Module.Colors.COLOR_RGBA2GRAY.value);
                     //console.log(img_pyr.data[0]);
-                    var dst = new Module.matrix_t(320, 240, Module.Types.U8_t.value | Module.Types.C1_t.value, 0)
-                    imgproc.resample(test_m.getPointer(),dst.getPointer(), 8, 8)
+                    var dst = new Module.matrix_t(320, 240, Module.Types.U8_t.value | Module.Types.C1_t.value)
+                    imgproc.resample(test_m.getPointer(), dst.getPointer(), 8, 8)
 
                     stat.stop("grayscale");
 

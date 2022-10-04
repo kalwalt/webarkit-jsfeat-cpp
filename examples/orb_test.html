@@ -11,8 +11,8 @@
         var orb = new jsfeat.orb()
         var screen_corners = [];
         var num_corners = 20;
-        var img_u8_smooth = new jsfeat.matrix_t(640, 480, jsfeat.U8_t | jsfeat.C1_t, 0);
-        var screen_descriptors = new jsfeat.matrix_t(32, 500, jsfeat.U8_t | jsfeat.C1_t, 0);
+        var img_u8_smooth = new jsfeat.matrix_t(640, 480, jsfeat.U8_t | jsfeat.C1_t);
+        var screen_descriptors = new jsfeat.matrix_t(32, 500, jsfeat.U8_t | jsfeat.C1_t);
         var i = 640 * 480;
         while (--i >= 0) {
             screen_corners[i] = new jsfeat.keypoint_t(0, 0, 0, 0, -1);        
