@@ -16,14 +16,19 @@ public:
   int cols;
   int rows;
   int type;
-  int channel;
-  int size;
+  size_t channel;
+  size_t size;
 #ifdef __EMSCRIPTEN__
   emscripten::val data = emscripten::val::null();
 
   matrix_t(int c, int r, int data_type, emscripten::val data_buffer) {
-    cols = c;
-    rows = r;
+    if (c < 0 || r < 0) {
+      JSLOGw("cols and rows values must be greater than zero, will be converted to absoulte values.");
+      cols = std::abs(c), rows = std::abs(r);
+    } else {
+      cols = c;
+      rows = r;
+    }
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
@@ -34,8 +39,13 @@ public:
     }
   };
   matrix_t(int c, int r, int data_type) {
-    cols = c;
-    rows = r;
+    if (c < 0 || r < 0) {
+      JSLOGw("cols and rows values must be greater than zero, will be converted to absoulte values.");
+      cols = std::abs(c), rows = std::abs(r);
+    } else {
+      cols = c;
+      rows = r;
+    }
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
@@ -43,8 +53,14 @@ public:
   };
 #else
   matrix_t(int c, int r, int data_type) {
-    cols = c;
-    rows = r;
+    if (c < 0 || r < 0) {
+      std::cout << "error!" << std::endl;
+      JSLOGw("cols and rows values must be greater than zero, will be converted to absoulte values.");
+      cols = std::abs(c), rows = std::abs(r);
+    } else {
+      cols = c;
+      rows = r;
+    }
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
@@ -103,21 +119,13 @@ public:
 
   void allocate() {
     if (type == Types::U8_t) {
-      for (int i = 0; i < size; i++) {
-        u8.push_back(0);
-      }
+      u8.assign(size, 0);
     } else if (type == Types::S32_t) {
-      for (int i = 0; i < size; i++) {
-        i32.push_back(0);
-      }
+      i32.assign(size, 0);
     } else if (type == Types::F32_t) {
-      for (int i = 0; i < size; i++) {
-        f32.push_back(0.0);
-      }
+      f32.assign(size, 0);
     } else if (type == Types::F64_t) {
-      for (int i = 0; i < size; i++) {
-        f64.push_back(0.0);
-      }
+      f64.assign(size, 0);
     }
   }
 
