@@ -97,6 +97,7 @@
             }
 
             var stat = new profiler();
+            const jsfeatCpp = Module;
 
             // our point match structure
             var match_t = (function () {
@@ -133,11 +134,9 @@
                     var max_pattern_size = 512;
                     var max_per_level = 300;
                     var sc_inc = Math.sqrt(2.0); // magic number ;)
-                    const jsfeatCpp = Module;
-                    console.log(jsfeatCpp);
                     var jsCppOrb = new jsfeatCpp.orb();
                     var lev0_img = new jsfeat.matrix_t(img_u8.cols, img_u8.rows, jsfeat.U8_t | jsfeat.C1_t);
-                    var lev_img = new jsfeat.matrix_t(img_u8.cols, img_u8.rows, jsfeat.U8_t | jsfeat.C1_t);
+                    var lev_img = new jsfeatCpp.matrix_t(img_u8.cols, img_u8.rows, jsfeat.U8_t | jsfeat.C1_t, 0);
                     var new_width = 0, new_height = 0;
                     var lev_corners, lev_descr;
                     var corners_num = 0;
@@ -162,7 +161,7 @@
                             lev_corners[i] = new jsfeatCpp.keypoint_t(0, 0, 0, 0, -1);
                         }
 
-                        pattern_descriptors[lev] = new jsfeat.matrix_t(32, max_per_level, jsfeat.U8_t | jsfeat.C1_t);
+                        pattern_descriptors[lev] = new jsfeatCpp.matrix_t(32, max_per_level, jsfeat.U8_t | jsfeat.C1_t, 0);
                     }
 
                     // do the first level
@@ -173,7 +172,7 @@
                     corners_num = detect_keypoints(lev_img, lev_corners, max_per_level);
                     //console.log(lev_corners);
                     console.log(lev_descr);
-                    jsCppOrb.describe(lev_img, lev_corners, corners_num, lev_descr);
+                    jsCppOrb.describe(lev_img.getPointer(), lev_corners, corners_num, lev_descr.getPointer());
 
                     console.log("train " + lev_img.cols + "x" + lev_img.rows + " points: " + corners_num);
 
@@ -192,7 +191,7 @@
                         imgproc.resample(lev0_img, lev_img, new_width, new_height);
                         imgproc.gaussian_blur(lev_img, lev_img, options.blur_size | 0);
                         corners_num = detect_keypoints(lev_img, lev_corners, max_per_level);
-                        orb.describe(lev_img, lev_corners, corners_num, lev_descr);
+                        jsCppOrb.describe(lev_img.getPointer(), lev_corners, corners_num, lev_descr.getPointer());
 
                         // fix the coordinates due to scale level
                         for (i = 0; i < corners_num; ++i) {
@@ -217,9 +216,9 @@
 
                 img_u8 = new jsfeat.matrix_t(640, 480, jsfeat.U8_t | jsfeat.C1_t);
                 // after blur
-                img_u8_smooth = new jsfeat.matrix_t(640, 480, jsfeat.U8_t | jsfeat.C1_t);
+                img_u8_smooth = new jsfeatCpp.matrix_t(640, 480, jsfeat.U8_t | jsfeat.C1_t, 0);
                 // we wll limit to 500 strongest points
-                screen_descriptors = new jsfeat.matrix_t(32, 500, jsfeat.U8_t | jsfeat.C1_t);
+                screen_descriptors = new jsfeatCpp.matrix_t(32, 500, jsfeat.U8_t | jsfeat.C1_t, 0);
                 pattern_descriptors = [];
 
                 screen_corners = [];
