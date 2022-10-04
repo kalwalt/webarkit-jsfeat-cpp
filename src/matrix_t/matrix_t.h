@@ -10,7 +10,7 @@
 #include <jslog/jslog.h>
 
 namespace jsfeat {
-class matrix_t {
+class matrix_t : public data_t {
 
 public:
   int cols;
@@ -18,7 +18,6 @@ public:
   int type;
   int channel;
   int size;
-  data_t *dt;
 #ifdef __EMSCRIPTEN__
   emscripten::val data = emscripten::val::null();
 
@@ -31,7 +30,6 @@ public:
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
-    dt = new data_t();
 #ifdef __EMSCRIPTEN__
     if (isType(data_buffer, "object")) {
       fillData(data_buffer);
@@ -45,7 +43,6 @@ public:
 #ifdef DEBUG_EM
     JSLOGd("deleting matrix_t");
 #endif
-    delete dt;
   }
 
   int getCols() const { return cols; };
@@ -67,28 +64,28 @@ public:
   emscripten::val getData() const {
     if (type == Types::U8_t) {
       emscripten::val view{
-          emscripten::typed_memory_view(dt->u8.size(), dt->u8.data())};
-      auto result = emscripten::val::global("Uint8Array").new_(dt->u8.size());
+          emscripten::typed_memory_view(u8.size(), u8.data())};
+      auto result = emscripten::val::global("Uint8Array").new_(u8.size());
       result.call<void>("set", view);
       return view;
     } else if (type == Types::S32_t) {
       emscripten::val view{
-          emscripten::typed_memory_view(dt->i32.size(), dt->i32.data())};
-      auto result = emscripten::val::global("Int32Array").new_(dt->i32.size());
+          emscripten::typed_memory_view(i32.size(), i32.data())};
+      auto result = emscripten::val::global("Int32Array").new_(i32.size());
       result.call<void>("set", view);
       return view;
     } else if (type == Types::F32_t) {
       emscripten::val view{
-          emscripten::typed_memory_view(dt->f32.size(), dt->f32.data())};
+          emscripten::typed_memory_view(f32.size(), f32.data())};
       auto result =
-          emscripten::val::global("Float32Array").new_(dt->f32.size());
+          emscripten::val::global("Float32Array").new_(f32.size());
       result.call<void>("set", view);
       return view;
     } else if (type == Types::F64_t) {
       emscripten::val view{
-          emscripten::typed_memory_view(dt->f64.size(), dt->f64.data())};
+          emscripten::typed_memory_view(f64.size(), f64.data())};
       auto result =
-          emscripten::val::global("Float64Array").new_(dt->f64.size());
+          emscripten::val::global("Float64Array").new_(f64.size());
       result.call<void>("set", view);
       return view;
     }
@@ -98,19 +95,19 @@ public:
   void allocate() {
     if (type == Types::U8_t) {
       for (int i = 0; i < size; i++) {
-        dt->u8.push_back(0);
+        u8.push_back(0);
       }
     } else if (type == Types::S32_t) {
       for (int i = 0; i < size; i++) {
-        dt->i32.push_back(0);
+        i32.push_back(0);
       }
     } else if (type == Types::F32_t) {
       for (int i = 0; i < size; i++) {
-        dt->f32.push_back(0.0);
+        f32.push_back(0.0);
       }
     } else if (type == Types::F64_t) {
       for (int i = 0; i < size; i++) {
-        dt->f64.push_back(0.0);
+        f64.push_back(0.0);
       }
     }
   }
@@ -126,13 +123,13 @@ public:
       rows = r;
       channel = ch;
       if (type == Types::U8_t) {
-        dt->u8.resize(new_size);
+        u8.resize(new_size);
       } else if (type == Types::S32_t) {
-        dt->i32.resize(new_size);
+        i32.resize(new_size);
       } else if (type == Types::F32_t) {
-        dt->f32.resize(new_size);
+        f32.resize(new_size);
       } else if (type == Types::F64_t) {
-        dt->f64.resize(new_size);
+        f64.resize(new_size);
       }
     } else {
       cols = c;
@@ -159,17 +156,17 @@ private:
 #ifdef __EMSCRIPTEN__
   void fillData(emscripten::val data_buffer) {
     if (type == Types::U8_t) {
-      dt->u8 = emscripten::convertJSArrayToNumberVector<u_char>(data_buffer);
-      dt->u8.resize(size);
+      u8 = emscripten::convertJSArrayToNumberVector<u_char>(data_buffer);
+      u8.resize(size);
     } else if (type == Types::S32_t) {
-      dt->i32 = emscripten::convertJSArrayToNumberVector<int>(data_buffer);
-      dt->i32.resize(size);
+      i32 = emscripten::convertJSArrayToNumberVector<int>(data_buffer);
+      i32.resize(size);
     } else if (type == Types::F32_t) {
-      dt->f32 = emscripten::convertJSArrayToNumberVector<float>(data_buffer);
-      dt->f32.resize(size);
+      f32 = emscripten::convertJSArrayToNumberVector<float>(data_buffer);
+      f32.resize(size);
     } else if (type == Types::F64_t) {
-      dt->f64 = emscripten::convertJSArrayToNumberVector<double>(data_buffer);
-      dt->f64.resize(size);
+      f64 = emscripten::convertJSArrayToNumberVector<double>(data_buffer);
+      f64.resize(size);
     }
   }
   bool isType(emscripten::val value, const std::string &type) {

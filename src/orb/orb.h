@@ -30,7 +30,7 @@ public:
     int i = 0, b = 0, px = 0.0, py = 0.0, angle = 0.0;
     int t0 = 0, t1 = 0, val = 0;
     // int img = src.data, w = src.cols, h = src.rows;
-    u_char *patch_d = patch_img->dt->u8.data();
+    u_char *patch_d = patch_img->u8.data();
     int patch_off = 16 * 32 + 16; // center of patch
     int patt = 0;
 
@@ -45,7 +45,7 @@ public:
       descriptors->resize(DESCR_SIZE, count, 1);
     }
 
-    u_char *descr_d = descriptors->dt->u8.data();
+    u_char *descr_d = descriptors->u8.data();
     int descr_off = 0;
 
     for (i = 0; i < count; ++i) {
@@ -139,12 +139,12 @@ private:
 
     float cosine = std::cos(angle);
     float sine = std::sin(angle);
-    H->dt->f32.at(0) = cosine;
-    H->dt->f32.at(1) = -sine;
-    H->dt->f32.at(2) = ((-cosine + sine) * psize * 0.5 + px);
-    H->dt->f32.at(3) = sine;
-    H->dt->f32.at(4) = cosine;
-    H->dt->f32.at(5) = ((-sine - cosine) * psize * 0.5 + py);
+    H->f32.at(0) = cosine;
+    H->f32.at(1) = -sine;
+    H->f32.at(2) = ((-cosine + sine) * psize * 0.5 + px);
+    H->f32.at(3) = sine;
+    H->f32.at(4) = cosine;
+    H->f32.at(5) = ((-sine - cosine) * psize * 0.5 + py);
     /*for (int i = 0; i < 9; i++) {
       std::cout << i << ' ' << H->dt->f32.at(i) << std::endl;
       // JSLOGi("%d %d", i, H->dt->f32.at(i));
