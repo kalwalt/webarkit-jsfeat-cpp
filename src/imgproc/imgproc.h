@@ -53,37 +53,37 @@ public:
 
     ptrDst->resize(w, h, 1);
 
-    if (ptrSrc->dt->u8.empty()) {
+    if (ptrSrc->u8.empty()) {
       JSLOGe("vector is empty");
     }
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       // probably we can do this in javascript but not in C++
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        ptrDst->dt->u8.at(jr) = (ptrSrc->dt->u8.at(ir) * coeff_r +
-                                 ptrSrc->dt->u8.at(ir + 1) * coeff_g +
-                                 ptrSrc->dt->u8.at(ir + 2) * coeff_b + 8192) >>
+        ptrDst->u8.at(jr) = (ptrSrc->u8.at(ir) * coeff_r +
+                                 ptrSrc->u8.at(ir + 1) * coeff_g +
+                                 ptrSrc->u8.at(ir + 2) * coeff_b + 8192) >>
                                 14;
-        ptrDst->dt->u8.at(jr + 1) =
-            (ptrSrc->dt->u8.at(ir + cn) * coeff_r +
-             ptrSrc->dt->u8.at(ir + cn + 1) * coeff_g +
-             ptrSrc->dt->u8.at(ir + cn + 2) * coeff_b + 8192) >>
+        ptrDst->u8.at(jr + 1) =
+            (ptrSrc->u8.at(ir + cn) * coeff_r +
+             ptrSrc->u8.at(ir + cn + 1) * coeff_g +
+             ptrSrc->u8.at(ir + cn + 2) * coeff_b + 8192) >>
             14;
-        ptrDst->dt->u8.at(jr + 2) =
-            (ptrSrc->dt->u8.at(ir + cn2) * coeff_r +
-             ptrSrc->dt->u8.at(ir + cn2 + 1) * coeff_g +
-             ptrSrc->dt->u8.at(ir + cn2 + 2) * coeff_b + 8192) >>
+        ptrDst->u8.at(jr + 2) =
+            (ptrSrc->u8.at(ir + cn2) * coeff_r +
+             ptrSrc->u8.at(ir + cn2 + 1) * coeff_g +
+             ptrSrc->u8.at(ir + cn2 + 2) * coeff_b + 8192) >>
             14;
-        ptrDst->dt->u8.at(jr + 3) =
-            (ptrSrc->dt->u8.at(ir + cn3) * coeff_r +
-             ptrSrc->dt->u8.at(ir + cn3 + 1) * coeff_g +
-             ptrSrc->dt->u8.at(ir + cn3 + 2) * coeff_b + 8192) >>
+        ptrDst->u8.at(jr + 3) =
+            (ptrSrc->u8.at(ir + cn3) * coeff_r +
+             ptrSrc->u8.at(ir + cn3 + 1) * coeff_g +
+             ptrSrc->u8.at(ir + cn3 + 2) * coeff_b + 8192) >>
             14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        ptrDst->dt->u8.at(jr) = (ptrSrc->dt->u8.at(ir) * coeff_r +
-                                 ptrSrc->dt->u8.at(ir + 1) * coeff_g +
-                                 ptrSrc->dt->u8.at(ir + 2) * coeff_b + 8192) >>
+        ptrDst->u8.at(jr) = (ptrSrc->u8.at(ir) * coeff_r +
+                                 ptrSrc->u8.at(ir + 1) * coeff_g +
+                                 ptrSrc->u8.at(ir + 2) * coeff_b + 8192) >>
                                 14;
       }
     }
@@ -127,24 +127,24 @@ public:
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        ptrDst->dt->u8.at(jr) = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+        ptrDst->u8.at(jr) = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
                                  src[ir + 2] * coeff_b + 8192) >>
                                 14;
-        ptrDst->dt->u8.at(jr + 1) =
+        ptrDst->u8.at(jr + 1) =
             (src[ir + cn] * coeff_r + src[ir + cn + 1] * coeff_g +
              src[ir + cn + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->dt->u8.at(jr + 2) =
+        ptrDst->u8.at(jr + 2) =
             (src[ir + cn2] * coeff_r + src[ir + cn2 + 1] * coeff_g +
              src[ir + cn2 + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->dt->u8.at(jr + 3) =
+        ptrDst->u8.at(jr + 3) =
             (src[ir + cn3] * coeff_r + src[ir + cn3 + 1] * coeff_g +
              src[ir + cn3 + 2] * coeff_b + 8192) >>
             14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        ptrDst->dt->u8.at(jr) = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+        ptrDst->u8.at(jr) = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
                                  src[ir + 2] * coeff_b + 8192) >>
                                 14;
       }
@@ -174,20 +174,20 @@ public:
       sline = sptr;
       dline = dptr;
       for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
-        dst->dt->u8.at(dline) =
-            (src->dt->u8.at(sline) + src->dt->u8.at(sline + 1) +
-             src->dt->u8.at(sline + w) + src->dt->u8.at(sline + w + 1) + 2) >>
+        dst->u8.at(dline) =
+            (src->u8.at(sline) + src->u8.at(sline + 1) +
+             src->u8.at(sline + w) + src->u8.at(sline + w + 1) + 2) >>
             2;
-        dst->dt->u8.at(dline + 1) =
-            (src->dt->u8.at(sline + 2) + src->dt->u8.at(sline + 3) +
-             src->dt->u8.at(sline + w + 2) + src->dt->u8.at(sline + w + 3) +
+        dst->u8.at(dline + 1) =
+            (src->u8.at(sline + 2) + src->u8.at(sline + 3) +
+             src->u8.at(sline + w + 2) + src->u8.at(sline + w + 3) +
              2) >>
             2;
       }
       for (; x < _w2; ++x, ++dline, sline += 2) {
-        dst->dt->u8.at(dline) =
-            (src->dt->u8.at(sline) + src->dt->u8.at(sline + 1) +
-             src->dt->u8.at(sline + w) + src->dt->u8.at(sline + w + 1) + 2) >>
+        dst->u8.at(dline) =
+            (src->u8.at(sline) + src->u8.at(sline + 1) +
+             src->u8.at(sline + w) + src->u8.at(sline + w + 1) + 2) >>
             2;
       }
       sptr += w << 1;
@@ -209,8 +209,8 @@ public:
 
     dst->resize(w2, h2, src->channel);
 
-    u_char *src_d = src->dt->u8.data();
-    u_char *dst_d = dst->dt->u8.data();
+    u_char *src_d = src->u8.data();
+    u_char *dst_d = dst->u8.data();
 
     for (y = 0; y < _h2; ++y) {
       sline = sptr;
@@ -252,7 +252,7 @@ public:
     float b = 0.0;
     float p0 = 0.0;
     float p1 = 0.0;
-    float *td = transform->dt->f32.data();
+    float *td = transform->f32.data();
     float m00 = td[0];
     float m01 = td[1];
     float m02 = td[2];
@@ -272,14 +272,14 @@ public:
           b = ys - iys;
           off = src_width * iys + ixs;
 
-          p0 = src->dt->u8[off] + a * (src->dt->u8[off + 1] - src->dt->u8[off]);
-          p1 = src->dt->u8[off + src_width] +
-               a * (src->dt->u8[off + src_width + 1] -
-                    src->dt->u8[off + src_width]);
+          p0 = src->u8[off] + a * (src->u8[off + 1] - src->u8[off]);
+          p1 = src->u8[off + src_width] +
+               a * (src->u8[off + src_width + 1] -
+                    src->u8[off + src_width]);
 
-          dst->dt->u8[dptr] = p0 + b * (p1 - p0);
+          dst->u8[dptr] = p0 + b * (p1 - p0);
         } else
-          dst->dt->u8[dptr] = fill_value;
+          dst->u8[dptr] = fill_value;
       }
     }
   }
@@ -306,7 +306,7 @@ public:
     float b = 0.0;
     float p0 = 0.0;
     float p1 = 0.0;
-    float *td = ptrTransform->dt->f32.data();
+    float *td = ptrTransform->f32.data();
     float m00 = td[0];
     float m01 = td[1];
     float m02 = td[2];
@@ -326,15 +326,15 @@ public:
           b = ys - iys;
           off = src_width * iys + ixs;
 
-          p0 = ptrSrc->dt->u8[off] +
-               a * (ptrSrc->dt->u8[off + 1] - ptrSrc->dt->u8[off]);
-          p1 = ptrSrc->dt->u8[off + src_width] +
-               a * (ptrSrc->dt->u8[off + src_width + 1] -
-                    ptrSrc->dt->u8[off + src_width]);
+          p0 = ptrSrc->u8[off] +
+               a * (ptrSrc->u8[off + 1] - ptrSrc->u8[off]);
+          p1 = ptrSrc->u8[off + src_width] +
+               a * (ptrSrc->u8[off + src_width + 1] -
+                    ptrSrc->u8[off + src_width]);
 
-          ptrDst->dt->u8[dptr] = p0 + b * (p1 - p0);
+          ptrDst->u8[dptr] = p0 + b * (p1 - p0);
         } else
-          ptrDst->dt->u8[dptr] = fill_value;
+          ptrDst->u8[dptr] = fill_value;
       }
     }
   }
@@ -459,7 +459,7 @@ private:
     dy = 0;
     for (sy = 0; sy < src->rows; sy++) {
       a = w * sy;
-      Array<u_char> a_ptr = dst->dt->u8;
+      Array<u_char> a_ptr = dst->u8;
       for (k = 0; k < xofs_count; k++) {
         int dxn = xofs[k].di;
         unsigned int alpha = xofs[k].alpha;
@@ -471,7 +471,7 @@ private:
             (int)((std::max(sy + 1 - (dy + 1) * scale_y, 0.)) * 256);
         unsigned int beta1 = 256 - beta;
         b = nw * dy;
-        Array<u_char> b_ptr = dst->dt->u8;// + b->step  * dy;
+        Array<u_char> b_ptr = dst->u8;// + b->step  * dy;
         if (beta <= 0) {
           for (dx = 0; dx < dst->cols * ch; dx++) {
             b_ptr[b + dx] =

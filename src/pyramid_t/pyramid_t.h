@@ -37,7 +37,7 @@ public:
     if (!skip_first_level) {
       int j = input->cols * input->rows;
       while (--j >= 0) {
-        b->dt->u8[j] = input->dt->u8[j];
+        b->u8[j] = input->u8[j];
       }
     }
     b = this->mt[1];
@@ -75,8 +75,8 @@ public:
  
     for (int i = 0; i < this->levels; i++){
         emscripten::val view{
-            emscripten::typed_memory_view(mt[i]->dt->u8.size(), mt[i]->dt->u8.data())};
-        auto result = emscripten::val::global("Uint8Array").new_(mt[i]->dt->u8.size());
+            emscripten::typed_memory_view(mt[i]->u8.size(), mt[i]->u8.data())};
+        auto result = emscripten::val::global("Uint8Array").new_(mt[i]->u8.size());
         result.call<void>("set", view);
         data.call<void>("push", result);
     }
