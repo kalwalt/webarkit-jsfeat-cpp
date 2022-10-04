@@ -7,6 +7,7 @@
 #endif
 #include <jslog/jslog.h>
 #include <matrix_t/matrix_t.h>
+#include <node_utils/functions.h>
 #include <types/types.h>
 #include <vector>
 #include <algorithm>
@@ -420,7 +421,7 @@ private:
     int h = src->rows, w = src->cols;
     assert(src->cols > 0 && dst->cols > 0);
     Array<jsfeat_int_alpha> xofs(src->cols * 2);
-    int ch = jsfeat_clamp(this->get_channel(src->type), 1, 4);
+    int ch = jsfeat_clamp(get_channel(src->type), 1, 4);
     double scale_x = (double)src->cols / dst->cols;
     double scale_y = (double)src->rows / dst->rows;
     // double scale = 1.f / (scale_x * scale_y);
@@ -499,7 +500,6 @@ private:
   void _resample(matrix_t *src, matrix_t *dst, int nw, int nh) {
     // to be implemented!
   }
-  int get_channel(int type) { return (type & 0xFF); };
 }; // class imgproc
 
 } // namespace jsfeat

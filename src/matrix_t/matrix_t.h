@@ -6,6 +6,7 @@
 #endif
 #include <jslog/jslog.h>
 #include <node_utils/data_t.h>
+#include <node_utils/functions.h>
 #include <string>
 #include <types/types.h>
 
@@ -168,8 +169,6 @@ public:
   };
 #endif
 private:
-  int get_data_type(int type) { return (type & 0xFF00); }
-  int get_channel(int type) { return (type & 0xFF); };
 #ifdef __EMSCRIPTEN__
   void fillData(emscripten::val data_buffer) {
     if (type == Types::U8_t) {
