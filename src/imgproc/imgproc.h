@@ -11,6 +11,7 @@
 #include <types/types.h>
 #include <vector>
 #include <algorithm>
+#include <cassert>
 
 namespace jsfeat {
 

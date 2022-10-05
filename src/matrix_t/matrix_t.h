@@ -24,7 +24,8 @@ public:
 
   matrix_t(int c, int r, int data_type, emscripten::val data_buffer) {
     if (c < 0 || r < 0) {
-      JSLOGw("cols and rows values must be greater than zero, will be converted to absoulte values.");
+      JSLOGw("cols and rows values must be greater than zero, will be "
+             "converted to absoulte values.");
       cols = std::abs(c), rows = std::abs(r);
     } else {
       cols = c;
@@ -41,7 +42,8 @@ public:
   };
   matrix_t(int c, int r, int data_type) {
     if (c < 0 || r < 0) {
-      JSLOGw("cols and rows values must be greater than zero, will be converted to absoulte values.");
+      JSLOGw("cols and rows values must be greater than zero, will be "
+             "converted to absoulte values.");
       cols = std::abs(c), rows = std::abs(r);
     } else {
       cols = c;
@@ -56,7 +58,8 @@ public:
   matrix_t(int c, int r, int data_type) {
     if (c < 0 || r < 0) {
       std::cout << "error!" << std::endl;
-      JSLOGw("cols and rows values must be greater than zero, will be converted to absoulte values.");
+      JSLOGw("cols and rows values must be greater than zero, will be "
+             "converted to absoulte values.");
       cols = std::abs(c), rows = std::abs(r);
     } else {
       cols = c;
@@ -66,6 +69,38 @@ public:
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
   };
+  matrix_t(matrix_t &m) {
+    cols = m.cols;
+    rows = m.rows;
+    type = m.type;
+    channel = m.channel;
+    size = m.size;
+    if (type == Types::U8_t) {
+      u8 = m.u8;
+    } else if (type == Types::S32_t) {
+      i32 = m.i32;
+    } else if (type == Types::F32_t) {
+      f32 = m.f32;
+    } else if (type == Types::F64_t) {
+      f64 = m.f64;
+    }
+  }
+  matrix_t(const matrix_t &m) {
+    cols = m.cols;
+    rows = m.rows;
+    type = m.type;
+    channel = m.channel;
+    size = m.size;
+    if (type == Types::U8_t) {
+      u8 = m.u8;
+    } else if (type == Types::S32_t) {
+      i32 = m.i32;
+    } else if (type == Types::F32_t) {
+      f32 = m.f32;
+    } else if (type == Types::F64_t) {
+      f64 = m.f64;
+    }
+  }
 #endif
 
   ~matrix_t() {
@@ -155,6 +190,7 @@ public:
       channel = ch;
     }
   }
+
 #ifdef __EMSCRIPTEN__
   auto getPointer() { return reinterpret_cast<int>(this); }
 

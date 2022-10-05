@@ -171,7 +171,7 @@
                     imgproc.gaussian_blur(lev0_img, lev_img, options.blur_size | 0); // this is more robust
                     corners_num = detect_keypoints(lev_img, lev_corners, max_per_level);
                     //console.log(lev_corners);
-                    console.log(lev_descr);
+                    //console.log(lev_descr);
                     jsCppOrb.describe(lev_img.getPointer(), lev_corners, corners_num, lev_descr.getPointer());
 
                     console.log("train " + lev_img.cols + "x" + lev_img.rows + " points: " + corners_num);
@@ -413,9 +413,11 @@
             // each on screen point is compared to all pattern points
             // to find the closest match
             function match_pattern() {
-                var q_cnt = screen_descriptors.rows;
-                var query_du8 = screen_descriptors.data;
-                var query_u32 = screen_descriptors.buffer.i32; // cast to integer buffer
+                var internal_desc = new jsfeat.matrix_t(screen_descriptors.cols, screen_descriptors.rows, jsfeat.U8_t | jsfeat.C1_t);
+                internal_desc.data = screen_descriptors.data;
+                var q_cnt = internal_desc.rows;
+                var query_du8 = internal_desc.data;
+                var query_u32 = internal_desc.buffer.i32; // cast to integer buffer
                 var qd_off = 0;
                 var qidx = 0, lev = 0, pidx = 0, k = 0;
                 var num_matches = 0;
@@ -427,9 +429,10 @@
                     var best_lev = -1;
 
                     for (lev = 0; lev < num_train_levels; ++lev) {
-                        var lev_descr = pattern_descriptors[lev];
-                        var ld_cnt = lev_descr.rows;
-                        var ld_i32 = lev_descr.buffer.i32; // cast to integer buffer
+                        var internal_patt_desc = new jsfeat.matrix_t(pattern_descriptors[lev].cols, pattern_descriptors[lev].rows, jsfeat.U8_t | jsfeat.C1_t);
+                        internal_patt_desc.data = pattern_descriptors[lev].data;
+                        var ld_cnt = internal_patt_desc.rows;
+                        var ld_i32 = internal_patt_desc.buffer.i32; // cast to integer buffer
                         var ld_off = 0;
 
                         for (pidx = 0; pidx < ld_cnt; ++pidx) {
