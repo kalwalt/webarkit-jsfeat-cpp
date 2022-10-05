@@ -1,8 +1,8 @@
 #ifndef DATA_T_H
 #define DATA_T_H
 
-#include <types/types.h>
 #include <jslog/jslog.h>
+#include <types/types.h>
 
 namespace jsfeat {
 class data_t {
