@@ -139,16 +139,13 @@ private:
 
     float cosine = std::cos(angle);
     float sine = std::sin(angle);
-    H->f32.at(0) = cosine;
-    H->f32.at(1) = -sine;
-    H->f32.at(2) = ((-cosine + sine) * psize * 0.5 + px);
-    H->f32.at(3) = sine;
-    H->f32.at(4) = cosine;
-    H->f32.at(5) = ((-sine - cosine) * psize * 0.5 + py);
-    /*for (int i = 0; i < 9; i++) {
-      std::cout << i << ' ' << H->dt->f32.at(i) << std::endl;
-      // JSLOGi("%d %d", i, H->dt->f32.at(i));
-    }*/
+    H->f32[0] = cosine;
+    H->f32[1] = -sine;
+    H->f32[2] = ((-cosine + sine) * psize * 0.5 + px);
+    H->f32[3] = sine;
+    H->f32[4] = cosine;
+    H->f32[5] = ((-sine - cosine) * psize * 0.5 + py);
+
     proc->warp_affine_internal(src, dst, H, 128);
   };
 };
