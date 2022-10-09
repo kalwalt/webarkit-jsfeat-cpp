@@ -178,19 +178,19 @@ public:
       sline = sptr;
       dline = dptr;
       for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
-        dst->u8.at(dline) =
-            (src->u8.at(sline) + src->u8.at(sline + 1) + src->u8.at(sline + w) +
-             src->u8.at(sline + w + 1) + 2) >>
+        dst->u8[dline] =
+            (src->u8[sline] + src->u8[sline + 1] + src->u8[sline + w] +
+             src->u8[sline + w + 1] + 2) >>
             2;
-        dst->u8.at(dline + 1) =
-            (src->u8.at(sline + 2) + src->u8.at(sline + 3) +
-             src->u8.at(sline + w + 2) + src->u8.at(sline + w + 3) + 2) >>
+        dst->u8[dline + 1] =
+            (src->u8[sline + 2] + src->u8[sline + 3] +
+             src->u8[sline + w + 2] + src->u8[sline + w + 3] + 2) >>
             2;
       }
       for (; x < _w2; ++x, ++dline, sline += 2) {
-        dst->u8.at(dline) =
-            (src->u8.at(sline) + src->u8.at(sline + 1) + src->u8.at(sline + w) +
-             src->u8.at(sline + w + 1) + 2) >>
+        dst->u8[dline] =
+            (src->u8[sline] + src->u8[sline + 1] + src->u8[sline + w] +
+             src->u8[sline + w + 1] + 2) >>
             2;
       }
       sptr += w << 1;
