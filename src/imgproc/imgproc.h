@@ -5,13 +5,13 @@
 #include <emscripten.h>
 #include <emscripten/val.h>
 #endif
+#include <algorithm>
+#include <cassert>
 #include <jslog/jslog.h>
 #include <matrix_t/matrix_t.h>
 #include <node_utils/functions.h>
 #include <types/types.h>
 #include <vector>
-#include <algorithm>
-#include <cassert>
 
 namespace jsfeat {
 
@@ -20,7 +20,13 @@ typedef struct {
   unsigned int alpha;
 } jsfeat_int_alpha;
 
-#define jsfeat_clamp(x, a, b) ({ typeof (a) _a = (a); typeof (b) _b = (b); typeof (x) _x = (x); (_x < _a) ? _a : ((_x > _b) ? _b : _x); })
+#define jsfeat_clamp(x, a, b)                                                  \
+  ({                                                                           \
+    typeof(a) _a = (a);                                                        \
+    typeof(b) _b = (b);                                                        \
+    typeof(x) _x = (x);                                                        \
+    (_x < _a) ? _a : ((_x > _b) ? _b : _x);                                    \
+  })
 
 class imgproc {
 public:
@@ -60,33 +66,29 @@ public:
     }
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
-      // probably we can do this in javascript but not in C++
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        ptrDst->u8.at(jr) = (ptrSrc->u8.at(ir) * coeff_r +
-                                 ptrSrc->u8.at(ir + 1) * coeff_g +
-                                 ptrSrc->u8.at(ir + 2) * coeff_b + 8192) >>
-                                14;
-        ptrDst->u8.at(jr + 1) =
-            (ptrSrc->u8.at(ir + cn) * coeff_r +
-             ptrSrc->u8.at(ir + cn + 1) * coeff_g +
-             ptrSrc->u8.at(ir + cn + 2) * coeff_b + 8192) >>
+        ptrDst->u8[jr] =
+            (ptrSrc->u8[ir] * coeff_r + ptrSrc->u8[ir + 1] * coeff_g +
+             ptrSrc->u8[ir + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8.at(jr + 2) =
-            (ptrSrc->u8.at(ir + cn2) * coeff_r +
-             ptrSrc->u8.at(ir + cn2 + 1) * coeff_g +
-             ptrSrc->u8.at(ir + cn2 + 2) * coeff_b + 8192) >>
+        ptrDst->u8[jr + 1] =
+            (ptrSrc->u8[ir + cn] * coeff_r + ptrSrc->u8[ir + cn + 1] * coeff_g +
+             ptrSrc->u8[ir + cn + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8.at(jr + 3) =
-            (ptrSrc->u8.at(ir + cn3) * coeff_r +
-             ptrSrc->u8.at(ir + cn3 + 1) * coeff_g +
-             ptrSrc->u8.at(ir + cn3 + 2) * coeff_b + 8192) >>
-            14;
+        ptrDst->u8[jr + 2] = (ptrSrc->u8[ir + cn2] * coeff_r +
+                              ptrSrc->u8[ir + cn2 + 1] * coeff_g +
+                              ptrSrc->u8[ir + cn2 + 2] * coeff_b + 8192) >>
+                             14;
+        ptrDst->u8[jr + 3] = (ptrSrc->u8[ir + cn3] * coeff_r +
+                              ptrSrc->u8[ir + cn3 + 1] * coeff_g +
+                              ptrSrc->u8[ir + cn3 + 2] * coeff_b + 8192) >>
+                             14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        ptrDst->u8.at(jr) = (ptrSrc->u8.at(ir) * coeff_r +
-                                 ptrSrc->u8.at(ir + 1) * coeff_g +
-                                 ptrSrc->u8.at(ir + 2) * coeff_b + 8192) >>
-                                14;
+        ptrDst->u8[jr] =
+            (ptrSrc->u8[ir] * coeff_r + ptrSrc->u8[ir + 1] * coeff_g +
+             ptrSrc->u8[ir + 2] * coeff_b + 8192) >>
+            14;
       }
     }
   };
@@ -129,26 +131,26 @@ public:
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        ptrDst->u8.at(jr) = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
-                                 src[ir + 2] * coeff_b + 8192) >>
-                                14;
-        ptrDst->u8.at(jr + 1) =
+        ptrDst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+                          src[ir + 2] * coeff_b + 8192) >>
+                         14;
+        ptrDst->u8[jr + 1] =
             (src[ir + cn] * coeff_r + src[ir + cn + 1] * coeff_g +
              src[ir + cn + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8.at(jr + 2) =
+        ptrDst->u8[jr + 2] =
             (src[ir + cn2] * coeff_r + src[ir + cn2 + 1] * coeff_g +
              src[ir + cn2 + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8.at(jr + 3) =
+        ptrDst->u8[jr + 3] =
             (src[ir + cn3] * coeff_r + src[ir + cn3 + 1] * coeff_g +
              src[ir + cn3 + 2] * coeff_b + 8192) >>
             14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        ptrDst->u8.at(jr) = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
-                                 src[ir + 2] * coeff_b + 8192) >>
-                                14;
+        ptrDst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+                          src[ir + 2] * coeff_b + 8192) >>
+                         14;
       }
     }
   };
@@ -177,19 +179,18 @@ public:
       dline = dptr;
       for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
         dst->u8.at(dline) =
-            (src->u8.at(sline) + src->u8.at(sline + 1) +
-             src->u8.at(sline + w) + src->u8.at(sline + w + 1) + 2) >>
+            (src->u8.at(sline) + src->u8.at(sline + 1) + src->u8.at(sline + w) +
+             src->u8.at(sline + w + 1) + 2) >>
             2;
         dst->u8.at(dline + 1) =
             (src->u8.at(sline + 2) + src->u8.at(sline + 3) +
-             src->u8.at(sline + w + 2) + src->u8.at(sline + w + 3) +
-             2) >>
+             src->u8.at(sline + w + 2) + src->u8.at(sline + w + 3) + 2) >>
             2;
       }
       for (; x < _w2; ++x, ++dline, sline += 2) {
         dst->u8.at(dline) =
-            (src->u8.at(sline) + src->u8.at(sline + 1) +
-             src->u8.at(sline + w) + src->u8.at(sline + w + 1) + 2) >>
+            (src->u8.at(sline) + src->u8.at(sline + 1) + src->u8.at(sline + w) +
+             src->u8.at(sline + w + 1) + 2) >>
             2;
       }
       sptr += w << 1;
@@ -276,8 +277,7 @@ public:
 
           p0 = src->u8[off] + a * (src->u8[off + 1] - src->u8[off]);
           p1 = src->u8[off + src_width] +
-               a * (src->u8[off + src_width + 1] -
-                    src->u8[off + src_width]);
+               a * (src->u8[off + src_width + 1] - src->u8[off + src_width]);
 
           dst->u8[dptr] = p0 + b * (p1 - p0);
         } else
@@ -328,8 +328,7 @@ public:
           b = ys - iys;
           off = src_width * iys + ixs;
 
-          p0 = ptrSrc->u8[off] +
-               a * (ptrSrc->u8[off + 1] - ptrSrc->u8[off]);
+          p0 = ptrSrc->u8[off] + a * (ptrSrc->u8[off + 1] - ptrSrc->u8[off]);
           p1 = ptrSrc->u8[off + src_width] +
                a * (ptrSrc->u8[off + src_width + 1] -
                     ptrSrc->u8[off + src_width]);
@@ -369,55 +368,55 @@ public:
     }
   };
 
-  void gaussian_blur(matrix_t *src, matrix_t *dst, int kernel_size, int sigma) {
-                // mixed javascript and C++ code, will be implemented in a future...
-                /*if (!sigma) { sigma = 0.0; }
-                if (!kernel_size) { kernel_size = 0; }
-                kernel_size = kernel_size == 0 ? (std::max(1, (4.0 * sigma + 1.0 - 1e-8)) * 2 + 1)|0 : kernel_size;
-                int half_kernel = kernel_size >> 1;
-                int w = src->cols, h = src->rows;
-                int data_type = src->type, is_u8 = data_type & Types::U8_t;
+  void gaussian_blur(matrix_t *src, matrix_t *dst, int kernel_size, int sigma){
+      // mixed javascript and C++ code, will be implemented in a future...
+      /*if (!sigma) { sigma = 0.0; }
+      if (!kernel_size) { kernel_size = 0; }
+      kernel_size = kernel_size == 0 ? (std::max(1, (4.0 * sigma + 1.0 - 1e-8))
+      * 2 + 1)|0 : kernel_size; int half_kernel = kernel_size >> 1; int w =
+      src->cols, h = src->rows; int data_type = src->type, is_u8 = data_type &
+      Types::U8_t;
 
-                dst->resize(w, h, src->channel);
+      dst->resize(w, h, src->channel);
 
-                u_char* src_d = src->dt->u8.data();
-                u_char* dst_d = dst->dt->u8.data();
-                //var buf,filter,buf_sz=(kernel_size + Math.max(h, w))|0;
-                int buf_sz=(kernel_size + std::max(h, w))|0;
-                //var buf_node = jsfeat.cache.get_buffer(buf_sz<<2);
-                //var filt_node = jsfeat.cache.get_buffer(kernel_size<<2);
+      u_char* src_d = src->dt->u8.data();
+      u_char* dst_d = dst->dt->u8.data();
+      //var buf,filter,buf_sz=(kernel_size + Math.max(h, w))|0;
+      int buf_sz=(kernel_size + std::max(h, w))|0;
+      //var buf_node = jsfeat.cache.get_buffer(buf_sz<<2);
+      //var filt_node = jsfeat.cache.get_buffer(kernel_size<<2);
 
-                if(is_u8) {
-                    //buf = buf_node.i32;
-                    Array<int> buf(buf_sz<<2);
-                    //filter = filt_node.i32;
-                    Array<int> filter(kernel_size<<2);               
-                } else if(data_type & Types::S32_t) {
-                    //buf = buf_node.i32;
-                    Array<int> buf(buf_sz<<2);
-                    //filter = filt_node.f32;
-                    Array<float> filter(kernel_size<<2); 
-                } else {
-                    //buf = buf_node.f32;
-                    Array<float> buf(buf_sz<<2);
-                    //filter = filt_node.f32;
-                    Array<float> filter(kernel_size<<2); 
-                }
+      if(is_u8) {
+          //buf = buf_node.i32;
+          Array<int> buf(buf_sz<<2);
+          //filter = filt_node.i32;
+          Array<int> filter(kernel_size<<2);
+      } else if(data_type & Types::S32_t) {
+          //buf = buf_node.i32;
+          Array<int> buf(buf_sz<<2);
+          //filter = filt_node.f32;
+          Array<float> filter(kernel_size<<2);
+      } else {
+          //buf = buf_node.f32;
+          Array<float> buf(buf_sz<<2);
+          //filter = filt_node.f32;
+          Array<float> filter(kernel_size<<2);
+      }
 
-                jsfeat.math.get_gaussian_kernel(kernel_size, sigma, filter, data_type);
+      jsfeat.math.get_gaussian_kernel(kernel_size, sigma, filter, data_type);
 
-                if(is_u8) {
-                    _convol_u8(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
-                } else {
-                    _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
-                }
+      if(is_u8) {
+          _convol_u8(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
+      } else {
+          _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
+      }
 
-                jsfeat.cache.put_buffer(buf_node);
-                jsfeat.cache.put_buffer(filt_node);*/
-            };
+      jsfeat.cache.put_buffer(buf_node);
+      jsfeat.cache.put_buffer(filt_node);*/
+  };
 
 private:
-// a is src matrix, b is dst matrix
+  // a is src matrix, b is dst matrix
   void _resample_u8(matrix_t *src, matrix_t *dst, int nw, int nh) {
     int h = src->rows, w = src->cols;
     assert(src->cols > 0 && dst->cols > 0);
@@ -456,8 +455,8 @@ private:
     Array<u_int> buf(dst->cols * ch);
     Array<u_int> sum(dst->cols * ch);
     for (dx = 0; dx < dst->cols * ch; dx++) {
-       buf[dx] = sum[dx] = 0;
-    } 
+      buf[dx] = sum[dx] = 0;
+    }
     dy = 0;
     for (sy = 0; sy < src->rows; sy++) {
       a = w * sy;
@@ -473,7 +472,7 @@ private:
             (int)((std::max(sy + 1 - (dy + 1) * scale_y, 0.)) * 256);
         unsigned int beta1 = 256 - beta;
         b = nw * dy;
-        Array<u_char> b_ptr = dst->u8;// + b->step  * dy;
+        Array<u_char> b_ptr = dst->u8; // + b->step  * dy;
         if (beta <= 0) {
           for (dx = 0; dx < dst->cols * ch; dx++) {
             b_ptr[b + dx] =
@@ -482,8 +481,8 @@ private:
           }
         } else {
           for (dx = 0; dx < dst->cols * ch; dx++) {
-            b_ptr[b + dx] =
-                jsfeat_clamp((sum[dx] + buf[dx] * beta1) / inv_scale_256, 0, 255);
+            b_ptr[b + dx] = jsfeat_clamp(
+                (sum[dx] + buf[dx] * beta1) / inv_scale_256, 0, 255);
             sum[dx] = buf[dx] * beta;
             buf[dx] = 0;
           }
