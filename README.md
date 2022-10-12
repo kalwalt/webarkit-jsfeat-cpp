@@ -8,7 +8,9 @@ For now only **matrix_t** and the **imgproc** classes with some grayscale method
 ## Libs
 Libs are stored in `build` folder: 
 - **jsfeatcpp.js** the Release lib.
+- **jsfeatES6cpp.js** the ES6 Release lib.
 - **jsfeatcpp_debug.js** the Debug lib.
+- **jsfeatES6cpp_debug.js** the ES6 Debug lib.
 ## Usage
 You can import the libs as a ES6 module in a script tag:
 
@@ -20,12 +22,36 @@ You can import the libs as a ES6 module in a script tag:
 
 There isn't a npm package yet, so this is the only way.
 
+or the non ES6 version :
+
+```html
+ <script src="../build/jsfeatcpp.js"></script>
+```
+
+but the Module object will be available only when it is full loaded, so wrap your code into the listener:
+
+```js
+window.addEventListener('jsfeatCpp-loaded', function (e) {
+    //your code here...
+    })
+```
+
+
+
+
 ## Examples
 Take a look at our examples in the examples folder:
 
 - matrix_t_test.html
 - grayscale_example.html
 - grayscale_m_example.html
+- grayscale_video_example.html
+- keypoint_t_test.html
+- matrix_t_test.html
+- orb_test.html
+- pyrdown_video_example.html
+- resample_video_example.html
+- sample_orb_mixed.html
 
 Both examples use the debug version of the lib but, of course you can use the non-debug version as well.
 
