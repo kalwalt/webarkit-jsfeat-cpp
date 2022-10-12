@@ -90,7 +90,7 @@
                     imgproc.resample(img_u8.getPointer(), img_res_u8.getPointer(), 320, 240);
                     var data_u32 = new Uint32Array(image_data.data.buffer);
                     // we convert to mono gray image, check both methods
-                    render_mono_image(img_res_u8.data, data_u32, width, height, 640)
+                    render_mono_image(img_res_u8.data, data_u32, 320, 240, 320)
                     //moveBytes(img_u8.data, image_data.data, width, height);
                     ctx.putImageData(image_data, 0, 0);
                     requestAnimationFrame(process);
