@@ -2,6 +2,7 @@
 #include <types/types.h>
 #include <imgproc/imgproc.h>
 #include <stdlib.h>
+#include <cache/Cache.h>
 
 using namespace jsfeat;
 
@@ -22,4 +23,9 @@ int main() {
   std::cout << "type " << test.type << std::endl;
   std::cout << "channel " << test.channel << std::endl;
   std::cout << "first el: " << (int)test.u8[0] << std::endl;
+  Cache<3> c;
+  c.put_buffer(20, 0x0100 | 0x01);
+  std::optional<data_t> d = c.get("buffer_0");
+  d->u8[0] = 120;
+  std::cout << (int)d->u8[0] << std::endl;
 }
