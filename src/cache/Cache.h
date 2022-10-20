@@ -1,5 +1,6 @@
 #include <cache/LRUCache.h>
 #include <node_utils/data_t.h>
+#include <node_utils/functions.h>
 #include <string>
 namespace jsfeat {
 template <size_t Capacity>
