@@ -8,8 +8,8 @@
 #endif
 namespace jsfeat {
 
-typedef unsigned char u_char;
-typedef unsigned int u_int;
+using u_char = unsigned char;
+using u_int = unsigned int;
 template <typename T> using Array = std::vector<T>;
 
 #ifdef __EMSCRIPTEN__
