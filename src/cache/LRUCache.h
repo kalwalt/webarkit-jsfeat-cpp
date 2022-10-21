@@ -1,3 +1,6 @@
+#ifndef LRUCACHE_H
+#define LRUCACHE_H
+
 #include <list>
 #include <optional>
 #include <unordered_map>
@@ -49,7 +52,7 @@ public:
   }
 
   // Erases an item
-   void erase(const K &k) {
+  void erase(const K &k) {
     auto itr = index.find(k);
     if (itr == index.end()) {
       return;
@@ -70,3 +73,5 @@ private:
   // unordered_map acts as an index to the items store above.
   std::unordered_map<K, typename std::list<std::pair<K, V>>::iterator> index;
 };
+
+#endif
