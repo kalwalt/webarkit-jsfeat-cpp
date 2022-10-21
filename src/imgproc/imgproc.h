@@ -6,6 +6,7 @@
 #include <emscripten/val.h>
 #endif
 #include <algorithm>
+#include <cache/Cache.h>
 #include <cassert>
 #include <jslog/jslog.h>
 #include <matrix_t/matrix_t.h>
@@ -30,6 +31,8 @@ typedef struct {
 
 class imgproc {
 public:
+  Cache<3> cache;
+
   void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {
     auto ptrSrc = reinterpret_cast<matrix_t *>(src);
     auto ptrDst = reinterpret_cast<matrix_t *>(dst);
@@ -178,20 +181,18 @@ public:
       sline = sptr;
       dline = dptr;
       for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
-        dst->u8[dline] =
-            (src->u8[sline] + src->u8[sline + 1] + src->u8[sline + w] +
-             src->u8[sline + w + 1] + 2) >>
-            2;
+        dst->u8[dline] = (src->u8[sline] + src->u8[sline + 1] +
+                          src->u8[sline + w] + src->u8[sline + w + 1] + 2) >>
+                         2;
         dst->u8[dline + 1] =
-            (src->u8[sline + 2] + src->u8[sline + 3] +
-             src->u8[sline + w + 2] + src->u8[sline + w + 3] + 2) >>
+            (src->u8[sline + 2] + src->u8[sline + 3] + src->u8[sline + w + 2] +
+             src->u8[sline + w + 3] + 2) >>
             2;
       }
       for (; x < _w2; ++x, ++dline, sline += 2) {
-        dst->u8[dline] =
-            (src->u8[sline] + src->u8[sline + 1] + src->u8[sline + w] +
-             src->u8[sline + w + 1] + 2) >>
-            2;
+        dst->u8[dline] = (src->u8[sline] + src->u8[sline + 1] +
+                          src->u8[sline + w] + src->u8[sline + w + 1] + 2) >>
+                         2;
       }
       sptr += w << 1;
       dptr += w2;
@@ -235,6 +236,38 @@ public:
       dptr += w2;
     }
   };
+  void equalize_histogram_internal(matrix_t *src, matrix_t *dst) {
+    auto w = src->cols, h = src->rows;
+
+    dst->resize(w, h, src->channel);
+
+    auto size = w * h;
+    auto i = 0, prev = 0;
+
+    auto hist0 = cache.put_buffer(256 << 2, Types::S32_t | Types::C1_t);
+
+    for (; i < 256; ++i)
+      hist0->i32[i] = 0;
+    for (i = 0; i < size; ++i) {
+      ++hist0->i32[src->u8[i]];
+    }
+
+    prev = hist0->i32[0];
+    for (i = 1; i < 256; ++i) {
+      prev = hist0->i32[i] += prev;
+    }
+
+    auto norm = 255 / size;
+    for (i = 0; i < size; ++i) {
+      dst->u8[i] = (unsigned char)(hist0->i32[src->u8[i]] * norm + 0.5) | 0;
+    }
+    // to do: buffer should be put down the head...
+  };
+  void equalize_histogram(uintptr_t inputSrc, uintptr_t inputDst) {
+    auto src = reinterpret_cast<matrix_t *>(inputSrc);
+    auto dst = reinterpret_cast<matrix_t *>(inputDst);
+    this->equalize_histogram_internal(src, dst);
+  }
   void warp_affine_internal(matrix_t *src, matrix_t *dst, matrix_t *transform,
                             int fill_value) {
     if (!fill_value) {
