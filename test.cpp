@@ -25,4 +25,10 @@ int main() {
   std::optional<data_t> d = c.put_buffer(20, 0x0100 | 0x01);
   d->u8[0] = 120;
   std::cout << (int)d->u8[0] << std::endl;
+  c.back_buffer();
+  d->u8.clear();
+  std::cout << "vector cleared" << std::endl;
+  // data are not cleared...
+  std::cout << (int)d->u8[0] << std::endl;
+
 }

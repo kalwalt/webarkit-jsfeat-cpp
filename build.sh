@@ -50,8 +50,8 @@ else
 fi
 
 if [ $BUILD_LINUX ] ; then
-  g++ -Isrc test.cpp -o test
-  g++ -Isrc test.cpp -g -o test_d
+  g++ -std=gnu++17 -Isrc test.cpp -o test
+  g++ -std=gnu++17 -Isrc test.cpp -g -o test_d
 fi
 
 if [ $BUILD_EM ]; then 

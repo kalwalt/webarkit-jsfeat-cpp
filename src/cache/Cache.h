@@ -2,6 +2,7 @@
 #define CACHE_H
 
 #include <cache/LRUCache.h>
+#include <jslog/jslog.h>
 #include <node_utils/data_t.h>
 #include <node_utils/functions.h>
 #include <optional>
@@ -21,6 +22,18 @@ public:
     counter++;
     std::optional<data_t> dt = this->get(buffer_count);
     return dt;
+  }
+  bool back_buffer() {
+    std::string buffer_count = buffer + std::to_string(--counter);
+    bool res = this->back(buffer_count);
+#ifdef DEBUG_EM
+    if (res == true) {
+      JSLOGd("%s is back!", buffer_count.c_str());
+    } else {
+      JSLOGd("%s is not back...", buffer_count.c_str());
+    }
+#endif
+    return res;
   }
   ~Cache() {
 #ifdef DEBUG_EM

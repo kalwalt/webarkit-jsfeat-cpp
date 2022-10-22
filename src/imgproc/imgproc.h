@@ -13,6 +13,7 @@
 #include <node_utils/functions.h>
 #include <types/types.h>
 #include <vector>
+#include <cmath>
 
 namespace jsfeat {
 
@@ -236,40 +237,8 @@ public:
       dptr += w2;
     }
   };
+
   void equalize_histogram_internal(matrix_t *src, matrix_t *dst) {
-    auto w = src->cols, h = src->rows;
-
-    dst->resize(w, h, src->channel);
-
-    auto size = w * h;
-    auto i = 0, prev = 0;
-
-    auto hist0 = cache.put_buffer(256 << 2, Types::S32_t | Types::C1_t);
-
-    // for (; i < 256; ++i)
-    //   hist0->i32[i] = 0;
-    for (i = 0; i < size; ++i) {
-      //++hist0->i32[src->u8[i]];
-      hist0->i32[src->u8[i]] = ++i;
-    }
-
-    prev = hist0->i32[0];
-    for (i = 1; i < 256; ++i) {
-      // prev = hist0->i32[i] += prev;
-      hist0->i32[i] += prev;
-      prev = hist0->i32[i];
-      std::cout << hist0->i32[i] << std::endl;
-    }
-
-    auto norm = 255 / size;
-    for (i = 0; i < size; ++i) {
-      // dst->u8[i] = (unsigned char)(hist0->i32[src->u8[i]] * norm + 0.5) | 0;
-      dst->u8[i] = (unsigned char)(hist0->i32[src->u8[i]] * norm + 0.5) | 0;
-    }
-    // to do: buffer should be put down the head...
-  };
-
-  void equalize_histogram_internal2(matrix_t *src, matrix_t *dst) {
     auto w = src->cols, h = src->rows;
 
     dst->resize(w, h, src->channel);
@@ -277,51 +246,48 @@ public:
     /* max_val must be 255 if we use unsigned char as input, this should be
        changed if we use another input type (short, int...)
      */
-    int max_val = 255;
+    const auto max_val = 255;
 
     int total = w * h;
-    int n_bins = max_val + 1;
+    auto n_bins = max_val + 1;
 
     // Compute histogram
-    std::vector<int> hist(n_bins, 0);
+    auto hist = cache.put_buffer(n_bins, Types::S32_t | Types::C1_t);
     for (int i = 0; i < total; ++i) {
-      // hist[pdata[i]]++;
-      hist[src->u8[i]]++;
+      hist->i32[src->u8[i]]++;
     }
 
     // Build LUT from cumulative histrogram
 
     // Find first non-zero bin
-    int i = 0;
-    while (!hist[i])
+    auto i = 0;
+    while (!hist->i32[i])
       ++i;
 
-    if (hist[i] == total) {
+    if (hist->i32[i] == total) {
       for (int j = 0; j < total; ++j) {
-        // pdata[j] = i;
         src->u8[j] = i;
       }
       return;
     }
 
     // Compute scale
-    float scale = (n_bins - 1.f) / (total - hist[i]);
+    float scale = (n_bins - 1.f) / (total - hist->i32[i]);
 
     // Initialize lut
-    std::vector<int> lut(n_bins, 0);
+    auto lut = cache.put_buffer(n_bins, Types::S32_t | Types::C1_t);
     i++;
 
-    int sum = 0;
-    for (; i < hist.size(); ++i) {
-      sum += hist[i];
+    auto sum = 0;
+    for (; i < hist->i32.size(); ++i) {
+      sum += hist->i32[i];
       // the value is saturated in range [0, max_val]
-      lut[i] = std::max(0, std::min(int(std::round(sum * scale)), max_val));
+      lut->i32[i] = std::max(0, std::min(int(std::round(sum * scale)), max_val));
     }
 
     // Apply equalization
     for (int i = 0; i < total; ++i) {
-      // pdata[i] = lut[pdata[i]];
-      dst->u8[i] = lut[src->u8[i]];
+      dst->u8[i] = lut->i32[src->u8[i]];
     }
     // to do: buffer should be put down the head...
   };
@@ -329,7 +295,7 @@ public:
   void equalize_histogram(uintptr_t inputSrc, uintptr_t inputDst) {
     auto src = reinterpret_cast<matrix_t *>(inputSrc);
     auto dst = reinterpret_cast<matrix_t *>(inputDst);
-    this->equalize_histogram_internal2(src, dst);
+    this->equalize_histogram_internal(src, dst);
   }
   void warp_affine_internal(matrix_t *src, matrix_t *dst, matrix_t *transform,
                             int fill_value) {

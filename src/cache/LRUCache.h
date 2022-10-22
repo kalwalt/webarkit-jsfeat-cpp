@@ -33,6 +33,18 @@ public:
     return true;
   }
 
+  bool back(const K &k) {
+    auto itr = index.find(k);
+    if (itr == index.end()) {
+      return false; // empty std::optional
+    }
+    /*Use list splice to transfer this item to
+     the last position, which makes the item
+     least-recently-used. Iterators still stay valid.*/
+    items.splice(items.end(), items, itr->second);
+    return true;
+  }
+
   /*Gets the value for a key.
    Returns empty std::optional if not found.
    The returned item becomes most-recently-used*/
