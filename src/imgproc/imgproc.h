@@ -6,12 +6,14 @@
 #include <emscripten/val.h>
 #endif
 #include <algorithm>
+#include <cache/Cache.h>
 #include <cassert>
 #include <jslog/jslog.h>
 #include <matrix_t/matrix_t.h>
 #include <node_utils/functions.h>
 #include <types/types.h>
 #include <vector>
+#include <cmath>
 
 namespace jsfeat {
 
@@ -30,6 +32,7 @@ typedef struct {
 
 class imgproc {
 public:
+
   void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {
     auto ptrSrc = reinterpret_cast<matrix_t *>(src);
     auto ptrDst = reinterpret_cast<matrix_t *>(dst);
@@ -178,20 +181,18 @@ public:
       sline = sptr;
       dline = dptr;
       for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
-        dst->u8[dline] =
-            (src->u8[sline] + src->u8[sline + 1] + src->u8[sline + w] +
-             src->u8[sline + w + 1] + 2) >>
-            2;
+        dst->u8[dline] = (src->u8[sline] + src->u8[sline + 1] +
+                          src->u8[sline + w] + src->u8[sline + w + 1] + 2) >>
+                         2;
         dst->u8[dline + 1] =
-            (src->u8[sline + 2] + src->u8[sline + 3] +
-             src->u8[sline + w + 2] + src->u8[sline + w + 3] + 2) >>
+            (src->u8[sline + 2] + src->u8[sline + 3] + src->u8[sline + w + 2] +
+             src->u8[sline + w + 3] + 2) >>
             2;
       }
       for (; x < _w2; ++x, ++dline, sline += 2) {
-        dst->u8[dline] =
-            (src->u8[sline] + src->u8[sline + 1] + src->u8[sline + w] +
-             src->u8[sline + w + 1] + 2) >>
-            2;
+        dst->u8[dline] = (src->u8[sline] + src->u8[sline + 1] +
+                          src->u8[sline + w] + src->u8[sline + w + 1] + 2) >>
+                         2;
       }
       sptr += w << 1;
       dptr += w2;
@@ -235,6 +236,66 @@ public:
       dptr += w2;
     }
   };
+
+  void equalize_histogram_internal(matrix_t *src, matrix_t *dst) {
+    auto w = src->cols, h = src->rows;
+
+    dst->resize(w, h, src->channel);
+
+    /* max_val must be 255 if we use unsigned char as input, this should be
+       changed if we use another input type (short, int...)
+     */
+    const auto max_val = 255;
+
+    int total = w * h;
+    auto n_bins = max_val + 1;
+
+    // Compute histogram
+    auto hist = cache.put_buffer(n_bins, Types::S32_t | Types::C1_t);
+    for (int i = 0; i < total; ++i) {
+      hist->i32[src->u8[i]]++;
+    }
+
+    // Build LUT from cumulative histrogram
+
+    // Find first non-zero bin
+    auto i = 0;
+    while (!hist->i32[i])
+      ++i;
+
+    if (hist->i32[i] == total) {
+      for (int j = 0; j < total; ++j) {
+        src->u8[j] = i;
+      }
+      return;
+    }
+
+    // Compute scale
+    float scale = (n_bins - 1.f) / (total - hist->i32[i]);
+
+    // Initialize lut
+    auto lut = cache.put_buffer(n_bins, Types::S32_t | Types::C1_t);
+    i++;
+
+    auto sum = 0;
+    for (; i < hist->i32.size(); ++i) {
+      sum += hist->i32[i];
+      // the value is saturated in range [0, max_val]
+      lut->i32[i] = std::max(0, std::min(int(std::round(sum * scale)), max_val));
+    }
+
+    // Apply equalization
+    for (int i = 0; i < total; ++i) {
+      dst->u8[i] = lut->i32[src->u8[i]];
+    }
+    // to do: buffer should be put down the head...
+  };
+
+  void equalize_histogram(uintptr_t inputSrc, uintptr_t inputDst) {
+    auto src = reinterpret_cast<matrix_t *>(inputSrc);
+    auto dst = reinterpret_cast<matrix_t *>(inputDst);
+    this->equalize_histogram_internal(src, dst);
+  }
   void warp_affine_internal(matrix_t *src, matrix_t *dst, matrix_t *transform,
                             int fill_value) {
     if (!fill_value) {
