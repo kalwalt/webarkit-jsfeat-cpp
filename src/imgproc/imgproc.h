@@ -32,7 +32,6 @@ typedef struct {
 
 class imgproc {
 public:
-  Cache<3> cache;
 
   void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {
     auto ptrSrc = reinterpret_cast<matrix_t *>(src);

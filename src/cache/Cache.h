@@ -46,7 +46,9 @@ private:
   std::string buffer{"buffer_"};
   int type{0};
 };
-
+/* We create an instance of the Cache class inside the namespace, so let include
+the header to make available when it is needed */
+Cache<30> cache;
 } // namespace jsfeat
 
 #endif // end of
