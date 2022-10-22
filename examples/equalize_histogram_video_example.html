@@ -85,7 +85,6 @@
                     ctx.drawImage(video, 0, 0, width, height);
                     var image_data = ctx.getImageData(0, 0, width, height);
                     var img_u8 = new jsfeatCpp.matrix_t(width, height, U8_t | C1_t);
-                    //var dst_u8 = new jsfeatCpp.matrix_t(width, height, U8_t | C1_t);
                     imgproc.grayscale(image_data.data, width, height, img_u8.getPointer(), COLOR_RGBA2GRAY);
                     imgproc.equalize_histogram(img_u8.getPointer(), img_u8.getPointer());
                     var data_u32 = new Uint32Array(image_data.data.buffer);
