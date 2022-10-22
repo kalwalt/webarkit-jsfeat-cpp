@@ -22,8 +22,9 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     class_<imgproc>("imgproc")
     .constructor<>()
     .function("grayscale", &imgproc::grayscale, allow_raw_pointer<matrix_t>())
-    .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<matrix_t>(),  allow_raw_pointer<matrix_t>())
+    .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<matrix_t>(), allow_raw_pointer<matrix_t>())
     .function("pyrdown", &imgproc::pyrdown, allow_raw_pointer<matrix_t>())
+    .function("equalize_histogram", &imgproc::equalize_histogram, allow_raw_pointer<matrix_t>())
     .function("warp_affine", &imgproc::warp_affine, allow_raw_pointer<matrix_t>())
     .function("resample", select_overload<void(uintptr_t, uintptr_t, int, int)>(&imgproc::resample));
 
