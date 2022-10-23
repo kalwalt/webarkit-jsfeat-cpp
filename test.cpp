@@ -42,4 +42,10 @@ int main() {
   for (int &v : res)
     std::cout << v << " ";
     std::cout << std::endl;
+  std::vector<int> res2 = mat1.sort_internal<int>(vec, 0, vec.size() - 1);
+  // It should print sorted numbers: 4, 7, 9, 17, 21,
+  std::cout << "Sorted numbers:" << std::endl;
+  for (std::vector<int>::iterator it=res2.begin(); it!=res2.end(); ++it)
+    std::cout << *it << " ";
+    std::cout << '\n';
 }

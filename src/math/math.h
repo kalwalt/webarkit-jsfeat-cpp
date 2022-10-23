@@ -1,6 +1,7 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include <algorithm>
 #include <cstddef>
 #include <types/types.h>
 
@@ -13,15 +14,15 @@ public:
     auto isort_thresh = 7;
     int t, ta, tb, tc;
     auto sp = 0, left = 0, right = 0, i = 0, n = 0, m = 0, ptr = 0, ptr2 = 0,
-        d = 0;
+         d = 0;
     auto left0 = 0, left1 = 0, right0 = 0, right1 = 0, pivot = 0, a = 0, b = 0,
-        c = 0, swap_cnt = 0;
+         c = 0, swap_cnt = 0;
 
     auto stack = qsort_stack;
 
     if ((high - low + 1) <= 1) {
-        return array;
-    } 
+      return array;
+    }
 
     stack[0] = low;
     stack[1] = high;
@@ -137,7 +138,6 @@ public:
             break;
           }
 
-          //n = Math.min((left1 - left0), (left - left1));
           n = std::min((left1 - left0), (left - left1));
           m = (left - n) | 0;
           for (i = 0; i < n; ++i, ++m) {
@@ -146,7 +146,6 @@ public:
             array[m] = t;
           }
 
-          //n = Math.min((right0 - right1), (right1 - right));
           n = std::min((right0 - right1), (right1 - right));
           m = (right0 - n + 1) | 0;
           for (i = 0; i < n; ++i, ++m) {
@@ -179,9 +178,12 @@ public:
         }
       }
     }
-    /*for (int &ar: array)
-    std::cout << ar << std::endl;*/
     return array;
+  }
+  template <typename A>
+  Array<A> sort_internal(Array<A> array, size_t low, size_t high) {
+    std::sort(array.begin()+low, array.begin()+high);
+  return array;
   }
 
 private:
