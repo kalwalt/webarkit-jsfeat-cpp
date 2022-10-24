@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <types/types.h>
+#include <utility>
 
 namespace jsfeat {
 class Math {
@@ -41,9 +42,7 @@ public:
           for (ptr = left + 1; ptr <= right; ptr++) {
             for (ptr2 = ptr; ptr2 > left && cmp(array[ptr2], array[ptr2 - 1]);
                  ptr2--) {
-              t = array[ptr2];
-              array[ptr2] = array[ptr2 - 1];
-              array[ptr2 - 1] = t;
+              std::swap(array[ptr2], array[ptr2 - 1]);
             }
           }
           break;
@@ -77,9 +76,7 @@ public:
           pivot = cmp(ta, tb) ? (cmp(tb, tc) ? b : (cmp(ta, tc) ? c : a))
                               : (cmp(tc, tb) ? b : (cmp(ta, tc) ? a : c));
           if (pivot != left0) {
-            t = array[pivot];
-            array[pivot] = array[left0];
-            array[left0] = t;
+            std::swap(array[pivot], array[left0]);
             pivot = left0;
           }
           left = left1 = left0 + 1;
@@ -90,9 +87,7 @@ public:
             while (left <= right && !cmp(ta, array[left])) {
               if (!cmp(array[left], ta)) {
                 if (left > left1) {
-                  t = array[left1];
-                  array[left1] = array[left];
-                  array[left] = t;
+                  std::swap(array[left1], array[left]);
                 }
                 swap_cnt = 1;
                 left1++;
@@ -103,9 +98,7 @@ public:
             while (left <= right && !cmp(array[right], ta)) {
               if (!cmp(ta, array[right])) {
                 if (right < right1) {
-                  t = array[right1];
-                  array[right1] = array[right];
-                  array[right] = t;
+                  std::swap(array[right1], array[right]);
                 }
                 swap_cnt = 1;
                 right1--;
@@ -116,9 +109,7 @@ public:
             if (left > right)
               break;
 
-            t = array[left];
-            array[left] = array[right];
-            array[right] = t;
+            std::swap(array[left], array[right]);
             swap_cnt = 1;
             left++;
             right--;
@@ -141,17 +132,13 @@ public:
           n = std::min((left1 - left0), (left - left1));
           m = (left - n) | 0;
           for (i = 0; i < n; ++i, ++m) {
-            t = array[left0 + i];
-            array[left0 + i] = array[m];
-            array[m] = t;
+            std::swap(array[left0 + i], array[m]);
           }
 
           n = std::min((right0 - right1), (right1 - right));
           m = (right0 - n + 1) | 0;
           for (i = 0; i < n; ++i, ++m) {
-            t = array[left + i];
-            array[left + i] = array[m];
-            array[m] = t;
+            std::swap(array[left + i], array[m]);
           }
           n = (left - left1);
           m = (right1 - right);
