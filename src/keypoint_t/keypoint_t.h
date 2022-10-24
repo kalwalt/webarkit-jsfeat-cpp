@@ -38,7 +38,9 @@ public:
   auto getLevel() const { return this->level; }
   auto setAngle(float angle) { this->angle = angle; }
   auto getAngle() const { return this->angle; }
+  #ifdef __EMSCRIPTEN__
   auto getPointer() { return reinterpret_cast<int>(this); }
+  #endif
 };
 
 #endif
