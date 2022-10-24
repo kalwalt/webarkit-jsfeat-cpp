@@ -60,6 +60,6 @@ int main() {
   matrix_t *yp = new matrix_t(20, 20, 0x0100 | 0x04);
   yp->allocate();
   Array<keypoint_t> k;
-  int count = yape06.detect(yp, k, 5);
+  int count = yape06.detect_internal(yp, k, 5);
   std::cout << "points no.: " << count << std::endl;
 }

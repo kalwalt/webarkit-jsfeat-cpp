@@ -3,4 +3,5 @@
 #include <matrix_t/matrix_t.h>
 #include <orb/orb.h>
 #include <pyramid_t/pyramid_t.h>
+#include <yape06/yape06.h>
 #include <types/types.h>
