@@ -6,6 +6,10 @@
 #include <matrix_t/matrix_t.h>
 #include <types/types.h>
 #include <yape06/yape06_utils.h>
+#include <jslog/jslog.h>
+#ifdef __EMSCRIPTEN__
+#include <emscripten/val.h>
+#endif
 
 namespace jsfeat {
 
@@ -17,7 +21,11 @@ public:
     laplacian_threshold = 30;
     min_eigen_value_threshold = 25;
   }
-  auto detect(matrix_t *src, Array<keypoint_t> points, int border) {
+  Yape06(int laplacian, int min_eigen) {
+    laplacian_threshold = laplacian;
+    min_eigen_value_threshold = min_eigen;
+  }
+  auto detect_internal(matrix_t *src, Array<keypoint_t> points, int border) {
     if (!border) {
       border = 5;
     }
@@ -78,6 +86,20 @@ public:
 
     return number_of_points;
   }
+   auto detect(uintptr_t inputSrc,Array<keypoint_t> &points, int border) {
+    auto src = reinterpret_cast<matrix_t *>(inputSrc);
+    return detect_internal(src, points, border);
+  }
+  //getters and setters
+  auto getLaplacianThreshold() const { return laplacian_threshold; };
+  auto getMinEigenValueThreshold() const { return min_eigen_value_threshold; }
+  auto setLaplacianThreshold(int laplacian_value) { laplacian_threshold = laplacian_value; }
+  auto setMinEigenValueThreshold( int threshold_value) {min_eigen_value_threshold = threshold_value; }
+~Yape06(){
+    #ifdef __EMSCRIPTEN__
+    JSLOGd("deleting Yape06");
+    #endif
+}
 };
 
 } // namespace jsfeat
