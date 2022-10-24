@@ -44,7 +44,7 @@ public:
     while (--x >= 0) {
       laplacian[x] = 0;
     }
-    compute_laplacian(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex, ey);
+    compute_laplacian<u_char, int>(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex, ey);
 
     row = (sy * w + sx) | 0;
     for (y = sy; y < ey; ++y, row += w) {
@@ -63,7 +63,7 @@ public:
              lv > laplacian[rowx + w + 1])) {
 
           min_eigen_value =
-              hessian_min_eigen_value(srd_d, rowx, lv, Dxx, Dyy, Dxy, Dyx);
+              hessian_min_eigen_value<u_char>(srd_d, rowx, lv, Dxx, Dyy, Dxy, Dyx);
           if (min_eigen_value > eigen_thresh) {
             auto pt = points[number_of_points];
             pt.x = x, pt.y = y, pt.score = min_eigen_value;
