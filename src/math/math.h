@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional>
 #include <types/types.h>
 #include <utility>
 
@@ -167,9 +168,9 @@ public:
     }
     return array;
   }
-  template <typename A>
+  template <typename A, typename Compare = std::less<A>>
   Array<A> sort_internal(Array<A> array, size_t low, size_t high) {
-    std::sort(array.begin()+low, array.begin()+high);
+    std::sort(array.begin()+low, array.begin()+high, Compare());
   return array;
   }
 

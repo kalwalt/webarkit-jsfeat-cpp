@@ -1,4 +1,5 @@
 #include <cache/Cache.h>
+#include <functional>
 #include <imgproc/imgproc.h>
 #include <math/math.h>
 #include <matrix_t/matrix_t.h>
@@ -37,14 +38,14 @@ int main() {
   Math mat1;
   std::vector<int> vec{17, 9, 4, 7, 21};
   std::vector<int> res = mat1.qsort_internal<int>(vec, 0, vec.size() - 1, myfunction);
-  // It should print sorted numbers: 4, 7, 9, 17, 21,
-  std::cout << "Sorted numbers:" << std::endl;
+  // It should print sorted numbers: 4, 7, 9, 17, 21.
+  std::cout << "Sorted numbers with qsort_internal():" << std::endl;
   for (int &v : res)
     std::cout << v << " ";
     std::cout << std::endl;
-  std::vector<int> res2 = mat1.sort_internal<int>(vec, 0, vec.size() - 1);
-  // It should print sorted numbers: 4, 7, 9, 17, 21,
-  std::cout << "Sorted numbers:" << std::endl;
+  std::vector<int> res2 = mat1.sort_internal<int, std::greater<int>>(vec, 0, vec.size());
+  // It should print sorted numbers: 21, 17, 9, 7, 4.
+  std::cout << "Sorted numbers with sort_internal():" << std::endl;
   for (std::vector<int>::iterator it=res2.begin(); it!=res2.end(); ++it)
     std::cout << *it << " ";
     std::cout << '\n';
