@@ -1,7 +1,8 @@
 #include <types/types.h>
 
 namespace jsfeat {
-auto compute_laplacian(Array<u_char> src, Array<int> dst, int w, int h, int Dxx,
+template <typename A, typename B>
+auto compute_laplacian(Array<A> src, Array<B> dst, int w, int h, int Dxx,
                        int Dyy, int sx, int sy, int ex, int ey) {
   auto y = 0, x = 0, yrow = (sy * w + sx) | 0, row = yrow;
 
@@ -12,8 +13,9 @@ auto compute_laplacian(Array<u_char> src, Array<int> dst, int w, int h, int Dxx,
     }
   }
 }
-auto hessian_min_eigen_value(Array<u_char> src, int off, int tr, int Dxx,
-                             int Dyy, int Dxy, int Dyx) {
+template <typename A>
+auto hessian_min_eigen_value(Array<A> src, int off, int tr, int Dxx, int Dyy,
+                             int Dxy, int Dyx) {
   auto Ixx = -2 * src[off] + src[off + Dxx] + src[off - Dxx];
   auto Iyy = -2 * src[off] + src[off + Dyy] + src[off - Dyy];
   auto Ixy = src[off + Dxy] + src[off - Dxy] - src[off + Dyx] - src[off - Dyx];
