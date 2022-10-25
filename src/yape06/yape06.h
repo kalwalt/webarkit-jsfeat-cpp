@@ -2,11 +2,11 @@
 #define YAPE06_H
 
 #include <cache/Cache.h>
+#include <jslog/jslog.h>
 #include <keypoint_t/keypoint_t.h>
 #include <matrix_t/matrix_t.h>
 #include <types/types.h>
 #include <yape06/yape06_utils.h>
-#include <jslog/jslog.h>
 #ifdef __EMSCRIPTEN__
 #include <emscripten/val.h>
 #endif
@@ -52,7 +52,8 @@ public:
     while (--x >= 0) {
       laplacian[x] = 0;
     }
-    compute_laplacian<u_char, int>(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex, ey);
+    compute_laplacian<u_char, int>(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex,
+                                   ey);
 
     row = (sy * w + sx) | 0;
     for (y = sy; y < ey; ++y, row += w) {
@@ -70,8 +71,8 @@ public:
              lv > laplacian[rowx + w - 1] && lv > laplacian[rowx - w + 1] &&
              lv > laplacian[rowx + w + 1])) {
 
-          min_eigen_value =
-              hessian_min_eigen_value<u_char>(srd_d, rowx, lv, Dxx, Dyy, Dxy, Dyx);
+          min_eigen_value = hessian_min_eigen_value<u_char>(srd_d, rowx, lv,
+                                                            Dxx, Dyy, Dxy, Dyx);
           if (min_eigen_value > eigen_thresh) {
             auto pt = points[number_of_points];
             pt.x = x, pt.y = y, pt.score = min_eigen_value;
@@ -86,20 +87,37 @@ public:
 
     return number_of_points;
   }
-   auto detect(uintptr_t inputSrc,Array<keypoint_t> &points, int border) {
+  auto detect(uintptr_t inputSrc, Array<KPoint_t> &pts, int border) {
     auto src = reinterpret_cast<matrix_t *>(inputSrc);
+    Array<keypoint_t> points;
+    auto size = pts.size();
+    keypoint_t kt(0, 0, 0, 0, 0.0);
+    points.assign(size, kt);
+    auto i = 0;
+    for (KPoint_t &p : pts) {
+      points[i].x = p.x;
+      points[i].y = p.y;
+      points[i].level = p.level;
+      points[i].score = p.score;
+      points[i].angle = p.angle;
+      i++;
+    }
     return detect_internal(src, points, border);
   }
-  //getters and setters
+  // getters and setters
   auto getLaplacianThreshold() const { return laplacian_threshold; };
   auto getMinEigenValueThreshold() const { return min_eigen_value_threshold; }
-  auto setLaplacianThreshold(int laplacian_value) { laplacian_threshold = laplacian_value; }
-  auto setMinEigenValueThreshold( int threshold_value) {min_eigen_value_threshold = threshold_value; }
-~Yape06(){
-    #ifdef __EMSCRIPTEN__
+  auto setLaplacianThreshold(int laplacian_value) {
+    laplacian_threshold = laplacian_value;
+  }
+  auto setMinEigenValueThreshold(int threshold_value) {
+    min_eigen_value_threshold = threshold_value;
+  }
+  ~Yape06() {
+#ifdef __EMSCRIPTEN__
     JSLOGd("deleting Yape06");
-    #endif
-}
+#endif
+  }
 };
 
 } // namespace jsfeat
