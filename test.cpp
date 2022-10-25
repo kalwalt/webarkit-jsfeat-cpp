@@ -62,4 +62,8 @@ int main() {
   Array<keypoint_t> k;
   int count = yape06.detect_internal(yp, k, 5);
   std::cout << "points no.: " << count << std::endl;
+  Array<keypoint_t> points;
+  keypoint_t kt(0, 0, 0, 0, 0.0);
+    points.assign(5, kt);
+  std::cout << points[0].x << std::endl;
 }

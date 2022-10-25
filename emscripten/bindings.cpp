@@ -5,7 +5,7 @@ using namespace emscripten;
 
 EMSCRIPTEN_BINDINGS(webarkit) {
     register_vector<std::vector<u_char>>("vector_u_char");
-    register_vector<std::vector<keypoint_t>>("vector_keypoint_t");
+    register_vector<KPoint_t>("vector_kpoint_t");
 
     class_<matrix_t>("matrix_t")
     .constructor<int, int, int, emscripten::val>()
@@ -83,11 +83,11 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .field("channels", &_Mat_t::channels)
     .field("data", &_Mat_t::data);
 
-    /*value_object<keypoint_t>("keypoint_t")
-    .field("x", &keypoint_t::x)
-    .field("y", &keypoint_t::y)
-    .field("score", &keypoint_t::score)
-    .field("level", &keypoint_t::level)
-    .field("angle", &keypoint_t::angle);*/
+    value_object<KPoint_t>("KPoint_t")
+    .field("x", &KPoint_t::x)
+    .field("y", &KPoint_t::y)
+    .field("score", &KPoint_t::score)
+    .field("level", &KPoint_t::level)
+    .field("angle", &KPoint_t::angle);
 
 };
