@@ -52,17 +52,14 @@ public:
     while (--x >= 0) {
       laplacian[x] = 0;
     }
-    compute_laplacian<u_char, int>(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex,
-                                   ey);
+    compute_laplacian<u_char, int>(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex, ey);
 
-    //row = (sy * w + sx) | 0;
-    row = (sy * w + sx);
+    row = (sy * w + sx) | 0;
     for (y = sy; y < ey; ++y, row += w) {
       for (x = sx, rowx = row; x < ex; ++x, ++rowx) {
 
         lv = laplacian[rowx];
-        //JSLOGi("lv is %d", lv);
-        //std::cout << "lv is: " << lv << std::endl;
+
         if ((lv < -lap_thresh && lv < laplacian[rowx - 1] &&
              lv < laplacian[rowx + 1] && lv < laplacian[rowx - w] &&
              lv < laplacian[rowx + w] && lv < laplacian[rowx - w - 1] &&
@@ -88,16 +85,22 @@ public:
     }
 
     // this.cache.put_buffer(lap_buf);
-
     return number_of_points;
   }
   auto detect(uintptr_t inputSrc, emscripten::val inputPoints, int border) {
     auto src = reinterpret_cast<matrix_t *>(inputSrc);
     auto points = emscripten::vecFromJSArray<keypoint_t>(inputPoints);
-    /*for(auto i=0; i<points.size();i++) {
-      std::cout << "keypoints inside: "  << points[i].angle << std::endl;
-    }*/
-    return detect_internal(src, points, border);
+
+    auto count = detect_internal(src, points, border);
+    emscripten::val out = emscripten::val::object();
+    emscripten::val pointsArr = emscripten::val::array();
+    for(auto i = 0; i< points.size(); i++){
+      pointsArr.call<void>("push", points[i]);
+    }
+    out.set("count", count);
+    out.set("points", pointsArr);
+
+    return out;
   }
   // getters and setters
   auto getLaplacianThreshold() const { return laplacian_threshold; };
