@@ -10,7 +10,6 @@ auto compute_laplacian(Array<A> src, Array<B>& dst, int w, int h, int Dxx,
     for (x = sx; x < ex; ++x, ++row) {
       dst[row] = -4 * src[row] + src[row + Dxx] + src[row - Dxx] +
                  src[row + Dyy] + src[row - Dyy];
-      //std::cout << "dst is: " << dst[row] << std::endl;
     }
   }
 }
