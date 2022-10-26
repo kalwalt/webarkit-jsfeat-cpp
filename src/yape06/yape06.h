@@ -49,10 +49,10 @@ public:
     auto ey = std::min(h - 3, h - border) | 0;
 
     x = w * h;
-    while (--x >= 0) {
+    /*while (--x >= 0) {
       laplacian[x] = 0;
-    }
-    compute_laplacian<u_char, int>(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex, ey);
+    }*/
+    laplacian = compute_laplacian<u_char, int>(srd_d, w, h, Dxx, Dyy, sx, sy, ex, ey);
 
     row = (sy * w + sx) | 0;
     for (y = sy; y < ey; ++y, row += w) {
