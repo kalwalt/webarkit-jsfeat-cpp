@@ -20,14 +20,13 @@
         window.addEventListener('jsfeatCpp-loaded', function (e) {
             var jsfeatCpp = Module;
             var imgproc = new jsfeatCpp.imgproc();
-            var yape06 = new jsfeatCpp.yape06(25, 10);
+            var yape06 = new jsfeatCpp.yape06();
             yape06.laplacian_threshold = 30;
             yape06.min_eigen_value_threshold = 25;
-            corners = new jsfeatCpp.vector_kpoint_t();
+            corners = [];
             var i = 640 * 480;
             while (--i >= 0) {
-                var point = { x:0, y:0, level:0, score:0, angle:0.0};
-                corners.push_back(point);
+                corners[i] = new jsfeatCpp.keypoint_t(0, 0, 0, 0, -1);
             }
             const U8_t = Module.Types.U8_t.value;
             const C1_t = Module.Types.C1_t.value;
@@ -102,7 +101,7 @@
                     var img_u8 = new jsfeatCpp.matrix_t(width, height, U8_t | C1_t);
                     imgproc.grayscale(image_data.data, width, height, img_u8.getPointer(), COLOR_RGBA2GRAY);
                     var count = yape06.detect(img_u8.getPointer(), corners, 5);
-                    console.log(count);
+                    console.log("count is: ", count);
                     var data_u32 = new Uint32Array(image_data.data.buffer);
                     // we convert to mono gray image, check both methods
                     render_mono_image(img_u8.data, data_u32, width, height, 640)

@@ -55,11 +55,14 @@ public:
     compute_laplacian<u_char, int>(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex,
                                    ey);
 
-    row = (sy * w + sx) | 0;
+    //row = (sy * w + sx) | 0;
+    row = (sy * w + sx);
     for (y = sy; y < ey; ++y, row += w) {
       for (x = sx, rowx = row; x < ex; ++x, ++rowx) {
 
         lv = laplacian[rowx];
+        //JSLOGi("lv is %d", lv);
+        //std::cout << "lv is: " << lv << std::endl;
         if ((lv < -lap_thresh && lv < laplacian[rowx - 1] &&
              lv < laplacian[rowx + 1] && lv < laplacian[rowx - w] &&
              lv < laplacian[rowx + w] && lv < laplacian[rowx - w - 1] &&
@@ -73,6 +76,7 @@ public:
 
           min_eigen_value = hessian_min_eigen_value<u_char>(srd_d, rowx, lv,
                                                             Dxx, Dyy, Dxy, Dyx);
+          //JSLOGi("min_eigen_value is %d", min_eigen_value);
           if (min_eigen_value > eigen_thresh) {
             auto pt = points[number_of_points];
             pt.x = x, pt.y = y, pt.score = min_eigen_value;
@@ -87,21 +91,12 @@ public:
 
     return number_of_points;
   }
-  auto detect(uintptr_t inputSrc, Array<KPoint_t> &pts, int border) {
+  auto detect(uintptr_t inputSrc, emscripten::val inputPoints, int border) {
     auto src = reinterpret_cast<matrix_t *>(inputSrc);
-    Array<keypoint_t> points;
-    auto size = pts.size();
-    keypoint_t kt(0, 0, 0, 0, 0.0);
-    points.assign(size, kt);
-    auto i = 0;
-    for (KPoint_t &p : pts) {
-      points[i].x = p.x;
-      points[i].y = p.y;
-      points[i].level = p.level;
-      points[i].score = p.score;
-      points[i].angle = p.angle;
-      i++;
-    }
+    auto points = emscripten::vecFromJSArray<keypoint_t>(inputPoints);
+    /*for(auto i=0; i<points.size();i++) {
+      std::cout << "keypoints inside: "  << points[i].angle << std::endl;
+    }*/
     return detect_internal(src, points, border);
   }
   // getters and setters
