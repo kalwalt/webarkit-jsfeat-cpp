@@ -44,6 +44,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .property("data", &pyramid_t::getData);
 
     class_<keypoint_t>("keypoint_t")
+    .constructor<>()
     .constructor<int, int, int, int, float>()
     .function("getPointer", &keypoint_t::getPointer)
     .property("x", &keypoint_t::getX, &keypoint_t::setX)
@@ -51,6 +52,12 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .property("score", &keypoint_t::getScore, &keypoint_t::setScore)
     .property("level", &keypoint_t::getLevel, &keypoint_t::setLevel)
     .property("angle", &keypoint_t::getAngle, &keypoint_t::setAngle);
+
+    class_<KeyPoints>("KeyPoints")
+    .constructor<>()
+    .constructor<size_t>()
+    .property("corners", &KeyPoints::get_corners)
+    .function("get_pointer", &KeyPoints::get_pointer);
 
     class_<Yape06>("yape06")
     .constructor<>()
