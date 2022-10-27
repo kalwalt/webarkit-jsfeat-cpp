@@ -4,6 +4,7 @@
 #include <cache/Cache.h>
 #include <jslog/jslog.h>
 #include <keypoint_t/keypoint_t.h>
+#include <keypoints/keypoints.h>
 #include <matrix_t/matrix_t.h>
 #include <types/types.h>
 #include <yape06/yape06_utils.h>
@@ -25,10 +26,12 @@ public:
     laplacian_threshold = laplacian;
     min_eigen_value_threshold = min_eigen;
   }
-  auto detect_internal(matrix_t *src, Array<keypoint_t> points, int border) {
+  //auto detect_internal(matrix_t *src, Array<keypoint_t> points, int border) {
+  auto detect_internal(matrix_t *src, KeyPoints* pts, int border) {
     if (!border) {
       border = 5;
     }
+    auto points = pts->kpoints;
     auto x = 0, y = 0;
     auto w = src->cols, h = src->rows;
     // auto srd_d = src.data;
@@ -87,20 +90,23 @@ public:
     // this.cache.put_buffer(lap_buf);
     return number_of_points;
   }
-  auto detect(uintptr_t inputSrc, emscripten::val inputPoints, int border) {
+  //auto detect(uintptr_t inputSrc, emscripten::val inputPoints, int border) {
+  auto detect(uintptr_t inputSrc, uintptr_t inputPoints, int border) {
     auto src = reinterpret_cast<matrix_t *>(inputSrc);
-    auto points = emscripten::vecFromJSArray<keypoint_t>(inputPoints);
+    //auto points = emscripten::vecFromJSArray<keypoint_t>(inputPoints);
+    auto points = reinterpret_cast<KeyPoints *>(inputPoints);
 
     auto count = detect_internal(src, points, border);
-    emscripten::val out = emscripten::val::object();
+    /*emscripten::val out = emscripten::val::object();
     emscripten::val pointsArr = emscripten::val::array();
-    for(auto i = 0; i< points.size(); i++){
+    for(auto i = 0; i< points->kpoints.size(); i++){
       pointsArr.call<void>("push", points[i]);
     }
     out.set("count", count);
     out.set("points", pointsArr);
 
-    return out;
+    return out;*/
+    return count;
   }
   // getters and setters
   auto getLaplacianThreshold() const { return laplacian_threshold; };
