@@ -2,6 +2,19 @@
 
 namespace jsfeat {
 template <typename A, typename B>
+auto compute_laplacian(Array<A> src, Array<B>& dst, int w, int h, int Dxx,
+                       int Dyy, int sx, int sy, int ex, int ey) {
+  auto y = 0, x = 0, yrow = (sy * w + sx) | 0, row = yrow;
+
+  for (y = sy; y < ey; ++y, yrow += w, row = yrow) {
+    for (x = sx; x < ex; ++x, ++row) {
+      dst[row] = -4 * src[row] + src[row + Dxx] + src[row - Dxx] +
+                 src[row + Dyy] + src[row - Dyy];
+    }
+  }
+
+}
+template <typename A, typename B>
 auto compute_laplacian(Array<A> src, int w, int h, int Dxx,
                        int Dyy, int sx, int sy, int ex, int ey) {
   auto y = 0, x = 0, yrow = (sy * w + sx) | 0, row = yrow;

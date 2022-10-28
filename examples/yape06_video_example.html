@@ -111,8 +111,8 @@
                     var image_data = ctx.getImageData(0, 0, width, height);
                     var img_u8 = new jsfeatCpp.matrix_t(width, height, U8_t | C1_t);
                     imgproc.grayscale(image_data.data, width, height, img_u8.getPointer(), COLOR_RGBA2GRAY);
-                    var obj = yape06.detect(img_u8.getPointer(), corners.get_pointer(), 5);
-                    //console.log("count is: ", obj);
+                    var obj = yape06.detect(img_u8.getPointer(), corners.get_pointer(), 0);
+                    console.log("count is: ", obj);
                     //console.log(corners.corners);
                     var data_u32 = new Uint32Array(image_data.data.buffer);
                     // we convert to mono gray image, check both methods
