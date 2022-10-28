@@ -63,8 +63,8 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .constructor<>()
     .constructor<int, int>()
     .function("detect", &Yape06::detect, allow_raw_pointer<matrix_t>())
-    .property("laplacian_threshold", &Yape06::getLaplacianThreshold, &Yape06::setLaplacianThreshold)
-    .property("min_eigen_value_threshold", &Yape06::getMinEigenValueThreshold, &Yape06::setMinEigenValueThreshold);
+    .property("laplacian_threshold", &Yape06::get_laplacian_threshold, &Yape06::set_laplacian_threshold)
+    .property("min_eigen_value_threshold", &Yape06::get_min_eigen_value_threshold, &Yape06::set_min_eigen_value_threshold);
 
     enum_<Types>("Types")
     .value("U8_t", U8_t)
