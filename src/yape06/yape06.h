@@ -26,12 +26,13 @@ public:
     laplacian_threshold = laplacian;
     min_eigen_value_threshold = min_eigen;
   }
-  auto detect_internal(matrix_t* src, KeyPoints* pts, int border) {
+  auto detect_internal(matrix_t* src, KeyPoints* pts, KeyPoints* outPts, int border) {
     if (!border) {
       border = 5;
     }
     assert(border > 0 && "border value must be > o!");
     auto points = pts->kpoints;
+    auto out = outPts->kpoints;
     auto x = 0, y = 0;
     auto w = src->cols, h = src->rows;
     // auto srd_d = src.data;
@@ -76,8 +77,10 @@ public:
                                                             Dxx, Dyy, Dxy, Dyx);
 
           if (min_eigen_value > eigen_thresh) {
-            auto pt = points[number_of_points];
-            pt.x = x, pt.y = y, pt.score = min_eigen_value;
+            //auto pt = points[number_of_points];
+            out[number_of_points] = points[number_of_points];
+            //pt.x = x, pt.y = y, pt.score = min_eigen_value;
+            out[number_of_points].x = x, out[number_of_points].y = y, out[number_of_points].score = min_eigen_value;
             ++number_of_points;
             ++x, ++rowx; // skip next pixel since this is maxima in 3x3
           }
@@ -88,11 +91,12 @@ public:
     // this.cache.put_buffer(lap_buf);
     return number_of_points;
   }
-  auto detect(uintptr_t inputSrc, uintptr_t inputPoints, int border) {
+  auto detect(uintptr_t inputSrc, uintptr_t inputPoints, uintptr_t outPoints, int border) {
     auto src = reinterpret_cast<matrix_t*>(inputSrc);
     auto points = reinterpret_cast<KeyPoints*>(inputPoints);
+    auto out = reinterpret_cast<KeyPoints*>(outPoints);
 
-    auto count = detect_internal(src, points, border);
+    auto count = detect_internal(src, points, out, border);
 
     return count;
   }
