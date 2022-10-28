@@ -2,7 +2,7 @@
 
 namespace jsfeat {
 template <typename A, typename B>
-auto compute_laplacian(Array<A> src, Array<B>& dst, int w, int h, int Dxx,
+auto compute_laplacian(Array<A>& src, Array<B>& dst, int w, int h, int Dxx,
                        int Dyy, int sx, int sy, int ex, int ey) {
   auto y = 0, x = 0, yrow = (sy * w + sx) | 0, row = yrow;
 
@@ -29,7 +29,7 @@ auto compute_laplacian(Array<A> src, int w, int h, int Dxx,
   return dst;
 }
 template <typename A>
-auto hessian_min_eigen_value(Array<A> src, int off, int tr, int Dxx, int Dyy,
+auto hessian_min_eigen_value(Array<A>& src, int off, int tr, int Dxx, int Dyy,
                              int Dxy, int Dyx) {
   auto Ixx = -2 * src[off] + src[off + Dxx] + src[off - Dxx];
   auto Iyy = -2 * src[off] + src[off + Dyy] + src[off - Dyy];

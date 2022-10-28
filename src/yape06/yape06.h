@@ -52,7 +52,8 @@ public:
 
     x = w * h;
 
-    compute_laplacian<u_char, int>(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex, ey);
+    compute_laplacian<u_char, int>(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex,
+                                   ey);
 
     row = (sy * w + sx) | 0;
     for (y = sy; y < ey; ++y, row += w) {
@@ -97,7 +98,9 @@ public:
   }
   // getters and setters
   auto get_laplacian_threshold() const { return laplacian_threshold; };
-  auto get_min_eigen_value_threshold() const { return min_eigen_value_threshold; }
+  auto get_min_eigen_value_threshold() const {
+    return min_eigen_value_threshold;
+  }
   auto set_laplacian_threshold(int laplacian_value) {
     laplacian_threshold = laplacian_value;
   }

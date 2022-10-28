@@ -113,7 +113,7 @@
                     imgproc.grayscale(image_data.data, width, height, img_u8.getPointer(), COLOR_RGBA2GRAY);
                     var obj = yape06.detect(img_u8.getPointer(), corners.get_pointer(), 0);
                     console.log("count is: ", obj);
-                    //console.log(corners.corners);
+                    console.log(corners.corners);
                     var data_u32 = new Uint32Array(image_data.data.buffer);
                     // we convert to mono gray image, check both methods
                     //render_mono_image(img_u8.data, data_u32, width, height, 640)
