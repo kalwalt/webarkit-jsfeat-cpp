@@ -35,6 +35,9 @@ public:
     this->size = kp.size;
     this->kpoints = kp.kpoints;
   }
+  auto get_size() const {return size; };
+  
+  auto set_size(int size) { this->size = size; };
 
   auto get_key_points() const { return kpoints; }
 
@@ -64,9 +67,14 @@ private:
   size_t size;
 };
 
-struct Yape06Points {
+struct Yape06Points : public KeyPoints {
   int count;
   KeyPoints pts;
+  Yape06Points(){};
+  Yape06Points(KeyPoints& kp) {
+    pts.set_size(kp.get_size());// = kp.get_size();
+    pts.kpoints = kp.kpoints;
+  }
 };
 
 } // namespace jsfeat

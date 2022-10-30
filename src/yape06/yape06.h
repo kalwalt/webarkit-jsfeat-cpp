@@ -26,16 +26,13 @@ public:
     laplacian_threshold = laplacian;
     min_eigen_value_threshold = min_eigen;
   }
-  auto detect_internal(matrix_t* src, KeyPoints* pts, KeyPoints* outPts, int border) {
+  auto detect_internal(matrix_t* src, KeyPoints* pts, int border) {
     if (!border) {
       border = 5;
     }
     assert(border > 0 && "border value must be > o!");
     auto points = pts->kpoints;
-    auto out = outPts->kpoints;
-    Yape06Points ypts;
-    keypoint_t kt(0, 0, 0, 0, -1);
-    ypts.pts.kpoints.assign(640*480, kt);
+    Yape06Points ypts(*pts);
     auto x = 0, y = 0;
     auto w = src->cols, h = src->rows;
     // auto srd_d = src.data;
@@ -78,15 +75,12 @@ public:
 
           min_eigen_value = hessian_min_eigen_value<u_char>(srd_d, rowx, lv,
                                                             Dxx, Dyy, Dxy, Dyx);
-         
+
           if (min_eigen_value > eigen_thresh) {
-            //auto pt = points[number_of_points];
-            //out[number_of_points] = points[number_of_points];
-            //pt.x = x, pt.y = y, pt.score = min_eigen_value;
-            //out[number_of_points].x = x, out[number_of_points].y = y, out[number_of_points].score = min_eigen_value;
-            //ypts[number_of_points].x = x, ypts[number_of_points].y = y, ypts[number_of_points].score = min_eigen_value;
-            //std::cout << out[number_of_points].x << " " << out[number_of_points].y << std::endl;
-            ypts.count = number_of_points, ypts.pts.kpoints[number_of_points].x = x, ypts.pts.kpoints[number_of_points].y = y, ypts.pts.kpoints[number_of_points].score = min_eigen_value;
+            ypts.count = number_of_points,
+            ypts.pts.kpoints[number_of_points].x = x,
+            ypts.pts.kpoints[number_of_points].y = y,
+            ypts.pts.kpoints[number_of_points].score = min_eigen_value;
             ++number_of_points;
             ++x, ++rowx; // skip next pixel since this is maxima in 3x3
           }
@@ -96,20 +90,16 @@ public:
 
     return ypts;
   }
-  auto detect(uintptr_t inputSrc, uintptr_t inputPoints, uintptr_t outPoints, int border) {
+  auto detect(uintptr_t inputSrc, uintptr_t inputPoints, int border) {
     auto src = reinterpret_cast<matrix_t*>(inputSrc);
     auto points = reinterpret_cast<KeyPoints*>(inputPoints);
-    //auto out = reinterpret_cast<KeyPoints*>(outPoints);
-    auto size = 640 * 480;
-    KeyPoints * out = new KeyPoints(size);
 
-    auto obj = detect_internal(src, points, out, border);
+    auto obj = detect_internal(src, points, border);
 
     emscripten::val outObj = emscripten::val::object();
     emscripten::val pointsArr = emscripten::val::array();
     KPoint_t pt;
-    for(auto i = 0; i< obj.pts.kpoints.size(); i++){
-      //pointsArr.call<void>("push", obj.pts.kpoints[i]);
+    for (auto i = 0; i < obj.pts.kpoints.size(); i++) {
       pt.x = obj.pts.kpoints[i].x;
       pt.y = obj.pts.kpoints[i].y;
       pt.level = obj.pts.kpoints[i].level;
