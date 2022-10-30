@@ -1,6 +1,7 @@
 #ifndef KEYPOINTS_H
 #define KEYPOINTS_H
 
+#include <keypoint_t/keypoint_t.h>
 #include <types/types.h>
 
 #ifdef __EMSCRIPTEN__
@@ -12,7 +13,6 @@ namespace jsfeat {
 class KeyPoints {
 
 public:
-
   KeyPoints() {}
 
   KeyPoints(size_t size) {
@@ -26,21 +26,27 @@ public:
     kpoints.assign(size, kpt);
   }
 
-  auto get_key_points() const {
-    return kpoints;
+  KeyPoints(KeyPoints& kp) {
+    this->size = kp.size;
+    this->kpoints = kp.kpoints;
   }
 
-  auto set_key_points(Array<keypoint_t> kpoints) {
-    this->kpoints = kpoints;
+  KeyPoints(const KeyPoints& kp) {
+    this->size = kp.size;
+    this->kpoints = kp.kpoints;
   }
 
-  #ifdef __EMSCRIPTEN__
+  auto get_key_points() const { return kpoints; }
+
+  auto set_key_points(Array<keypoint_t> kpoints) { this->kpoints = kpoints; }
+
+#ifdef __EMSCRIPTEN__
   auto get_pointer() { return reinterpret_cast<int>(this); }
 
   emscripten::val get_corners() const {
     emscripten::val pointsArr = emscripten::val::array();
     KPoint_t pt;
-    for(auto i = 0; i< kpoints.size(); i++){
+    for (auto i = 0; i < kpoints.size(); i++) {
       pt.x = kpoints[i].x;
       pt.y = kpoints[i].y;
       pt.level = kpoints[i].level;
@@ -50,12 +56,17 @@ public:
     }
     return pointsArr;
   }
-  #endif
+#endif
 
   Array<keypoint_t> kpoints;
 
-  private:
+private:
   size_t size;
+};
+
+struct Yape06Points {
+  int count;
+  KeyPoints pts;
 };
 
 } // namespace jsfeat
