@@ -8,6 +8,7 @@
 #include <node_utils/data_t.h>
 #include <node_utils/functions.h>
 #include <string>
+#include <variant>
 #include <types/types.h>
 
 namespace jsfeat {
@@ -19,6 +20,7 @@ public:
   int type;
   size_t channel;
   size_t size;
+  using Data = std::variant<Array<u_char>, Array<int>, Array<float>, Array<double>>;
 #ifdef __EMSCRIPTEN__
   emscripten::val data = emscripten::val::null();
 
@@ -67,6 +69,32 @@ public:
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
+  };
+  Matrix_t(int c, int r, int data_type, Data data) {
+    if (c < 0 || r < 0) {
+      JSLOGw("cols and rows values must be greater than zero, will be "
+             "converted to absoulte values.");
+      cols = std::abs(c), rows = std::abs(r);
+    } else {
+      cols = c;
+      rows = r;
+    }
+    type = get_data_type(data_type) | 0;
+    channel = get_channel(data_type) | 0;
+    size = (cols * channel) * rows;
+    if (type == Types::U8_t) {
+      auto m_u8 = std::get<Array<u_char>>(data);
+      u8 = m_u8;
+    } else if (type == Types::S32_t) {
+      auto m_i32 = std::get<Array<int>>(data);
+      i32 = m_i32;
+    } else if (type == Types::F32_t) {
+      auto m_f32 = std::get<Array<float>>(data);
+      f32 = m_f32;
+    } else if (type == Types::F64_t) {
+      auto m_f64 = std::get<Array<double>>(data);
+      f64 = m_f64;
+    }
   };
   Matrix_t(Matrix_t &m) {
     cols = m.cols;

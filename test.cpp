@@ -1,3 +1,4 @@
+#include "src/matrix_t/matrix_t.h"
 #include <cache/Cache.h>
 #include <functional>
 #include <imgproc/imgproc.h>
@@ -6,6 +7,7 @@
 #include <stdlib.h>
 #include <types/types.h>
 #include <yape06/yape06.h>
+#include <variant>
 
 using namespace jsfeat;
 
@@ -66,4 +68,7 @@ int main() {
   KeyPoint_t kt(0, 0, 0, 0, 0.0);
   points.assign(5, kt);
   std::cout << points[0].x << std::endl;
+  Array<u_char> data { 0, 1, 2, 3 };
+  Matrix_t matD(4, 4, 0x0100 | 0x04,  data);
+  std::cout << "number at index 2 is: " << (int)matD.u8[2] << std::endl;
 }
