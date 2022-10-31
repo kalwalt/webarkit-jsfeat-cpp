@@ -11,7 +11,7 @@
 #include <types/types.h>
 
 namespace jsfeat {
-class Matrix_t : public data_t {
+class Matrix_t : public Data_t {
 
 public:
   int cols;

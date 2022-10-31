@@ -11,16 +11,16 @@
 namespace jsfeat {
 
 template <size_t Capacity>
-class Cache : public LRUCache<std::string, data_t, Capacity> {
+class Cache : public LRUCache<std::string, Data_t, Capacity> {
 public:
   Cache(){};
-  std::optional<data_t> put_buffer(size_t data_size, int data_type) {
+  std::optional<Data_t> put_buffer(size_t data_size, int data_type) {
     type = get_data_type(data_type) | 0;
-    data_t data(data_size, type);
+    Data_t data(data_size, type);
     std::string buffer_count = buffer + std::to_string(counter);
     this->put(buffer_count, data);
     counter++;
-    std::optional<data_t> dt = this->get(buffer_count);
+    std::optional<Data_t> dt = this->get(buffer_count);
     return dt;
   }
   bool back_buffer() {
