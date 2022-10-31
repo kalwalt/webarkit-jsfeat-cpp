@@ -11,7 +11,7 @@
 #include <types/types.h>
 
 namespace jsfeat {
-class matrix_t : public data_t {
+class Matrix_t : public data_t {
 
 public:
   int cols;
@@ -22,7 +22,7 @@ public:
 #ifdef __EMSCRIPTEN__
   emscripten::val data = emscripten::val::null();
 
-  matrix_t(int c, int r, int data_type, emscripten::val data_buffer) {
+  Matrix_t(int c, int r, int data_type, emscripten::val data_buffer) {
     if (c < 0 || r < 0) {
       JSLOGw("cols and rows values must be greater than zero, will be "
              "converted to absoulte values.");
@@ -40,7 +40,7 @@ public:
       allocate();
     }
   };
-  matrix_t(int c, int r, int data_type) {
+  Matrix_t(int c, int r, int data_type) {
     if (c < 0 || r < 0) {
       JSLOGw("cols and rows values must be greater than zero, will be "
              "converted to absoulte values.");
@@ -55,9 +55,8 @@ public:
     allocate();
   };
 #else
-  matrix_t(int c, int r, int data_type) {
+  Matrix_t(int c, int r, int data_type) {
     if (c < 0 || r < 0) {
-      std::cout << "error!" << std::endl;
       JSLOGw("cols and rows values must be greater than zero, will be "
              "converted to absoulte values.");
       cols = std::abs(c), rows = std::abs(r);
@@ -69,7 +68,7 @@ public:
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
   };
-  matrix_t(matrix_t &m) {
+  Matrix_t(Matrix_t &m) {
     cols = m.cols;
     rows = m.rows;
     type = m.type;
@@ -85,7 +84,7 @@ public:
       f64 = m.f64;
     }
   }
-  matrix_t(const matrix_t &m) {
+  Matrix_t(const Matrix_t &m) {
     cols = m.cols;
     rows = m.rows;
     type = m.type;
@@ -103,7 +102,7 @@ public:
   }
 #endif
 
-  ~matrix_t() {
+  ~Matrix_t() {
 #ifdef DEBUG_EM
     JSLOGd("deleting matrix_t");
 #endif
@@ -194,7 +193,7 @@ public:
 #ifdef __EMSCRIPTEN__
   auto getPointer() { return reinterpret_cast<int>(this); }
 
-  static _Mat_t get(const matrix_t &m) {
+  static _Mat_t get(const Matrix_t &m) {
     _Mat_t output;
     output.cols = m.cols;
     output.rows = m.rows;
