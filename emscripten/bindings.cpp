@@ -29,9 +29,9 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .function("warp_affine", &Imgproc::warp_affine, allow_raw_pointer<Matrix_t>())
     .function("resample", select_overload<void(uintptr_t, uintptr_t, int, int)>(&Imgproc::resample));
 
-    class_<orb>("orb")
+    class_<Orb>("orb")
     .constructor<>()
-    .function("describe", &orb::describe, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>());
+    .function("describe", &Orb::describe, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>());
 
     class_<pyramid_t>("pyramid_t")
     .constructor<int>()

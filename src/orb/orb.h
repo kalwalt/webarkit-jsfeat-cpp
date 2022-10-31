@@ -12,9 +12,9 @@
 
 namespace jsfeat {
 
-class orb {
+class Orb {
 public:
-  orb() {
+  Orb() {
     H = new Matrix_t(3, 3, Types::F32_t | Types::C1_t);
     H->allocate();
     patch_img = new Matrix_t(32, 32, Types::U8_t | Types::C1_t);
