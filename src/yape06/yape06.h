@@ -89,6 +89,7 @@ public:
 
     return ypts;
   }
+  #ifdef __EMSCRIPTEN__
   auto detect(uintptr_t inputSrc, uintptr_t inputPoints, int border) {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto points = reinterpret_cast<KeyPoints*>(inputPoints);
@@ -111,6 +112,7 @@ public:
 
     return outObj;
   }
+  #endif
   // getters and setters
   auto get_laplacian_threshold() const { return laplacian_threshold; };
   auto get_min_eigen_value_threshold() const {
