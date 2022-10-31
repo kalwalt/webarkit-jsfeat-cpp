@@ -12,12 +12,12 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .constructor<int, int, int>()
     .function("allocate", &Matrix_t::allocate)
     .function("resize", &Matrix_t::resize)
-    .function("getPointer", &Matrix_t::getPointer)
-    .property("cols", &Matrix_t::getCols, &Matrix_t::setCols)
-    .property("rows", &Matrix_t::getRows, &Matrix_t::setRows)
-    .property("type", &Matrix_t::getType, &Matrix_t::setType)
-    .property("channel", &Matrix_t::getChannel, &Matrix_t::setChannel)
-    .property("data", &Matrix_t::getData)
+    .function("getPointer", &Matrix_t::get_pointer)
+    .property("cols", &Matrix_t::get_cols, &Matrix_t::set_cols)
+    .property("rows", &Matrix_t::get_rows, &Matrix_t::set_rows)
+    .property("type", &Matrix_t::get_type, &Matrix_t::set_type)
+    .property("channel", &Matrix_t::get_channel_m, &Matrix_t::set_channel_m)
+    .property("data", &Matrix_t::get_data)
     .class_function("get", &Matrix_t::get);
 
     class_<Imgproc>("imgproc")
@@ -37,21 +37,21 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .constructor<int>()
     .function("allocate", &Pyramid_t::allocate)
     .function("build", &Pyramid_t::build, allow_raw_pointer<Matrix_t>())
-    .function("getPointer", &Pyramid_t::getPointer)
-    .function("getPointer_matrix", &Pyramid_t::getPointer_matrix)
-    .function("getMatrixData", &Pyramid_t::getMatrixData)
-    .property("levels", &Pyramid_t::getLevels)
-    .property("data", &Pyramid_t::getData);
+    .function("getPointer", &Pyramid_t::get_pointer)
+    .function("getPointer_matrix", &Pyramid_t::get_pointer_matrix)
+    .function("getMatrixData", &Pyramid_t::get_matrix_data)
+    .property("levels", &Pyramid_t::get_levels)
+    .property("data", &Pyramid_t::get_data);
 
     class_<KeyPoint_t>("keypoint_t")
     .constructor<>()
     .constructor<int, int, int, int, float>()
-    .function("getPointer", &KeyPoint_t::getPointer)
-    .property("x", &KeyPoint_t::getX, &KeyPoint_t::setX)
-    .property("y", &KeyPoint_t::getY, &KeyPoint_t::setY)
-    .property("score", &KeyPoint_t::getScore, &KeyPoint_t::setScore)
-    .property("level", &KeyPoint_t::getLevel, &KeyPoint_t::setLevel)
-    .property("angle", &KeyPoint_t::getAngle, &KeyPoint_t::setAngle);
+    .function("getPointer", &KeyPoint_t::get_pointer)
+    .property("x", &KeyPoint_t::get_x, &KeyPoint_t::set_x)
+    .property("y", &KeyPoint_t::get_y, &KeyPoint_t::set_y)
+    .property("score", &KeyPoint_t::get_score, &KeyPoint_t::set_score)
+    .property("level", &KeyPoint_t::get_level, &KeyPoint_t::set_level)
+    .property("angle", &KeyPoint_t::get_angle, &KeyPoint_t::set_angle);
 
     class_<KeyPoints>("KeyPoints")
     .constructor<>()
