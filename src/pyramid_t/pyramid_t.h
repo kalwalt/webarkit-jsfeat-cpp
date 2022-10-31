@@ -49,15 +49,15 @@ public:
     }
   }
 
-  auto getPointer() { return reinterpret_cast<int>(this); }
+  auto get_pointer() { return reinterpret_cast<int>(this); }
 
-  auto getPointer_matrix(int index) { return reinterpret_cast<int>(this->mt[index]); }
+  auto get_pointer_matrix(int index) { return reinterpret_cast<int>(this->mt[index]); }
 
-  int getLevels() const {
+  int get_levels() const {
     return this->levels;
   }
 
-  emscripten::val getMatrixData() const { 
+  emscripten::val get_matrix_data() const { 
     emscripten::val obj = emscripten::val::object();
     emscripten::val cols = emscripten::val::array();
     emscripten::val rows = emscripten::val::array();
@@ -70,7 +70,7 @@ public:
     return obj;
     }
 
-  emscripten::val getData() const {
+  emscripten::val get_data() const {
     emscripten::val data = emscripten::val::array();
  
     for (int i = 0; i < this->levels; i++){

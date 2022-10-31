@@ -34,8 +34,8 @@ public:
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
-    if (isType(data_buffer, "object")) {
-      fillData(data_buffer);
+    if (is_type(data_buffer, "object")) {
+      fill_data(data_buffer);
     } else {
       allocate();
     }
@@ -108,23 +108,23 @@ public:
 #endif
   }
 
-  int getCols() const { return cols; };
+  int get_cols() const { return cols; };
 
-  void setCols(int c) { cols = c; };
+  void set_cols(int c) { cols = c; };
 
-  int getRows() const { return rows; };
+  int get_rows() const { return rows; };
 
-  void setRows(int r) { rows = r; };
+  void set_rows(int r) { rows = r; };
 
-  int getType() const { return type; };
+  int get_type() const { return type; };
 
-  void setType(int _type) { type = _type; };
+  void set_type(int _type) { type = _type; };
 
-  int getChannel() const { return channel; };
+  int get_channel_m() const { return channel; };
 
-  void setChannel(int _channel) { channel = _channel; };
+  void set_channel_m(int _channel) { channel = _channel; };
 #ifdef __EMSCRIPTEN__
-  emscripten::val getData() const {
+  emscripten::val get_data() const {
     if (type == Types::U8_t) {
       emscripten::val view{emscripten::typed_memory_view(u8.size(), u8.data())};
       auto result = emscripten::val::global("Uint8Array").new_(u8.size());
@@ -191,7 +191,7 @@ public:
   }
 
 #ifdef __EMSCRIPTEN__
-  auto getPointer() { return reinterpret_cast<int>(this); }
+  auto get_pointer() { return reinterpret_cast<int>(this); }
 
   static _Mat_t get(const Matrix_t &m) {
     _Mat_t output;
@@ -199,13 +199,13 @@ public:
     output.rows = m.rows;
     output.channels = m.channel;
     output.size = m.size;
-    output.data = m.getData();
+    output.data = m.get_data();
     return output;
   };
 #endif
 private:
 #ifdef __EMSCRIPTEN__
-  void fillData(emscripten::val data_buffer) {
+  void fill_data(emscripten::val data_buffer) {
     if (type == Types::U8_t) {
       u8 = emscripten::convertJSArrayToNumberVector<u_char>(data_buffer);
       u8.resize(size);
@@ -220,7 +220,7 @@ private:
       f64.resize(size);
     }
   }
-  bool isType(emscripten::val value, const std::string &type) {
+  bool is_type(emscripten::val value, const std::string &type) {
     return (value.typeOf().as<std::string>() == type);
   }
 #endif
