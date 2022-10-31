@@ -1,18 +1,18 @@
 #ifndef KEYPOINT_T_H
 #define KEYPOINT_T_H
 
-class keypoint_t {
+class KeyPoint_t {
 public:
   int x, y, score, level;
   float angle;
-  keypoint_t() {
+  KeyPoint_t() {
     this->x = 0;
     this->y = 0;
     this->score = 0;
     this->level = 0;
     this->angle = -1.0;
   }
-  keypoint_t(int x, int y, int score, int level, float angle) {
+  KeyPoint_t(int x, int y, int score, int level, float angle) {
     if (!x) {
       this->x = 0;
     }

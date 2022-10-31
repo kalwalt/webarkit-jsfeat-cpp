@@ -3,7 +3,6 @@
 
 #include <cache/Cache.h>
 #include <jslog/jslog.h>
-#include <keypoint_t/keypoint_t.h>
 #include <keypoints/keypoints.h>
 #include <matrix_t/matrix_t.h>
 #include <types/types.h>
