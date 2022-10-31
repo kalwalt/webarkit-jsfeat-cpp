@@ -84,7 +84,7 @@ public:
   }
 
   private:
-  imgproc proc;
+  Imgproc proc;
 };
 
 
