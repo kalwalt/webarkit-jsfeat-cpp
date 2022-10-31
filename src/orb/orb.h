@@ -135,7 +135,7 @@ private:
 
   void rectify_patch(Matrix_t *src, Matrix_t *dst, float angle, int px, int py,
                      int psize) {
-    imgproc *proc;
+    Imgproc *proc;
 
     float cosine = std::cos(angle);
     float sine = std::sin(angle);

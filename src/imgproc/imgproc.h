@@ -30,7 +30,7 @@ typedef struct {
     (_x < _a) ? _a : ((_x > _b) ? _b : _x);                                    \
   })
 
-class imgproc {
+class Imgproc {
 public:
 
   void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {

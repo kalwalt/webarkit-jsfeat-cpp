@@ -20,14 +20,14 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .property("data", &Matrix_t::getData)
     .class_function("get", &Matrix_t::get);
 
-    class_<imgproc>("imgproc")
+    class_<Imgproc>("imgproc")
     .constructor<>()
-    .function("grayscale", &imgproc::grayscale, allow_raw_pointer<Matrix_t>())
-    .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
-    .function("pyrdown", &imgproc::pyrdown, allow_raw_pointer<Matrix_t>())
-    .function("equalize_histogram", &imgproc::equalize_histogram, allow_raw_pointer<Matrix_t>())
-    .function("warp_affine", &imgproc::warp_affine, allow_raw_pointer<Matrix_t>())
-    .function("resample", select_overload<void(uintptr_t, uintptr_t, int, int)>(&imgproc::resample));
+    .function("grayscale", &Imgproc::grayscale, allow_raw_pointer<Matrix_t>())
+    .function("grayscale_m", &Imgproc::grayscale_m, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
+    .function("pyrdown", &Imgproc::pyrdown, allow_raw_pointer<Matrix_t>())
+    .function("equalize_histogram", &Imgproc::equalize_histogram, allow_raw_pointer<Matrix_t>())
+    .function("warp_affine", &Imgproc::warp_affine, allow_raw_pointer<Matrix_t>())
+    .function("resample", select_overload<void(uintptr_t, uintptr_t, int, int)>(&Imgproc::resample));
 
     class_<orb>("orb")
     .constructor<>()
