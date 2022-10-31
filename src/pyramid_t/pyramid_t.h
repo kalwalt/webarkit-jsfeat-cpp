@@ -8,13 +8,13 @@
 
 namespace jsfeat {
 
-class pyramid_t {
+class Pyramid_t {
 public:
   int levels;
   std::vector<Matrix_t *> mt;
   emscripten::val data = emscripten::val::array();
 
-  pyramid_t(int levels) {
+  Pyramid_t(int levels) {
     this->levels = levels;
     // this->data (levels, 0);
   }
