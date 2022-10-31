@@ -33,15 +33,15 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .constructor<>()
     .function("describe", &Orb::describe, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>());
 
-    class_<pyramid_t>("pyramid_t")
+    class_<Pyramid_t>("pyramid_t")
     .constructor<int>()
-    .function("allocate", &pyramid_t::allocate)
-    .function("build", &pyramid_t::build, allow_raw_pointer<Matrix_t>())
-    .function("getPointer", &pyramid_t::getPointer)
-    .function("getPointer_matrix", &pyramid_t::getPointer_matrix)
-    .function("getMatrixData", &pyramid_t::getMatrixData)
-    .property("levels", &pyramid_t::getLevels)
-    .property("data", &pyramid_t::getData);
+    .function("allocate", &Pyramid_t::allocate)
+    .function("build", &Pyramid_t::build, allow_raw_pointer<Matrix_t>())
+    .function("getPointer", &Pyramid_t::getPointer)
+    .function("getPointer_matrix", &Pyramid_t::getPointer_matrix)
+    .function("getMatrixData", &Pyramid_t::getMatrixData)
+    .property("levels", &Pyramid_t::getLevels)
+    .property("data", &Pyramid_t::getData);
 
     class_<KeyPoint_t>("keypoint_t")
     .constructor<>()
