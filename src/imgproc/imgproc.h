@@ -34,8 +34,8 @@ class imgproc {
 public:
 
   void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {
-    auto ptrSrc = reinterpret_cast<matrix_t *>(src);
-    auto ptrDst = reinterpret_cast<matrix_t *>(dst);
+    auto ptrSrc = reinterpret_cast<Matrix_t *>(src);
+    auto ptrDst = reinterpret_cast<Matrix_t *>(dst);
     // this is default image data representation in browser
     if (!code) {
       code = Colors::COLOR_RGBA2GRAY;
@@ -103,7 +103,7 @@ public:
 #else
   void grayscale(u_char *src, int w, int h, uintptr_t dst, int code) {
 #endif
-    auto ptrDst = reinterpret_cast<matrix_t *>(dst);
+    auto ptrDst = reinterpret_cast<Matrix_t *>(dst);
     // this is default image data representation in browser
     if (!code) {
       code = Colors::COLOR_RGBA2GRAY;
@@ -158,8 +158,8 @@ public:
     }
   };
   void pyrdown(uintptr_t inputSrc, uintptr_t inputDst, int sx, int sy) {
-    auto dst = reinterpret_cast<matrix_t *>(inputDst);
-    auto src = reinterpret_cast<matrix_t *>(inputSrc);
+    auto dst = reinterpret_cast<Matrix_t *>(inputDst);
+    auto src = reinterpret_cast<Matrix_t *>(inputSrc);
     if (!sx) {
       sx = 0;
     }
@@ -198,7 +198,7 @@ public:
       dptr += w2;
     }
   };
-  void pyrdown_internal(matrix_t *src, matrix_t *dst, int sx = 0, int sy = 0) {
+  void pyrdown_internal(Matrix_t *src, Matrix_t *dst, int sx = 0, int sy = 0) {
     if (!sx) {
       sx = 0;
     }
@@ -237,7 +237,7 @@ public:
     }
   };
 
-  void equalize_histogram_internal(matrix_t *src, matrix_t *dst) {
+  void equalize_histogram_internal(Matrix_t *src, Matrix_t *dst) {
     auto w = src->cols, h = src->rows;
 
     dst->resize(w, h, src->channel);
@@ -292,11 +292,11 @@ public:
   };
 
   void equalize_histogram(uintptr_t inputSrc, uintptr_t inputDst) {
-    auto src = reinterpret_cast<matrix_t *>(inputSrc);
-    auto dst = reinterpret_cast<matrix_t *>(inputDst);
+    auto src = reinterpret_cast<Matrix_t *>(inputSrc);
+    auto dst = reinterpret_cast<Matrix_t *>(inputDst);
     this->equalize_histogram_internal(src, dst);
   }
-  void warp_affine_internal(matrix_t *src, matrix_t *dst, matrix_t *transform,
+  void warp_affine_internal(Matrix_t *src, Matrix_t *dst, Matrix_t *transform,
                             int fill_value) {
     if (!fill_value) {
       fill_value = 0;
@@ -348,9 +348,9 @@ public:
   }
   void warp_affine(uintptr_t src, uintptr_t dst, uintptr_t transform,
                    int fill_value) {
-    auto ptrSrc = reinterpret_cast<matrix_t *>(src);
-    auto ptrDst = reinterpret_cast<matrix_t *>(dst);
-    auto ptrTransform = reinterpret_cast<matrix_t *>(transform);
+    auto ptrSrc = reinterpret_cast<Matrix_t *>(src);
+    auto ptrDst = reinterpret_cast<Matrix_t *>(dst);
+    auto ptrTransform = reinterpret_cast<Matrix_t *>(transform);
     if (!fill_value) {
       fill_value = 0;
     }
@@ -401,8 +401,8 @@ public:
     }
   }
   void resample(uintptr_t inputSrc, uintptr_t inputDst, int nw, int nh) {
-    auto src = reinterpret_cast<matrix_t *>(inputSrc);
-    auto dst = reinterpret_cast<matrix_t *>(inputDst);
+    auto src = reinterpret_cast<Matrix_t *>(inputSrc);
+    auto dst = reinterpret_cast<Matrix_t *>(inputDst);
     int h = src->rows, w = src->cols;
     if (h > nh && w > nw) {
       dst->resize(nw, nh, src->channel);
@@ -415,7 +415,7 @@ public:
       }
     }
   };
-  void resample(matrix_t *src, matrix_t *dst, int nw, int nh) {
+  void resample(Matrix_t *src, Matrix_t *dst, int nw, int nh) {
     int h = src->rows, w = src->cols;
     if (h > nh && w > nw) {
       dst->resize(nw, nh, src->channel);
@@ -429,7 +429,7 @@ public:
     }
   };
 
-  void gaussian_blur(matrix_t *src, matrix_t *dst, int kernel_size, int sigma){
+  void gaussian_blur(Matrix_t *src, Matrix_t *dst, int kernel_size, int sigma){
       // mixed javascript and C++ code, will be implemented in a future...
       /*if (!sigma) { sigma = 0.0; }
       if (!kernel_size) { kernel_size = 0; }
@@ -478,7 +478,7 @@ public:
 
 private:
   // a is src matrix, b is dst matrix
-  void _resample_u8(matrix_t *src, matrix_t *dst, int nw, int nh) {
+  void _resample_u8(Matrix_t *src, Matrix_t *dst, int nw, int nh) {
     int h = src->rows, w = src->cols;
     assert(src->cols > 0 && dst->cols > 0);
     Array<jsfeat_int_alpha> xofs(src->cols * 2);
@@ -558,7 +558,7 @@ private:
     }
   }
 
-  void _resample(matrix_t *src, matrix_t *dst, int nw, int nh) {
+  void _resample(Matrix_t *src, Matrix_t *dst, int nw, int nh) {
     // to be implemented!
   }
 }; // class imgproc

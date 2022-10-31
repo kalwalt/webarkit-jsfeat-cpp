@@ -11,7 +11,7 @@ namespace jsfeat {
 class pyramid_t {
 public:
   int levels;
-  std::vector<matrix_t *> mt;
+  std::vector<Matrix_t *> mt;
   emscripten::val data = emscripten::val::array();
 
   pyramid_t(int levels) {
@@ -21,19 +21,19 @@ public:
   void allocate(int start_w, int start_h, int data_type) {
     int i = this->levels;
     while (--i >= 0) {
-        this->mt[i] = new matrix_t(start_w >> i, start_h >> i, data_type, Uint8Array);
+        this->mt[i] = new Matrix_t(start_w >> i, start_h >> i, data_type, Uint8Array);
         this->mt[i]->allocate();
     }
   }
   void build(uintptr_t inputSrc, bool skip_first_level) {
-    auto input = reinterpret_cast<matrix_t *>(inputSrc);
+    auto input = reinterpret_cast<Matrix_t *>(inputSrc);
     if (!skip_first_level) {
       skip_first_level = true;
     }
     // just copy data to first level
     int i = 2;
-    matrix_t *a = input;
-    matrix_t *b = this->mt[0];
+    Matrix_t *a = input;
+    Matrix_t *b = this->mt[0];
     if (!skip_first_level) {
       int j = input->cols * input->rows;
       while (--j >= 0) {
