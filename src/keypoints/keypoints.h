@@ -67,12 +67,12 @@ private:
   size_t size;
 };
 
-struct Yape06Points : public KeyPoints {
+struct KeyPointsCount : public KeyPoints {
   int count;
   KeyPoints pts;
-  Yape06Points(){};
-  Yape06Points(KeyPoints& kp) {
-    pts.set_size(kp.get_size());// = kp.get_size();
+  KeyPointsCount(){};
+  KeyPointsCount(KeyPoints& kp) {
+    pts.set_size(kp.get_size());
     pts.kpoints = kp.kpoints;
   }
 };

@@ -32,7 +32,7 @@ public:
     }
     assert(border > 0 && "border value must be > o!");
     auto points = pts->kpoints;
-    Yape06Points ypts(*pts);
+    KeyPointsCount ypts(*pts);
     auto x = 0, y = 0;
     auto w = src->cols, h = src->rows;
     // auto srd_d = src.data;
