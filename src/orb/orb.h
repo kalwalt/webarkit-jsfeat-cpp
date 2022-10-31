@@ -24,7 +24,7 @@ public:
   void describe(uintptr_t inputSrc, emscripten::val inputCorners, int count,
                 uintptr_t inputDescriptors) {
     auto src = reinterpret_cast<Matrix_t *>(inputSrc);
-    auto corners = emscripten::vecFromJSArray<keypoint_t>(inputCorners);
+    auto corners = emscripten::vecFromJSArray<KeyPoint_t>(inputCorners);
     auto descriptors = reinterpret_cast<Matrix_t *>(inputDescriptors);
     int DESCR_SIZE = 32; // bytes;
     int i = 0, b = 0, px = 0.0, py = 0.0, angle = 0.0;
