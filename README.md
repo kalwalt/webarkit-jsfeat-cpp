@@ -19,6 +19,12 @@ Oriented FAST and rotated BRIEF (ORB) is one most important class for feature tr
 ### **keypoint_t**
 A class to store key points for image tracking algorithms.
 
+### **keypoints**
+A class to store a vector of keypoint_t for image tracking algorithms.
+
+### **yape06**
+Feature detector from Computer Vision Lab, Ecole Polytechnique Federale de Lausanne (EPFL), Switzerland.
+
 ### **pyramid_t**
 A class to handle multiple pyramidal images.
 
@@ -63,11 +69,13 @@ Take a look at our examples in the examples folder:
 - grayscale_m_example.html
 - grayscale_video_example.html
 - keypoint_t_test.html
+- keypoints_test.html
 - matrix_t_test.html
 - orb_test.html
 - pyrdown_video_example.html
 - resample_video_example.html
 - sample_orb_mixed.html
+- yape06_video_example.html
 
 Both examples use the debug version of the lib but, of course you can use the non-debug version as well.
 

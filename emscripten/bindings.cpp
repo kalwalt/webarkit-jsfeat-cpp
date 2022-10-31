@@ -5,6 +5,7 @@ using namespace emscripten;
 
 EMSCRIPTEN_BINDINGS(webarkit) {
     register_vector<std::vector<u_char>>("vector_u_char");
+    register_vector<KPoint_t>("vector_kpoint_t");
 
     class_<matrix_t>("matrix_t")
     .constructor<int, int, int, emscripten::val>()
@@ -43,6 +44,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .property("data", &pyramid_t::getData);
 
     class_<keypoint_t>("keypoint_t")
+    .constructor<>()
     .constructor<int, int, int, int, float>()
     .function("getPointer", &keypoint_t::getPointer)
     .property("x", &keypoint_t::getX, &keypoint_t::setX)
@@ -50,6 +52,19 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .property("score", &keypoint_t::getScore, &keypoint_t::setScore)
     .property("level", &keypoint_t::getLevel, &keypoint_t::setLevel)
     .property("angle", &keypoint_t::getAngle, &keypoint_t::setAngle);
+
+    class_<KeyPoints>("KeyPoints")
+    .constructor<>()
+    .constructor<size_t>()
+    .property("corners", &KeyPoints::get_corners)
+    .function("get_pointer", &KeyPoints::get_pointer);
+
+    class_<Yape06>("yape06")
+    .constructor<>()
+    .constructor<int, int>()
+    .function("detect", &Yape06::detect, allow_raw_pointer<matrix_t>())
+    .property("laplacian_threshold", &Yape06::get_laplacian_threshold, &Yape06::set_laplacian_threshold)
+    .property("min_eigen_value_threshold", &Yape06::get_min_eigen_value_threshold, &Yape06::set_min_eigen_value_threshold);
 
     enum_<Types>("Types")
     .value("U8_t", U8_t)
@@ -74,4 +89,12 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .field("rows", &_Mat_t::rows)
     .field("channels", &_Mat_t::channels)
     .field("data", &_Mat_t::data);
+
+    value_object<KPoint_t>("KPoint_t")
+    .field("x", &KPoint_t::x)
+    .field("y", &KPoint_t::y)
+    .field("score", &KPoint_t::score)
+    .field("level", &KPoint_t::level)
+    .field("angle", &KPoint_t::angle);
+
 };

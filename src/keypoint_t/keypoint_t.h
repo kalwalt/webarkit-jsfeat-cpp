@@ -5,6 +5,13 @@ class keypoint_t {
 public:
   int x, y, score, level;
   float angle;
+  keypoint_t() {
+    this->x = 0;
+    this->y = 0;
+    this->score = 0;
+    this->level = 0;
+    this->angle = -1.0;
+  }
   keypoint_t(int x, int y, int score, int level, float angle) {
     if (!x) {
       this->x = 0;
@@ -38,7 +45,9 @@ public:
   auto getLevel() const { return this->level; }
   auto setAngle(float angle) { this->angle = angle; }
   auto getAngle() const { return this->angle; }
+  #ifdef __EMSCRIPTEN__
   auto getPointer() { return reinterpret_cast<int>(this); }
+  #endif
 };
 
 #endif

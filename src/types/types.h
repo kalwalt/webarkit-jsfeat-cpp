@@ -13,8 +13,10 @@ using u_int = unsigned int;
 template <typename T> using Array = std::vector<T>;
 
 #ifdef __EMSCRIPTEN__
-thread_local const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
-thread_local const emscripten::val Float32Array = emscripten::val::global("Float32Array");
+thread_local const emscripten::val Uint8Array =
+    emscripten::val::global("Uint8Array");
+thread_local const emscripten::val Float32Array =
+    emscripten::val::global("Float32Array");
 struct _Mat_t {
   int size;
   int cols;
@@ -23,6 +25,16 @@ struct _Mat_t {
   emscripten::val data = Uint8Array;
 };
 #endif
+
+struct KPoint_t;
+using ItemKPoint_t = Array<KPoint_t>;
+struct KPoint_t {
+  int x;
+  int y;
+  int level;
+  int score;
+  float angle;
+};
 
 enum Types {
   U8_t = 0x0100,
