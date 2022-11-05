@@ -71,4 +71,7 @@ int main() {
   Array<u_char> data { 0, 1, 2, 3 };
   Matrix_t matD(4, 4, 0x0100 | 0x04,  data);
   std::cout << "number at index 2 is: " << (int)matD.u8[2] << std::endl;
+  Matrix_t *src_d = new Matrix_t(20, 20, 0x0100 | 0x04); 
+  Matrix_t *dst_d = new Matrix_t(20, 20, 0x0100 | 0x04); 
+  img.gaussian_blur_internal(src, dst, 5, 2);
 }

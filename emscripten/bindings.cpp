@@ -22,6 +22,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
 
     class_<Imgproc>("imgproc")
     .constructor<>()
+    .function("gaussian_blur", &Imgproc::gaussian_blur, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
     .function("grayscale", &Imgproc::grayscale, allow_raw_pointer<Matrix_t>())
     .function("grayscale_m", &Imgproc::grayscale_m, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
     .function("pyrdown", &Imgproc::pyrdown, allow_raw_pointer<Matrix_t>())

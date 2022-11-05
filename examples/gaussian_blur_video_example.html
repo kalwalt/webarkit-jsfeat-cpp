@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JsfeatCpp video grayscale example</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <video id="video" autoplay loop muted playsinline></video>
+    <canvas id="canvas"></canvas>
+
+    <script>
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        window.addEventListener('jsfeatCpp-loaded', function (e) {
+            var jsfeatCpp = Module;
+            var imgproc = new jsfeatCpp.imgproc();
+            const U8_t = Module.Types.U8_t.value;
+            const C1_t = Module.Types.C1_t.value;
+            const COLOR_RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value;
+            const radius = 2;
+            const sigma = 0;
+            var r = radius | 0;
+            var kernel_size = (r+1) << 1;
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                var hint = {
+                    audio: false,
+                    video: true
+                };
+                if (window.innerWidth < 800) {
+                    var width = (window.innerWidth < window.innerHeight) ? 240 : 360;
+                    var height = (window.innerWidth < window.innerHeight) ? 360 : 240;
+
+                    var aspectRatio = window.innerWidth / window.innerHeight;
+
+                    console.log(width, height);
+
+                    hint = {
+                        audio: false,
+                        video: {
+                            facingMode: 'environment',
+                            width: { min: width, max: width }
+                        },
+                    };
+
+                    console.log(hint);
+                }
+
+                navigator.mediaDevices.getUserMedia(hint).then(function (stream) {
+                    video.srcObject = stream;
+                    video.addEventListener('loadedmetadata', function () {
+                        video.play();
+
+                        console.log('video', video, video.videoWidth, video.videoHeight);
+
+                        var canvasWidth = video.videoWidth;
+                        var canvasHeight = video.videoHeight;
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+                        process();
+                    });
+                });
+                function moveBytes(src, dest, width, height) {
+                    var i, j = 0;
+                    for (i = 0; i < width * height * 4;) {
+                        dest[i++] = src[j];
+                        dest[i++] = src[j];
+                        dest[i++] = src[j++];
+                        dest[i++] = 255;
+                    }
+                }
+                function render_mono_image(src, dst, sw, sh, dw) {
+                    var alpha = (0xff << 24);
+                    for (var i = 0; i < sh; ++i) {
+                        for (var j = 0; j < sw; ++j) {
+                            var pix = src[i * sw + j];
+                            dst[i * dw + j] = alpha | (pix << 16) | (pix << 8) | pix;
+                        }
+                    }
+                }
+                function process() {
+                    var width = 640, height = 480;
+                    ctx.drawImage(video, 0, 0, width, height);
+                    var image_data = ctx.getImageData(0, 0, width, height);
+                    var img_u8 = new jsfeatCpp.matrix_t(width, height, U8_t | C1_t);
+                    var dst_u8 = new jsfeatCpp.matrix_t(width, height, U8_t | C1_t);
+                    imgproc.grayscale(image_data.data, width, height, img_u8.getPointer(), COLOR_RGBA2GRAY);
+                    imgproc.gaussian_blur(img_u8.getPointer(), dst_u8.getPointer(), kernel_size, sigma);
+                    var data_u32 = new Uint32Array(image_data.data.buffer);
+                    // we convert to mono gray image, check both methods
+                    render_mono_image(dst_u8.data, data_u32, width, height, 640)
+                    //moveBytes(img_u8.data, image_data.data, width, height);
+                    ctx.putImageData(image_data, 0, 0);
+                    requestAnimationFrame(process);
+                }
+            }
+        })
+
+    </script>
+    <script src="../build/jsfeatcpp.js"></script>
+</body>
+
+</html>
