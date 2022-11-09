@@ -454,7 +454,7 @@ public:
       //auto buf_node = cache.put_buffer(buf_sz<<2, Types::S32_t | Types::C1_t);
       //auto filter_node = cache.put_buffer(kernel_size<<2, Types::S32_t | Types::C1_t)
       Array<int> buf;
-      Array<float> filter;
+      Array<int> filter;
       if(is_u8) {
           //buf = buf_node.i32;
           buf.assign(buf_sz<<2, 0);
@@ -475,7 +475,7 @@ public:
       }
 
       // From Math class
-      get_gaussian_kernel<float>(kernel_size, sigma, filter, data_type);
+      get_gaussian_kernel<int>(kernel_size, sigma, filter, data_type);
 
       if(is_u8) {
           _convol_u8(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
@@ -573,7 +573,7 @@ private:
     // to be implemented!
   }
 
-  void _convol_u8(Array<int>& buf, Array<u_char>& src_d, Array<u_char>& dst_d, int w, int h, Array<float>& filter, int kernel_size, int half_kernel) {
+  void _convol_u8(Array<int>& buf, Array<u_char>& src_d, Array<u_char>& dst_d, int w, int h, Array<int>& filter, int kernel_size, int half_kernel) {
     auto i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0, sum3 = 0;
     auto f0 = filter[0];
     auto fk = 0.0;
