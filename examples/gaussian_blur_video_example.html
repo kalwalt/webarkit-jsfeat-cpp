@@ -28,6 +28,7 @@
             const sigma = 0;
             var r = radius | 0;
             var kernel_size = (r+1) << 1;
+            console.log(kernel_size);
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 var hint = {
                     audio: false,
@@ -75,13 +76,12 @@
                         dest[i++] = 255;
                     }
                 }
-                function render_mono_image(src, dst, sw, sh, dw) {
+                function render_mono_image(src, dst) {
                     var alpha = (0xff << 24);
-                    for (var i = 0; i < sh; ++i) {
-                        for (var j = 0; j < sw; ++j) {
-                            var pix = src[i * sw + j];
-                            dst[i * dw + j] = alpha | (pix << 16) | (pix << 8) | pix;
-                        }
+                    var i = src.cols*src.rows, pix = 0;
+                    while(--i >= 0) {
+                        pix = src.data[i];
+                        dst[i] = alpha | (pix << 16) | (pix << 8) | pix;
                     }
                 }
                 function process() {
@@ -94,7 +94,7 @@
                     imgproc.gaussian_blur(img_u8.getPointer(), dst_u8.getPointer(), kernel_size, sigma);
                     var data_u32 = new Uint32Array(image_data.data.buffer);
                     // we convert to mono gray image, check both methods
-                    render_mono_image(dst_u8.data, data_u32, width, height, 640)
+                    render_mono_image(dst_u8, data_u32)
                     //moveBytes(img_u8.data, image_data.data, width, height);
                     ctx.putImageData(image_data, 0, 0);
                     requestAnimationFrame(process);
