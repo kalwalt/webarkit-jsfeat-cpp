@@ -224,6 +224,7 @@ public:
             for (i = 0; i < size; ++i) {
                 //kernel[i] = (_kernel[i] * sum + 0.5) | 0;
                 kernel[i] = (_kernel[i] * sum + 0.5);
+                //std::cout << kernel[i] << std::endl;
             }
         } else {
             // classic kernel

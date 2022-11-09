@@ -576,7 +576,7 @@ private:
   void _convol_u8(Array<int>& buf, Array<u_char>& src_d, Array<u_char>& dst_d, int w, int h, Array<float>& filter, int kernel_size, int half_kernel) {
     auto i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0, sum3 = 0;
     auto f0 = filter[0];
-    int fk = 0;
+    auto fk = 0.0;
     auto w2 = w << 1, w3 = w * 3, w4 = w << 2;
     // hor pass
     for (; i < h; ++i) {
