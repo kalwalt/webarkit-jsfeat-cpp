@@ -6,6 +6,7 @@
 #include <functional>
 #include <types/types.h>
 #include <utility>
+#include <cmath>
 
 namespace jsfeat {
 class Math {
@@ -173,6 +174,69 @@ public:
     std::sort(array.begin()+low, array.begin()+high, Compare());
   return array;
   }
+  template <typename A>
+  void get_gaussian_kernel(int size, float sigma, Array<A>& kernel, int data_type) {
+        auto i = 0; 
+        auto x = 0.0, t = 0.0, sigma_x = 0.0, scale_2x = 0.0;
+        auto sum = 0.0;
+        //var kern_node = this.cache.get_buffer(size << 2);
+        //var _kernel = kern_node.f32;//new Float32Array(size);
+        //auto _kernel = cache.put_buffer(size << 2, Types::F32_t | Types::C1_t);
+        Array<A> _kernel(size << 2);
+
+        if ((size & 1) == 1 && size <= 7 && sigma <= 0) {
+            switch (size >> 1) {
+                case 0:
+                    _kernel[0] = 1.0;
+                    sum = 1.0;
+                    break;
+                case 1:
+                    _kernel[0] = 0.25, _kernel[1] = 0.5, _kernel[2] = 0.25;
+                    sum = 0.25 + 0.5 + 0.25;
+                    break;
+                case 2:
+                    _kernel[0] = 0.0625, _kernel[1] = 0.25, _kernel[2] = 0.375,
+                        _kernel[3] = 0.25, _kernel[4] = 0.0625;
+                    sum = 0.0625 + 0.25 + 0.375 + 0.25 + 0.0625;
+                    break;
+                case 3:
+                    _kernel[0] = 0.03125, _kernel[1] = 0.109375, _kernel[2] = 0.21875,
+                        _kernel[3] = 0.28125, _kernel[4] = 0.21875, _kernel[5] = 0.109375, _kernel[6] = 0.03125;
+                    sum = 0.03125 + 0.109375 + 0.21875 + 0.28125 + 0.21875 + 0.109375 + 0.03125;
+                    break;
+            }
+        } else {
+            sigma_x = sigma > 0 ? sigma : ((size - 1) * 0.5 - 1.0) * 0.3 + 0.8;
+            scale_2x = -0.5 / (sigma_x * sigma_x);
+
+            for (; i < size; ++i) {
+                x = i - (size - 1) * 0.5;
+                t = std::exp(scale_2x * x * x);
+
+                _kernel[i] = t;
+                sum += t;
+            }
+        }
+
+        if (data_type & Types::U8_t) {
+            // int based kernel
+            sum = 256.0 / sum;
+            for (i = 0; i < size; ++i) {
+                //kernel[i] = (_kernel[i] * sum + 0.5) | 0;
+                kernel[i] = (_kernel[i] * sum + 0.5);
+                //std::cout << kernel[i] << std::endl;
+            }
+        } else {
+            // classic kernel
+            sum = 1.0 / sum;
+            for (i = 0; i < size; ++i) {
+                kernel[i] = _kernel[i] * sum;
+            }
+        }
+
+        //this.cache.put_buffer(kern_node);
+    }
+
 
 private:
   Array<int> qsort_stack;

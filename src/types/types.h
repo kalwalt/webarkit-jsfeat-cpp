@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <vector>
+#include <variant>
 #ifdef __EMSCRIPTEN__
 #include <emscripten/val.h>
 #endif
@@ -11,7 +12,8 @@ namespace jsfeat {
 using u_char = unsigned char;
 using u_int = unsigned int;
 template <typename T> using Array = std::vector<T>;
-
+using Data =
+      std::variant<Array<u_char>, Array<int>, Array<float>, Array<double>>;
 #ifdef __EMSCRIPTEN__
 thread_local const emscripten::val Uint8Array =
     emscripten::val::global("Uint8Array");

@@ -12,20 +12,20 @@
 
 namespace jsfeat {
 
-class orb {
+class Orb {
 public:
-  orb() {
-    H = new matrix_t(3, 3, Types::F32_t | Types::C1_t);
+  Orb() {
+    H = new Matrix_t(3, 3, Types::F32_t | Types::C1_t);
     H->allocate();
-    patch_img = new matrix_t(32, 32, Types::U8_t | Types::C1_t);
+    patch_img = new Matrix_t(32, 32, Types::U8_t | Types::C1_t);
     patch_img->allocate();
   }
 
   void describe(uintptr_t inputSrc, emscripten::val inputCorners, int count,
                 uintptr_t inputDescriptors) {
-    auto src = reinterpret_cast<matrix_t *>(inputSrc);
-    auto corners = emscripten::vecFromJSArray<keypoint_t>(inputCorners);
-    auto descriptors = reinterpret_cast<matrix_t *>(inputDescriptors);
+    auto src = reinterpret_cast<Matrix_t *>(inputSrc);
+    auto corners = emscripten::vecFromJSArray<KeyPoint_t>(inputCorners);
+    auto descriptors = reinterpret_cast<Matrix_t *>(inputDescriptors);
     int DESCR_SIZE = 32; // bytes;
     int i = 0, b = 0, px = 0.0, py = 0.0, angle = 0.0;
     int t0 = 0, t1 = 0, val = 0;
@@ -130,12 +130,12 @@ public:
   }
 
 private:
-  matrix_t* H;
-  matrix_t* patch_img;
+  Matrix_t* H;
+  Matrix_t* patch_img;
 
-  void rectify_patch(matrix_t *src, matrix_t *dst, float angle, int px, int py,
+  void rectify_patch(Matrix_t *src, Matrix_t *dst, float angle, int px, int py,
                      int psize) {
-    imgproc *proc;
+    Imgproc *proc;
 
     float cosine = std::cos(angle);
     float sine = std::sin(angle);

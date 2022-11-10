@@ -8,32 +8,32 @@
 
 namespace jsfeat {
 
-class pyramid_t {
+class Pyramid_t {
 public:
   int levels;
-  std::vector<matrix_t *> mt;
+  std::vector<Matrix_t *> mt;
   emscripten::val data = emscripten::val::array();
 
-  pyramid_t(int levels) {
+  Pyramid_t(int levels) {
     this->levels = levels;
     // this->data (levels, 0);
   }
   void allocate(int start_w, int start_h, int data_type) {
     int i = this->levels;
     while (--i >= 0) {
-        this->mt[i] = new matrix_t(start_w >> i, start_h >> i, data_type, Uint8Array);
+        this->mt[i] = new Matrix_t(start_w >> i, start_h >> i, data_type, Uint8Array);
         this->mt[i]->allocate();
     }
   }
   void build(uintptr_t inputSrc, bool skip_first_level) {
-    auto input = reinterpret_cast<matrix_t *>(inputSrc);
+    auto input = reinterpret_cast<Matrix_t *>(inputSrc);
     if (!skip_first_level) {
       skip_first_level = true;
     }
     // just copy data to first level
     int i = 2;
-    matrix_t *a = input;
-    matrix_t *b = this->mt[0];
+    Matrix_t *a = input;
+    Matrix_t *b = this->mt[0];
     if (!skip_first_level) {
       int j = input->cols * input->rows;
       while (--j >= 0) {
@@ -49,15 +49,15 @@ public:
     }
   }
 
-  auto getPointer() { return reinterpret_cast<int>(this); }
+  auto get_pointer() { return reinterpret_cast<int>(this); }
 
-  auto getPointer_matrix(int index) { return reinterpret_cast<int>(this->mt[index]); }
+  auto get_pointer_matrix(int index) { return reinterpret_cast<int>(this->mt[index]); }
 
-  int getLevels() const {
+  int get_levels() const {
     return this->levels;
   }
 
-  emscripten::val getMatrixData() const { 
+  emscripten::val get_matrix_data() const { 
     emscripten::val obj = emscripten::val::object();
     emscripten::val cols = emscripten::val::array();
     emscripten::val rows = emscripten::val::array();
@@ -70,7 +70,7 @@ public:
     return obj;
     }
 
-  emscripten::val getData() const {
+  emscripten::val get_data() const {
     emscripten::val data = emscripten::val::array();
  
     for (int i = 0; i < this->levels; i++){
@@ -84,7 +84,7 @@ public:
   }
 
   private:
-  imgproc proc;
+  Imgproc proc;
 };
 
 

@@ -17,11 +17,11 @@ public:
 
   KeyPoints(size_t size) {
     this->size = size;
-    keypoint_t kpt(0, 0, 0, 0, -1);
+    KeyPoint_t kpt(0, 0, 0, 0, -1);
     kpoints.assign(size, kpt);
   }
 
-  KeyPoints(size_t size, keypoint_t kpt) {
+  KeyPoints(size_t size, KeyPoint_t kpt) {
     this->size = size;
     kpoints.assign(size, kpt);
   }
@@ -41,7 +41,7 @@ public:
 
   auto get_key_points() const { return kpoints; }
 
-  auto set_key_points(Array<keypoint_t> kpoints) { this->kpoints = kpoints; }
+  auto set_key_points(Array<KeyPoint_t> kpoints) { this->kpoints = kpoints; }
 
 #ifdef __EMSCRIPTEN__
   auto get_pointer() { return reinterpret_cast<int>(this); }
@@ -61,7 +61,7 @@ public:
   }
 #endif
 
-  Array<keypoint_t> kpoints;
+  Array<KeyPoint_t> kpoints;
 
 private:
   size_t size;

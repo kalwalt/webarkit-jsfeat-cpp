@@ -7,51 +7,52 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     register_vector<std::vector<u_char>>("vector_u_char");
     register_vector<KPoint_t>("vector_kpoint_t");
 
-    class_<matrix_t>("matrix_t")
+    class_<Matrix_t>("matrix_t")
     .constructor<int, int, int, emscripten::val>()
     .constructor<int, int, int>()
-    .function("allocate", &matrix_t::allocate)
-    .function("resize", &matrix_t::resize)
-    .function("getPointer", &matrix_t::getPointer)
-    .property("cols", &matrix_t::getCols, &matrix_t::setCols)
-    .property("rows", &matrix_t::getRows, &matrix_t::setRows)
-    .property("type", &matrix_t::getType, &matrix_t::setType)
-    .property("channel", &matrix_t::getChannel, &matrix_t::setChannel)
-    .property("data", &matrix_t::getData)
-    .class_function("get", &matrix_t::get);
+    .function("allocate", &Matrix_t::allocate)
+    .function("resize", &Matrix_t::resize)
+    .function("getPointer", &Matrix_t::get_pointer)
+    .property("cols", &Matrix_t::get_cols, &Matrix_t::set_cols)
+    .property("rows", &Matrix_t::get_rows, &Matrix_t::set_rows)
+    .property("type", &Matrix_t::get_type, &Matrix_t::set_type)
+    .property("channel", &Matrix_t::get_channel_m, &Matrix_t::set_channel_m)
+    .property("data", &Matrix_t::get_data)
+    .class_function("get", &Matrix_t::get);
 
-    class_<imgproc>("imgproc")
+    class_<Imgproc>("imgproc")
     .constructor<>()
-    .function("grayscale", &imgproc::grayscale, allow_raw_pointer<matrix_t>())
-    .function("grayscale_m", &imgproc::grayscale_m, allow_raw_pointer<matrix_t>(), allow_raw_pointer<matrix_t>())
-    .function("pyrdown", &imgproc::pyrdown, allow_raw_pointer<matrix_t>())
-    .function("equalize_histogram", &imgproc::equalize_histogram, allow_raw_pointer<matrix_t>())
-    .function("warp_affine", &imgproc::warp_affine, allow_raw_pointer<matrix_t>())
-    .function("resample", select_overload<void(uintptr_t, uintptr_t, int, int)>(&imgproc::resample));
+    .function("gaussian_blur", &Imgproc::gaussian_blur, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
+    .function("grayscale", &Imgproc::grayscale, allow_raw_pointer<Matrix_t>())
+    .function("grayscale_m", &Imgproc::grayscale_m, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
+    .function("pyrdown", &Imgproc::pyrdown, allow_raw_pointer<Matrix_t>())
+    .function("equalize_histogram", &Imgproc::equalize_histogram, allow_raw_pointer<Matrix_t>())
+    .function("warp_affine", &Imgproc::warp_affine, allow_raw_pointer<Matrix_t>())
+    .function("resample", select_overload<void(uintptr_t, uintptr_t, int, int)>(&Imgproc::resample));
 
-    class_<orb>("orb")
+    class_<Orb>("orb")
     .constructor<>()
-    .function("describe", &orb::describe, allow_raw_pointer<matrix_t>(), allow_raw_pointer<matrix_t>());
+    .function("describe", &Orb::describe, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>());
 
-    class_<pyramid_t>("pyramid_t")
+    class_<Pyramid_t>("pyramid_t")
     .constructor<int>()
-    .function("allocate", &pyramid_t::allocate)
-    .function("build", &pyramid_t::build, allow_raw_pointer<matrix_t>())
-    .function("getPointer", &pyramid_t::getPointer)
-    .function("getPointer_matrix", &pyramid_t::getPointer_matrix)
-    .function("getMatrixData", &pyramid_t::getMatrixData)
-    .property("levels", &pyramid_t::getLevels)
-    .property("data", &pyramid_t::getData);
+    .function("allocate", &Pyramid_t::allocate)
+    .function("build", &Pyramid_t::build, allow_raw_pointer<Matrix_t>())
+    .function("getPointer", &Pyramid_t::get_pointer)
+    .function("getPointer_matrix", &Pyramid_t::get_pointer_matrix)
+    .function("getMatrixData", &Pyramid_t::get_matrix_data)
+    .property("levels", &Pyramid_t::get_levels)
+    .property("data", &Pyramid_t::get_data);
 
-    class_<keypoint_t>("keypoint_t")
+    class_<KeyPoint_t>("keypoint_t")
     .constructor<>()
     .constructor<int, int, int, int, float>()
-    .function("getPointer", &keypoint_t::getPointer)
-    .property("x", &keypoint_t::getX, &keypoint_t::setX)
-    .property("y", &keypoint_t::getY, &keypoint_t::setY)
-    .property("score", &keypoint_t::getScore, &keypoint_t::setScore)
-    .property("level", &keypoint_t::getLevel, &keypoint_t::setLevel)
-    .property("angle", &keypoint_t::getAngle, &keypoint_t::setAngle);
+    .function("getPointer", &KeyPoint_t::get_pointer)
+    .property("x", &KeyPoint_t::get_x, &KeyPoint_t::set_x)
+    .property("y", &KeyPoint_t::get_y, &KeyPoint_t::set_y)
+    .property("score", &KeyPoint_t::get_score, &KeyPoint_t::set_score)
+    .property("level", &KeyPoint_t::get_level, &KeyPoint_t::set_level)
+    .property("angle", &KeyPoint_t::get_angle, &KeyPoint_t::set_angle);
 
     class_<KeyPoints>("KeyPoints")
     .constructor<>()
@@ -62,7 +63,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     class_<Yape06>("yape06")
     .constructor<>()
     .constructor<int, int>()
-    .function("detect", &Yape06::detect, allow_raw_pointer<matrix_t>())
+    .function("detect", &Yape06::detect, allow_raw_pointer<Matrix_t>())
     .property("laplacian_threshold", &Yape06::get_laplacian_threshold, &Yape06::set_laplacian_threshold)
     .property("min_eigen_value_threshold", &Yape06::get_min_eigen_value_threshold, &Yape06::set_min_eigen_value_threshold);
 

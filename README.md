@@ -3,29 +3,30 @@ c++ [jsfeat](https://github.com/inspirit/jsfeat) version to build a WASM version
 The project is a Work in Progress, not all the features are released to make a comparison with the original jsfeat code. 
 At the moment only some classes are implemented and a bunch of functions are under testing. Anyway the main idea is to provide c++ code to build a WASM version, it's not intended to be used as a c++ library.
 ## Classes
-### **matrix_t**
+### **Matrix_t**
 This class is responsible to hold different types of data, to be used by all classes.
-### **imgproc**
+### **Imgproc**
 It is one of important classes to manipulate image data for image processing. For now we have these functions:
+- gaussain_blur
 - grayscale
 - grayscale_m
 - pyrdown
 - equalize_histogram
 - resample
 - warp_affine
-### **orb**
+### **Orb**
 Oriented FAST and rotated BRIEF (ORB) is one most important class for feature tracking. Ths feature is under testing.
 
-### **keypoint_t**
+### **Keypoint_t**
 A class to store key points for image tracking algorithms.
 
-### **keypoints**
+### **Keypoints**
 A class to store a vector of keypoint_t for image tracking algorithms.
 
-### **yape06**
+### **Yape06**
 Feature detector from Computer Vision Lab, Ecole Polytechnique Federale de Lausanne (EPFL), Switzerland.
 
-### **pyramid_t**
+### **Pyramid_t**
 A class to handle multiple pyramidal images.
 
 This project is quite experimental so do not expect great results. More classes will be implemented in the future.
@@ -65,6 +66,7 @@ window.addEventListener('jsfeatCpp-loaded', function (e) {
 Take a look at our examples in the examples folder:
 
 - equalize_histogram_video_example.html
+- gaussian_blur_video_example.html
 - grayscale_example.html
 - grayscale_m_example.html
 - grayscale_video_example.html

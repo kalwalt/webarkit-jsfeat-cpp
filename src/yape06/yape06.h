@@ -3,7 +3,6 @@
 
 #include <cache/Cache.h>
 #include <jslog/jslog.h>
-#include <keypoint_t/keypoint_t.h>
 #include <keypoints/keypoints.h>
 #include <matrix_t/matrix_t.h>
 #include <types/types.h>
@@ -26,7 +25,7 @@ public:
     laplacian_threshold = laplacian;
     min_eigen_value_threshold = min_eigen;
   }
-  auto detect_internal(matrix_t* src, KeyPoints* pts, int border) {
+  auto detect_internal(Matrix_t* src, KeyPoints* pts, int border) {
     if (!border) {
       border = 5;
     }
@@ -90,8 +89,9 @@ public:
 
     return ypts;
   }
+  #ifdef __EMSCRIPTEN__
   auto detect(uintptr_t inputSrc, uintptr_t inputPoints, int border) {
-    auto src = reinterpret_cast<matrix_t*>(inputSrc);
+    auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto points = reinterpret_cast<KeyPoints*>(inputPoints);
 
     auto obj = detect_internal(src, points, border);
@@ -112,6 +112,7 @@ public:
 
     return outObj;
   }
+  #endif
   // getters and setters
   auto get_laplacian_threshold() const { return laplacian_threshold; };
   auto get_min_eigen_value_threshold() const {
