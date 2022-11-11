@@ -8,6 +8,8 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     register_vector<KPoint_t>("vector_kpoint_t");
 
     class_<Matrix_t>("matrix_t")
+    .constructor<>()
+    .constructor<Matrix_t>()
     .constructor<int, int, int, emscripten::val>()
     .constructor<int, int, int>()
     .function("allocate", &Matrix_t::allocate)
