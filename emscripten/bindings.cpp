@@ -20,11 +20,24 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .property("data", &Matrix_t::get_data)
     .class_function("get", &Matrix_t::get);
 
+    class_<Matrix_smart>("Matrix_smart")
+    .constructor<int, int, int>()
+    .smart_ptr<std::shared_ptr<Matrix_smart>>("Matrix_smart")
+    //.smart_ptr_constructor<int, int, int>("Matrix_smart", &std::make_shared<Matrix_smart>)
+    .function("getSmartPointer", &Matrix_smart::get_smart_pointer)
+    .property("cols", &Matrix_smart::get_cols, &Matrix_smart::set_cols)
+    .property("rows", &Matrix_smart::get_rows, &Matrix_smart::set_rows)
+    .property("type", &Matrix_smart::get_type, &Matrix_smart::set_type)
+    .property("channel", &Matrix_smart::get_channel_m, &Matrix_smart::set_channel_m)
+    .property("data", &Matrix_smart::get_data)
+    .property("data", &Matrix_smart::get_data);
+
     class_<Imgproc>("imgproc")
     .constructor<>()
     .function("gaussian_blur", &Imgproc::gaussian_blur, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
     .function("grayscale", &Imgproc::grayscale, allow_raw_pointer<Matrix_t>())
     .function("grayscale_m", &Imgproc::grayscale_m, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
+    .function("grayscale_rgba", select_overload<void(emscripten::val, int, int, std::shared_ptr<Matrix_smart>)>(&Imgproc::grayscale_rgba))
     .function("pyrdown", &Imgproc::pyrdown, allow_raw_pointer<Matrix_t>())
     .function("equalize_histogram", &Imgproc::equalize_histogram, allow_raw_pointer<Matrix_t>())
     .function("warp_affine", &Imgproc::warp_affine, allow_raw_pointer<Matrix_t>())
