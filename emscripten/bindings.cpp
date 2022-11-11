@@ -20,10 +20,12 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .property("data", &Matrix_t::get_data)
     .class_function("get", &Matrix_t::get);
 
-    class_<Matrix_smart>("Matrix_smart")
+    class_<Matrix_smart>("matrix_smart")
     .constructor<int, int, int>()
-    .smart_ptr<std::shared_ptr<Matrix_smart>>("Matrix_smart")
+    .smart_ptr<std::shared_ptr<Matrix_smart>>("matrix_smart")
     //.smart_ptr_constructor<int, int, int>("Matrix_smart", &std::make_shared<Matrix_smart>)
+    .function("allocate", &Matrix_smart::allocate)
+    .function("resize", &Matrix_t::resize)
     .function("getSmartPointer", &Matrix_smart::get_smart_pointer)
     .property("cols", &Matrix_smart::get_cols, &Matrix_smart::set_cols)
     .property("rows", &Matrix_smart::get_rows, &Matrix_smart::set_rows)

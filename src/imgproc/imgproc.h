@@ -8,6 +8,7 @@
 #include <cache/Cache.h>
 #include <jslog/jslog.h>
 #include <math/math.h>
+#include <matrix_smart/matrix_smart.h>
 #include <matrix_t/matrix_t.h>
 #include <node_utils/functions.h>
 #include <types/types.h>
