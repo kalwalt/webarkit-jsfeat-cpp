@@ -5,17 +5,19 @@
 #include <emscripten.h>
 #include <emscripten/val.h>
 #endif
-#include <algorithm>
 #include <cache/Cache.h>
-#include <cassert>
 #include <jslog/jslog.h>
 #include <math/math.h>
 #include <matrix_t/matrix_t.h>
 #include <node_utils/functions.h>
 #include <types/types.h>
-#include <vector>
+
+#include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <memory>
+#include <type_traits>
+#include <vector>
 
 namespace jsfeat {
 
@@ -24,20 +26,19 @@ typedef struct {
   unsigned int alpha;
 } jsfeat_int_alpha;
 
-#define jsfeat_clamp(x, a, b)                                                  \
-  ({                                                                           \
-    typeof(a) _a = (a);                                                        \
-    typeof(b) _b = (b);                                                        \
-    typeof(x) _x = (x);                                                        \
-    (_x < _a) ? _a : ((_x > _b) ? _b : _x);                                    \
+#define jsfeat_clamp(x, a, b)               \
+  ({                                        \
+    typeof(a) _a = (a);                     \
+    typeof(b) _b = (b);                     \
+    typeof(x) _x = (x);                     \
+    (_x < _a) ? _a : ((_x > _b) ? _b : _x); \
   })
 
-class Imgproc: public Math {
-public:
-
+class Imgproc : public Math {
+ public:
   void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {
-    auto ptrSrc = reinterpret_cast<Matrix_t *>(src);
-    auto ptrDst = reinterpret_cast<Matrix_t *>(dst);
+    auto ptrSrc = reinterpret_cast<Matrix_t*>(src);
+    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
     // this is default image data representation in browser
     if (!code) {
       code = Colors::COLOR_RGBA2GRAY;
@@ -103,9 +104,9 @@ public:
                  int code) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
 #else
-  void grayscale(u_char *src, int w, int h, uintptr_t dst, int code) {
+  void grayscale(u_char* src, int w, int h, uintptr_t dst, int code) {
 #endif
-    auto ptrDst = reinterpret_cast<Matrix_t *>(dst);
+    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
     // this is default image data representation in browser
     if (!code) {
       code = Colors::COLOR_RGBA2GRAY;
@@ -160,7 +161,12 @@ public:
     }
   };
   template <typename Matrix_class>
-  void grayscale_rgba_internal(Array<u_char> src, int w, int h, std::shared_ptr<Matrix_class> dst) {
+  void grayscale_rgba_internal(Array<u_char> src, int w, int h,
+                               std::shared_ptr<Matrix_class> dst) {
+    static_assert(
+        std::is_base_of<Matrix_smart, Matrix_class>::value ||
+            std::is_base_of<Matrix_t, Matrix_class>::value,
+        "Matrix_class must inherit from Matrix_smart or Matrix_t class");
     // code from jsartoolkit5
     auto videosize = w * h;
     auto q = 0;
@@ -168,25 +174,27 @@ public:
     u_char g;
     u_char b;
     for (auto p = 0; p < videosize; p++) {
-      r = src[q + 0], g = src[q + 1], b = src[q + 2];     
+      r = src[q + 0], g = src[q + 1], b = src[q + 2];
       // https://stackoverflow.com/a/596241/5843642
       dst->u8.push_back((r + r + r + b + g + g + g + g) >> 3);
       q += 4;
     }
   }
-  #ifdef __EMSCRIPTEN__
-  void grayscale_rgba(emscripten::val inputSrc, int w, int h, std::shared_ptr<Matrix_smart> dst) {
+#ifdef __EMSCRIPTEN__
+  void grayscale_rgba(emscripten::val inputSrc, int w, int h,
+                      std::shared_ptr<Matrix_smart> dst) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
     grayscale_rgba_internal<Matrix_smart>(src, w, h, dst);
   }
-  void grayscale_rgba(emscripten::val inputSrc, int w, int h, std::shared_ptr<Matrix_t> dst) {
+  void grayscale_rgba(emscripten::val inputSrc, int w, int h,
+                      std::shared_ptr<Matrix_t> dst) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
     grayscale_rgba_internal<Matrix_t>(src, w, h, dst);
   }
-  #endif
+#endif
   void pyrdown(uintptr_t inputSrc, uintptr_t inputDst, int sx, int sy) {
-    auto dst = reinterpret_cast<Matrix_t *>(inputDst);
-    auto src = reinterpret_cast<Matrix_t *>(inputSrc);
+    auto dst = reinterpret_cast<Matrix_t*>(inputDst);
+    auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     if (!sx) {
       sx = 0;
     }
@@ -225,7 +233,7 @@ public:
       dptr += w2;
     }
   };
-  void pyrdown_internal(Matrix_t *src, Matrix_t *dst, int sx = 0, int sy = 0) {
+  void pyrdown_internal(Matrix_t* src, Matrix_t* dst, int sx = 0, int sy = 0) {
     if (!sx) {
       sx = 0;
     }
@@ -240,8 +248,8 @@ public:
 
     dst->resize(w2, h2, src->channel);
 
-    u_char *src_d = src->u8.data();
-    u_char *dst_d = dst->u8.data();
+    u_char* src_d = src->u8.data();
+    u_char* dst_d = dst->u8.data();
 
     for (y = 0; y < _h2; ++y) {
       sline = sptr;
@@ -264,7 +272,7 @@ public:
     }
   };
 
-  void equalize_histogram_internal(Matrix_t *src, Matrix_t *dst) {
+  void equalize_histogram_internal(Matrix_t* src, Matrix_t* dst) {
     auto w = src->cols, h = src->rows;
 
     dst->resize(w, h, src->channel);
@@ -287,8 +295,7 @@ public:
 
     // Find first non-zero bin
     auto i = 0;
-    while (!hist->i32[i])
-      ++i;
+    while (!hist->i32[i]) ++i;
 
     if (hist->i32[i] == total) {
       for (int j = 0; j < total; ++j) {
@@ -308,7 +315,8 @@ public:
     for (; i < hist->i32.size(); ++i) {
       sum += hist->i32[i];
       // the value is saturated in range [0, max_val]
-      lut->i32[i] = std::max(0, std::min(int(std::round(sum * scale)), max_val));
+      lut->i32[i] =
+          std::max(0, std::min(int(std::round(sum * scale)), max_val));
     }
 
     // Apply equalization
@@ -319,11 +327,11 @@ public:
   };
 
   void equalize_histogram(uintptr_t inputSrc, uintptr_t inputDst) {
-    auto src = reinterpret_cast<Matrix_t *>(inputSrc);
-    auto dst = reinterpret_cast<Matrix_t *>(inputDst);
+    auto src = reinterpret_cast<Matrix_t*>(inputSrc);
+    auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     this->equalize_histogram_internal(src, dst);
   }
-  void warp_affine_internal(Matrix_t *src, Matrix_t *dst, Matrix_t *transform,
+  void warp_affine_internal(Matrix_t* src, Matrix_t* dst, Matrix_t* transform,
                             int fill_value) {
     if (!fill_value) {
       fill_value = 0;
@@ -343,7 +351,7 @@ public:
     float b = 0.0;
     float p0 = 0.0;
     float p1 = 0.0;
-    float *td = transform->f32.data();
+    float* td = transform->f32.data();
     float m00 = td[0];
     float m01 = td[1];
     float m02 = td[2];
@@ -375,9 +383,9 @@ public:
   }
   void warp_affine(uintptr_t src, uintptr_t dst, uintptr_t transform,
                    int fill_value) {
-    auto ptrSrc = reinterpret_cast<Matrix_t *>(src);
-    auto ptrDst = reinterpret_cast<Matrix_t *>(dst);
-    auto ptrTransform = reinterpret_cast<Matrix_t *>(transform);
+    auto ptrSrc = reinterpret_cast<Matrix_t*>(src);
+    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
+    auto ptrTransform = reinterpret_cast<Matrix_t*>(transform);
     if (!fill_value) {
       fill_value = 0;
     }
@@ -396,7 +404,7 @@ public:
     float b = 0.0;
     float p0 = 0.0;
     float p1 = 0.0;
-    float *td = ptrTransform->f32.data();
+    float* td = ptrTransform->f32.data();
     float m00 = td[0];
     float m01 = td[1];
     float m02 = td[2];
@@ -428,8 +436,8 @@ public:
     }
   }
   void resample(uintptr_t inputSrc, uintptr_t inputDst, int nw, int nh) {
-    auto src = reinterpret_cast<Matrix_t *>(inputSrc);
-    auto dst = reinterpret_cast<Matrix_t *>(inputDst);
+    auto src = reinterpret_cast<Matrix_t*>(inputSrc);
+    auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     int h = src->rows, w = src->cols;
     if (h > nh && w > nw) {
       dst->resize(nw, nh, src->channel);
@@ -442,7 +450,7 @@ public:
       }
     }
   };
-  void resample(Matrix_t *src, Matrix_t *dst, int nw, int nh) {
+  void resample(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
     int h = src->rows, w = src->cols;
     if (h > nh && w > nw) {
       dst->resize(nw, nh, src->channel);
@@ -455,58 +463,73 @@ public:
       }
     }
   };
-  void gaussian_blur(uintptr_t inputSrc, uintptr_t inputDst, int kernel_size, float sigma){
-    auto src = reinterpret_cast<Matrix_t *>(inputSrc);
-    auto dst = reinterpret_cast<Matrix_t *>(inputDst);
+  void gaussian_blur(uintptr_t inputSrc, uintptr_t inputDst, int kernel_size,
+                     float sigma) {
+    auto src = reinterpret_cast<Matrix_t*>(inputSrc);
+    auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     gaussian_blur_internal(src, dst, kernel_size, sigma);
   };
-  void gaussian_blur_internal(Matrix_t *src, Matrix_t *dst, int kernel_size, float sigma){
-      if (!sigma) { sigma = 0.0; }
-      if (!kernel_size) { kernel_size = 0; }
-      kernel_size = kernel_size == 0 ? (std::max(1, (int)(4.0 * sigma + 1.0 - 1e-8)) * 2 + 1)|0 : kernel_size; 
-      int half_kernel = kernel_size >> 1; 
-      int w = src->cols, h = src->rows; 
-      int data_type = src->type;
-      int is_u8 = data_type & Types::U8_t;
+  void gaussian_blur_internal(Matrix_t* src, Matrix_t* dst, int kernel_size,
+                              float sigma) {
+    if (!sigma) {
+      sigma = 0.0;
+    }
+    if (!kernel_size) {
+      kernel_size = 0;
+    }
+    kernel_size =
+        kernel_size == 0
+            ? (std::max(1, (int)(4.0 * sigma + 1.0 - 1e-8)) * 2 + 1) | 0
+            : kernel_size;
+    int half_kernel = kernel_size >> 1;
+    int w = src->cols, h = src->rows;
+    int data_type = src->type;
+    int is_u8 = data_type & Types::U8_t;
 
-      dst->resize(w, h, src->channel);
+    dst->resize(w, h, src->channel);
 
-      auto src_d = src->u8;
-      auto dst_d = dst->u8;
-      int buf_sz = (kernel_size + std::max(h, w)) | 0;
+    auto src_d = src->u8;
+    auto dst_d = dst->u8;
+    int buf_sz = (kernel_size + std::max(h, w)) | 0;
 
-      if(is_u8) {
-        /* We could use the cache, but we need to provide the appropiate values to the functions,
-           this will be tested in another moment.*/
-        //auto buf = cache.put_buffer(buf_sz<<2, Types::S32_t | Types::C1_t);
-        //auto filter = cache.put_buffer(kernel_size<<2, Types::S32_t | Types::C1_t);
-        Array<int> buf(buf_sz<<2, 0);
-        Array<int> filter(kernel_size<<2, 0);
-        // From Math class
-        get_gaussian_kernel<int>(kernel_size, sigma, filter, data_type);
-        _convol_u8<int, int>(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
-      } else if(data_type & Types::S32_t) {
-        //auto buf = cache.put_buffer(buf_sz<<2, Types::S32_t | Types::C1_t);
-        //auto filter = cache.put_buffer(kernel_size<<2, Types::F32_t | Types::C1_t);
-        Array<int> buf(buf_sz<<2, 0);
-        Array<float> filter(kernel_size<<2, 0.0);
-        // From Math class
-        get_gaussian_kernel<float>(kernel_size, sigma, filter, data_type);
-        _convol<int, float>(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
-      } else {
-        //auto buf = cache.put_buffer(buf_sz<<2, Types::F32_t | Types::C1_t);
-        //auto filter = cache.put_buffer(kernel_size<<2, Types::F32_t | Types::C1_t);
-        Array<float> buf(buf_sz<<2, 0.0);
-        Array<float> filter(kernel_size<<2, 0.0);
-         // From Math class
-        get_gaussian_kernel<float>(kernel_size, sigma, filter, data_type);
-        _convol<float, float>(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
-      }
+    if (is_u8) {
+      /* We could use the cache, but we need to provide the appropiate values to
+         the functions, this will be tested in another moment.*/
+      // auto buf = cache.put_buffer(buf_sz<<2, Types::S32_t | Types::C1_t);
+      // auto filter = cache.put_buffer(kernel_size<<2, Types::S32_t |
+      // Types::C1_t);
+      Array<int> buf(buf_sz << 2, 0);
+      Array<int> filter(kernel_size << 2, 0);
+      // From Math class
+      get_gaussian_kernel<int>(kernel_size, sigma, filter, data_type);
+      _convol_u8<int, int>(buf, src_d, dst_d, w, h, filter, kernel_size,
+                           half_kernel);
+    } else if (data_type & Types::S32_t) {
+      // auto buf = cache.put_buffer(buf_sz<<2, Types::S32_t | Types::C1_t);
+      // auto filter = cache.put_buffer(kernel_size<<2, Types::F32_t |
+      // Types::C1_t);
+      Array<int> buf(buf_sz << 2, 0);
+      Array<float> filter(kernel_size << 2, 0.0);
+      // From Math class
+      get_gaussian_kernel<float>(kernel_size, sigma, filter, data_type);
+      _convol<int, float>(buf, src_d, dst_d, w, h, filter, kernel_size,
+                          half_kernel);
+    } else {
+      // auto buf = cache.put_buffer(buf_sz<<2, Types::F32_t | Types::C1_t);
+      // auto filter = cache.put_buffer(kernel_size<<2, Types::F32_t |
+      // Types::C1_t);
+      Array<float> buf(buf_sz << 2, 0.0);
+      Array<float> filter(kernel_size << 2, 0.0);
+      // From Math class
+      get_gaussian_kernel<float>(kernel_size, sigma, filter, data_type);
+      _convol<float, float>(buf, src_d, dst_d, w, h, filter, kernel_size,
+                            half_kernel);
+    }
   };
 
-private:
+ private:
   // a is src matrix, b is dst matrix
-  void _resample_u8(Matrix_t *src, Matrix_t *dst, int nw, int nh) {
+  void _resample_u8(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
     int h = src->rows, w = src->cols;
     assert(src->cols > 0 && dst->cols > 0);
     Array<jsfeat_int_alpha> xofs(src->cols * 2);
@@ -561,7 +584,7 @@ private:
             (int)((std::max(sy + 1 - (dy + 1) * scale_y, 0.)) * 256);
         unsigned int beta1 = 256 - beta;
         b = nw * dy;
-        Array<u_char> b_ptr = dst->u8; // + b->step  * dy;
+        Array<u_char> b_ptr = dst->u8;  // + b->step  * dy;
         if (beta <= 0) {
           for (dx = 0; dx < dst->cols * ch; dx++) {
             b_ptr[b + dx] =
@@ -586,107 +609,108 @@ private:
     }
   }
 
-  void _resample(Matrix_t *src, Matrix_t *dst, int nw, int nh) {
+  void _resample(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
     // to be implemented!
   }
-  template<typename Buffer, typename Filter>
-  void _convol_u8(Array<Buffer>& buf, Array<u_char>& src_d, Array<u_char>& dst_d, int w, int h, Array<Filter>& filter, int kernel_size, int half_kernel) {
-    auto i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0, sum3 = 0;
+  template <typename Buffer, typename Filter>
+  void _convol_u8(Array<Buffer>& buf, Array<u_char>& src_d,
+                  Array<u_char>& dst_d, int w, int h, Array<Filter>& filter,
+                  int kernel_size, int half_kernel) {
+    auto i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0,
+         sum3 = 0;
     auto f0 = filter[0];
     auto fk = 0.0;
     auto w2 = w << 1, w3 = w * 3, w4 = w << 2;
     // hor pass
     for (; i < h; ++i) {
-        sum = src_d[sp];
-        for (j = 0; j < half_kernel; ++j) {
-            buf[j] = sum;
+      sum = src_d[sp];
+      for (j = 0; j < half_kernel; ++j) {
+        buf[j] = sum;
+      }
+      for (j = 0; j <= w - 2; j += 2) {
+        buf[j + half_kernel] = src_d[sp + j];
+        buf[j + half_kernel + 1] = src_d[sp + j + 1];
+      }
+      for (; j < w; ++j) {
+        buf[j + half_kernel] = src_d[sp + j];
+      }
+      sum = src_d[sp + w - 1];
+      for (j = w; j < half_kernel + w; ++j) {
+        buf[j + half_kernel] = sum;
+      }
+      for (j = 0; j <= w - 4; j += 4) {
+        sum = buf[j] * f0, sum1 = buf[j + 1] * f0, sum2 = buf[j + 2] * f0,
+        sum3 = buf[j + 3] * f0;
+        for (k = 1; k < kernel_size; ++k) {
+          fk = filter[k];
+          sum += buf[k + j] * fk;
+          sum1 += buf[k + j + 1] * fk;
+          sum2 += buf[k + j + 2] * fk;
+          sum3 += buf[k + j + 3] * fk;
         }
-        for (j = 0; j <= w - 2; j += 2) {
-            buf[j + half_kernel] = src_d[sp + j];
-            buf[j + half_kernel + 1] = src_d[sp + j + 1];
+        dst_d[dp + j] = std::min(sum >> 8, 255);
+        dst_d[dp + j + 1] = std::min(sum1 >> 8, 255);
+        dst_d[dp + j + 2] = std::min(sum2 >> 8, 255);
+        dst_d[dp + j + 3] = std::min(sum3 >> 8, 255);
+      }
+      for (; j < w; ++j) {
+        sum = buf[j] * f0;
+        for (k = 1; k < kernel_size; ++k) {
+          sum += buf[k + j] * filter[k];
         }
-        for (; j < w; ++j) {
-            buf[j + half_kernel] = src_d[sp + j];
-        }
-        sum = src_d[sp + w - 1];
-        for (j = w; j < half_kernel + w; ++j) {
-            buf[j + half_kernel] = sum;
-        }
-        for (j = 0; j <= w - 4; j += 4) {
-            sum = buf[j] * f0,
-                sum1 = buf[j + 1] * f0,
-                sum2 = buf[j + 2] * f0,
-                sum3 = buf[j + 3] * f0;
-            for (k = 1; k < kernel_size; ++k) {
-                fk = filter[k];
-                sum += buf[k + j] * fk;
-                sum1 += buf[k + j + 1] * fk;
-                sum2 += buf[k + j + 2] * fk;
-                sum3 += buf[k + j + 3] * fk;
-            }
-            dst_d[dp + j] = std::min(sum >> 8, 255);
-            dst_d[dp + j + 1] = std::min(sum1 >> 8, 255);
-            dst_d[dp + j + 2] = std::min(sum2 >> 8, 255);
-            dst_d[dp + j + 3] = std::min(sum3 >> 8, 255);
-        }
-        for (; j < w; ++j) {
-            sum = buf[j] * f0;
-            for (k = 1; k < kernel_size; ++k) {
-                sum += buf[k + j] * filter[k];
-            }
-            dst_d[dp + j] = std::min(sum >> 8, 255);
-        }
-        sp += w;
-        dp += w;
+        dst_d[dp + j] = std::min(sum >> 8, 255);
+      }
+      sp += w;
+      dp += w;
     }
 
     // vert pass
     for (i = 0; i < w; ++i) {
-        sum = dst_d[i];
-        for (j = 0; j < half_kernel; ++j) {
-            buf[j] = sum;
+      sum = dst_d[i];
+      for (j = 0; j < half_kernel; ++j) {
+        buf[j] = sum;
+      }
+      k = i;
+      for (j = 0; j <= h - 2; j += 2, k += w2) {
+        buf[j + half_kernel] = dst_d[k];
+        buf[j + half_kernel + 1] = dst_d[k + w];
+      }
+      for (; j < h; ++j, k += w) {
+        buf[j + half_kernel] = dst_d[k];
+      }
+      sum = dst_d[(h - 1) * w + i];
+      for (j = h; j < half_kernel + h; ++j) {
+        buf[j + half_kernel] = sum;
+      }
+      dp = i;
+      for (j = 0; j <= h - 4; j += 4, dp += w4) {
+        sum = buf[j] * f0, sum1 = buf[j + 1] * f0, sum2 = buf[j + 2] * f0,
+        sum3 = buf[j + 3] * f0;
+        for (k = 1; k < kernel_size; ++k) {
+          fk = filter[k];
+          sum += buf[k + j] * fk;
+          sum1 += buf[k + j + 1] * fk;
+          sum2 += buf[k + j + 2] * fk;
+          sum3 += buf[k + j + 3] * fk;
         }
-        k = i;
-        for (j = 0; j <= h - 2; j += 2, k += w2) {
-            buf[j + half_kernel] = dst_d[k];
-            buf[j + half_kernel + 1] = dst_d[k + w];
+        dst_d[dp] = std::min(sum >> 8, 255);
+        dst_d[dp + w] = std::min(sum1 >> 8, 255);
+        dst_d[dp + w2] = std::min(sum2 >> 8, 255);
+        dst_d[dp + w3] = std::min(sum3 >> 8, 255);
+      }
+      for (; j < h; ++j, dp += w) {
+        sum = buf[j] * f0;
+        for (k = 1; k < kernel_size; ++k) {
+          sum += buf[k + j] * filter[k];
         }
-        for (; j < h; ++j, k += w) {
-            buf[j + half_kernel] = dst_d[k];
-        }
-        sum = dst_d[(h - 1) * w + i];
-        for (j = h; j < half_kernel + h; ++j) {
-            buf[j + half_kernel] = sum;
-        }
-        dp = i;
-        for (j = 0; j <= h - 4; j += 4, dp += w4) {
-            sum = buf[j] * f0,
-                sum1 = buf[j + 1] * f0,
-                sum2 = buf[j + 2] * f0,
-                sum3 = buf[j + 3] * f0;
-            for (k = 1; k < kernel_size; ++k) {
-                fk = filter[k];
-                sum += buf[k + j] * fk;
-                sum1 += buf[k + j + 1] * fk;
-                sum2 += buf[k + j + 2] * fk;
-                sum3 += buf[k + j + 3] * fk;
-            }
-            dst_d[dp] = std::min(sum >> 8, 255);
-            dst_d[dp + w] = std::min(sum1 >> 8, 255);
-            dst_d[dp + w2] = std::min(sum2 >> 8, 255);
-            dst_d[dp + w3] = std::min(sum3 >> 8, 255);
-        }
-        for (; j < h; ++j, dp += w) {
-            sum = buf[j] * f0;
-            for (k = 1; k < kernel_size; ++k) {
-                sum += buf[k + j] * filter[k];
-            }
-            dst_d[dp] = std::min(sum >> 8, 255);
-        }
+        dst_d[dp] = std::min(sum >> 8, 255);
+      }
     }
   }
-  template<typename Buffer, typename Filter>
-  void _convol(Array<Buffer>& buf, Array<u_char>& src_d, Array<u_char>& dst_d, int w, int h, Array<Filter>& filter, int kernel_size, int half_kernel) {
+  template <typename Buffer, typename Filter>
+  void _convol(Array<Buffer>& buf, Array<u_char>& src_d, Array<u_char>& dst_d,
+               int w, int h, Array<Filter>& filter, int kernel_size,
+               int half_kernel) {
     auto i = 0, j = 0, k = 0, sp = 0, dp = 0;
     auto sum = 0.0, sum1 = 0.0, sum2 = 0.0, sum3 = 0.0;
     auto f0 = filter[0];
@@ -694,97 +718,93 @@ private:
     auto w2 = w << 1, w3 = w * 3, w4 = w << 2;
     // hor pass
     for (; i < h; ++i) {
-        sum = src_d[sp];
-        for (j = 0; j < half_kernel; ++j) {
-            buf[j] = sum;
+      sum = src_d[sp];
+      for (j = 0; j < half_kernel; ++j) {
+        buf[j] = sum;
+      }
+      for (j = 0; j <= w - 2; j += 2) {
+        buf[j + half_kernel] = src_d[sp + j];
+        buf[j + half_kernel + 1] = src_d[sp + j + 1];
+      }
+      for (; j < w; ++j) {
+        buf[j + half_kernel] = src_d[sp + j];
+      }
+      sum = src_d[sp + w - 1];
+      for (j = w; j < half_kernel + w; ++j) {
+        buf[j + half_kernel] = sum;
+      }
+      for (j = 0; j <= w - 4; j += 4) {
+        sum = buf[j] * f0, sum1 = buf[j + 1] * f0, sum2 = buf[j + 2] * f0,
+        sum3 = buf[j + 3] * f0;
+        for (k = 1; k < kernel_size; ++k) {
+          fk = filter[k];
+          sum += buf[k + j] * fk;
+          sum1 += buf[k + j + 1] * fk;
+          sum2 += buf[k + j + 2] * fk;
+          sum3 += buf[k + j + 3] * fk;
         }
-        for (j = 0; j <= w - 2; j += 2) {
-            buf[j + half_kernel] = src_d[sp + j];
-            buf[j + half_kernel + 1] = src_d[sp + j + 1];
+        dst_d[dp + j] = sum;
+        dst_d[dp + j + 1] = sum1;
+        dst_d[dp + j + 2] = sum2;
+        dst_d[dp + j + 3] = sum3;
+      }
+      for (; j < w; ++j) {
+        sum = buf[j] * f0;
+        for (k = 1; k < kernel_size; ++k) {
+          sum += buf[k + j] * filter[k];
         }
-        for (; j < w; ++j) {
-            buf[j + half_kernel] = src_d[sp + j];
-        }
-        sum = src_d[sp + w - 1];
-        for (j = w; j < half_kernel + w; ++j) {
-            buf[j + half_kernel] = sum;
-        }
-        for (j = 0; j <= w - 4; j += 4) {
-            sum = buf[j] * f0,
-                sum1 = buf[j + 1] * f0,
-                sum2 = buf[j + 2] * f0,
-                sum3 = buf[j + 3] * f0;
-            for (k = 1; k < kernel_size; ++k) {
-                fk = filter[k];
-                sum += buf[k + j] * fk;
-                sum1 += buf[k + j + 1] * fk;
-                sum2 += buf[k + j + 2] * fk;
-                sum3 += buf[k + j + 3] * fk;
-            }
-            dst_d[dp + j] = sum;
-            dst_d[dp + j + 1] = sum1;
-            dst_d[dp + j + 2] = sum2;
-            dst_d[dp + j + 3] = sum3;
-        }
-        for (; j < w; ++j) {
-            sum = buf[j] * f0;
-            for (k = 1; k < kernel_size; ++k) {
-                sum += buf[k + j] * filter[k];
-            }
-            dst_d[dp + j] = sum;
-        }
-        sp += w;
-        dp += w;
+        dst_d[dp + j] = sum;
+      }
+      sp += w;
+      dp += w;
     }
 
     // vert pass
     for (i = 0; i < w; ++i) {
-        sum = dst_d[i];
-        for (j = 0; j < half_kernel; ++j) {
-            buf[j] = sum;
+      sum = dst_d[i];
+      for (j = 0; j < half_kernel; ++j) {
+        buf[j] = sum;
+      }
+      k = i;
+      for (j = 0; j <= h - 2; j += 2, k += w2) {
+        buf[j + half_kernel] = dst_d[k];
+        buf[j + half_kernel + 1] = dst_d[k + w];
+      }
+      for (; j < h; ++j, k += w) {
+        buf[j + half_kernel] = dst_d[k];
+      }
+      sum = dst_d[(h - 1) * w + i];
+      for (j = h; j < half_kernel + h; ++j) {
+        buf[j + half_kernel] = sum;
+      }
+      dp = i;
+      for (j = 0; j <= h - 4; j += 4, dp += w4) {
+        sum = buf[j] * f0, sum1 = buf[j + 1] * f0, sum2 = buf[j + 2] * f0,
+        sum3 = buf[j + 3] * f0;
+        for (k = 1; k < kernel_size; ++k) {
+          fk = filter[k];
+          sum += buf[k + j] * fk;
+          sum1 += buf[k + j + 1] * fk;
+          sum2 += buf[k + j + 2] * fk;
+          sum3 += buf[k + j + 3] * fk;
         }
-        k = i;
-        for (j = 0; j <= h - 2; j += 2, k += w2) {
-            buf[j + half_kernel] = dst_d[k];
-            buf[j + half_kernel + 1] = dst_d[k + w];
+        dst_d[dp] = sum;
+        dst_d[dp + w] = sum1;
+        dst_d[dp + w2] = sum2;
+        dst_d[dp + w3] = sum3;
+      }
+      for (; j < h; ++j, dp += w) {
+        sum = buf[j] * f0;
+        for (k = 1; k < kernel_size; ++k) {
+          sum += buf[k + j] * filter[k];
         }
-        for (; j < h; ++j, k += w) {
-            buf[j + half_kernel] = dst_d[k];
-        }
-        sum = dst_d[(h - 1) * w + i];
-        for (j = h; j < half_kernel + h; ++j) {
-            buf[j + half_kernel] = sum;
-        }
-        dp = i;
-        for (j = 0; j <= h - 4; j += 4, dp += w4) {
-            sum = buf[j] * f0,
-                sum1 = buf[j + 1] * f0,
-                sum2 = buf[j + 2] * f0,
-                sum3 = buf[j + 3] * f0;
-            for (k = 1; k < kernel_size; ++k) {
-                fk = filter[k];
-                sum += buf[k + j] * fk;
-                sum1 += buf[k + j + 1] * fk;
-                sum2 += buf[k + j + 2] * fk;
-                sum3 += buf[k + j + 3] * fk;
-            }
-            dst_d[dp] = sum;
-            dst_d[dp + w] = sum1;
-            dst_d[dp + w2] = sum2;
-            dst_d[dp + w3] = sum3;
-        }
-        for (; j < h; ++j, dp += w) {
-            sum = buf[j] * f0;
-            for (k = 1; k < kernel_size; ++k) {
-                sum += buf[k + j] * filter[k];
-            }
-            dst_d[dp] = sum;
-        }
-  }
+        dst_d[dp] = sum;
+      }
+    }
   }
 
-}; // class imgproc
+};  // class imgproc
 
-} // namespace jsfeat
+}  // namespace jsfeat
 
 #endif
