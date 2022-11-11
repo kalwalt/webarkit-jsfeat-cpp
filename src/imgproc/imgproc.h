@@ -15,6 +15,7 @@
 #include <types/types.h>
 #include <vector>
 #include <cmath>
+#include <memory>
 
 namespace jsfeat {
 
@@ -158,6 +159,26 @@ public:
       }
     }
   };
+  void grayscale_rgba_internal(Array<u_char> src, int w, int h, std::shared_ptr<Matrix_smart> dst) {
+    // code from jsartoolkit5
+    auto videosize = w * h;
+    auto q = 0;
+    u_char r;
+    u_char g;
+    u_char b;
+    for (auto p = 0; p < videosize; p++) {
+      r = src[q + 0], g = src[q + 1], b = src[q + 2];     
+      // https://stackoverflow.com/a/596241/5843642
+      dst->u8.push_back((r + r + r + b + g + g + g + g) >> 3);
+      q += 4;
+    }
+  }
+  #ifdef __EMSCRIPTEN__
+  void grayscale_rgba(emscripten::val inputSrc, int w, int h, std::shared_ptr<Matrix_smart> dst) {
+    auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
+    grayscale_rgba_internal(src, w, h, dst);
+  }
+  #endif
   void pyrdown(uintptr_t inputSrc, uintptr_t inputDst, int sx, int sy) {
     auto dst = reinterpret_cast<Matrix_t *>(inputDst);
     auto src = reinterpret_cast<Matrix_t *>(inputSrc);
