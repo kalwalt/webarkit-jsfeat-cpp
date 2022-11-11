@@ -9,25 +9,30 @@
 #include <node_utils/functions.h>
 #include <types/types.h>
 
+#include <memory>
 #include <string>
 #include <variant>
-#include <memory>
 
 namespace jsfeat {
 class Matrix_smart : public Data_t {
-  public:
+ public:
   int cols;
   int rows;
   int type;
   size_t channel;
   size_t size;
-  Matrix_smart(int c, int r, int data_type){
-    cols=c;
-    rows=r;
+  Matrix_smart(int c, int r, int data_type) {
+    cols = c;
+    rows = r;
     type = get_data_type(data_type) | 0;
     channel = get_channel(data_type) | 0;
     size = (cols * channel) * rows;
     allocate();
+  }
+  ~Matrix_smart() {
+#ifdef DEBUG_EM
+    JSLOGd("deleting Matrix_smart");
+#endif
   }
   int get_cols() const { return cols; };
 
@@ -44,12 +49,13 @@ class Matrix_smart : public Data_t {
   int get_channel_m() const { return channel; };
 
   void set_channel_m(int _channel) { channel = _channel; };
-  std::shared_ptr<Matrix_smart> get_smart_pointer(){
+  std::shared_ptr<Matrix_smart> get_smart_pointer() {
     return std::shared_ptr<Matrix_smart>(this);
   }
-  #ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
   emscripten::val get_data() const {
     if (type == Types::U8_t) {
+      std::cout << u8.size() << std::endl;
       emscripten::val view{emscripten::typed_memory_view(u8.size(), u8.data())};
       auto result = emscripten::val::global("Uint8Array").new_(u8.size());
       result.call<void>("set", view);
@@ -75,7 +81,7 @@ class Matrix_smart : public Data_t {
     }
   }
 #endif
-void allocate() {
+  void allocate() {
     if (type == Types::U8_t) {
       u8.assign(size, 0);
     } else if (type == Types::S32_t) {
