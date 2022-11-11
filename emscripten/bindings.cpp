@@ -38,6 +38,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .function("grayscale", &Imgproc::grayscale, allow_raw_pointer<Matrix_t>())
     .function("grayscale_m", &Imgproc::grayscale_m, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
     .function("grayscale_rgba", select_overload<void(emscripten::val, int, int, std::shared_ptr<Matrix_smart>)>(&Imgproc::grayscale_rgba))
+    .function("grayscale_rgba_t", select_overload<void(emscripten::val, int, int, std::shared_ptr<Matrix_t>)>(&Imgproc::grayscale_rgba))
     .function("pyrdown", &Imgproc::pyrdown, allow_raw_pointer<Matrix_t>())
     .function("equalize_histogram", &Imgproc::equalize_histogram, allow_raw_pointer<Matrix_t>())
     .function("warp_affine", &Imgproc::warp_affine, allow_raw_pointer<Matrix_t>())

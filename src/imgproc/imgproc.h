@@ -159,7 +159,8 @@ public:
       }
     }
   };
-  void grayscale_rgba_internal(Array<u_char> src, int w, int h, std::shared_ptr<Matrix_smart> dst) {
+  template <typename Matrix_class>
+  void grayscale_rgba_internal(Array<u_char> src, int w, int h, std::shared_ptr<Matrix_class> dst) {
     // code from jsartoolkit5
     auto videosize = w * h;
     auto q = 0;
@@ -176,7 +177,11 @@ public:
   #ifdef __EMSCRIPTEN__
   void grayscale_rgba(emscripten::val inputSrc, int w, int h, std::shared_ptr<Matrix_smart> dst) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
-    grayscale_rgba_internal(src, w, h, dst);
+    grayscale_rgba_internal<Matrix_smart>(src, w, h, dst);
+  }
+  void grayscale_rgba(emscripten::val inputSrc, int w, int h, std::shared_ptr<Matrix_t> dst) {
+    auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
+    grayscale_rgba_internal<Matrix_t>(src, w, h, dst);
   }
   #endif
   void pyrdown(uintptr_t inputSrc, uintptr_t inputDst, int sx, int sy) {

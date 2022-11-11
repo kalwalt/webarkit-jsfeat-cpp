@@ -77,7 +77,7 @@ int main() {
   img.gaussian_blur_internal(src, dst, 5, 2);
 
   Array<u_char> m_shared_src {23, 45, 14, 45, 126, 89, 245, 78, 178, 12, 224, 95, 120, 205, 120, 2};
-  std::shared_ptr<Matrix_smart> m_shared_dst = std::make_shared<Matrix_smart>(2, 2, 0x0100 | 0x04);
+  std::shared_ptr<Matrix_t> m_shared_dst = std::make_shared<Matrix_t>(2, 2, 0x0100 | 0x04);
   img.grayscale_rgba_internal(m_shared_src, 2, 2, m_shared_dst);
   std::cout << "Data from grayscale_rgba function" << std::endl;
   for(auto i=0; i<4; i++){
