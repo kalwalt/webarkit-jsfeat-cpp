@@ -71,6 +71,7 @@ class Matrix_smart : public Data_t {
   }
 #endif
   void allocate() {
+    size = (cols * channel) * rows;
     if (type == Types::U8_t) {
       u8.assign(size, 0);
       std::cout << "size in allocate: " << u8.size() << std::endl;

@@ -22,6 +22,13 @@ class Matrix_t : public Data_t {
   int type;
   size_t channel;
   size_t size;
+  Matrix_t() {
+    cols = 0;
+    rows = 0;
+    channel = 1;
+    type = Types::U8_t;
+    size = (cols * channel) * rows;
+  };
 #ifdef __EMSCRIPTEN__
   emscripten::val data = emscripten::val::null();
 
@@ -236,6 +243,7 @@ class Matrix_t : public Data_t {
 #endif
 
   void allocate() {
+    size = (cols * channel) * rows;
     if (type == Types::U8_t) {
       u8.assign(size, 0);
     } else if (type == Types::S32_t) {
