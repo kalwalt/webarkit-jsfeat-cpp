@@ -161,6 +161,20 @@ class Imgproc : public Math {
       }
     }
   };
+  void grayscale_rgba_standard(Array<u_char> src, int w, int h, Matrix_t* dst) {
+    // code from jsartoolkit5
+    auto videosize = w * h;
+    auto q = 0;
+    u_char r;
+    u_char g;
+    u_char b;
+    for (auto p = 0; p < videosize; p++) {
+      r = src[q + 0], g = src[q + 1], b = src[q + 2];
+      // https://stackoverflow.com/a/596241/5843642
+      dst->u8.push_back((r + r + r + b + g + g + g + g) >> 3);
+      q += 4;
+    }
+  }
   template <typename Matrix_class>
   void grayscale_rgba_internal(Array<u_char> src, int w, int h,
                                std::shared_ptr<Matrix_class> dst) {
@@ -182,6 +196,10 @@ class Imgproc : public Math {
     }
   }
 #ifdef __EMSCRIPTEN__
+  void grayscale_rgba(emscripten::val inputSrc, int w, int h, Matrix_t* dst) {
+    auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
+    grayscale_rgba_standard(src, w, h, dst);
+  }
   void grayscale_rgba(emscripten::val inputSrc, int w, int h,
                       std::shared_ptr<Matrix_smart> dst) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
