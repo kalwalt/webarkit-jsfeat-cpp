@@ -50,6 +50,16 @@ enum Types {
   C4_t = 0x04
 };
 
+enum ComboTypes {
+  U8C1_t = Types(U8_t) | Types(C1_t),
+  U8C3_t = Types(U8_t) | Types(C3_t),
+  U8C4_t = Types(U8_t) | Types(C4_t),
+  F32C1_t = Types(F32_t) | Types(C1_t),
+  F32C2_t = Types(F32_t) | Types(C2_t),
+  S32C1_t = Types(S32_t) | Types(C1_t),
+  S32C2_t = Types(S32_t) | Types(C2_t)
+};
+
 enum Colors {
   COLOR_RGBA2GRAY = 0,
   COLOR_RGB2GRAY = 1,
