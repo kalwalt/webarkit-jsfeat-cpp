@@ -43,38 +43,31 @@ class Matrix_smart : public Data_t {
   }
 #ifdef __EMSCRIPTEN__
   emscripten::val get_data() const {
+    auto result = emscripten::val::null();
     if (type == Types::U8_t) {
-      std::cout << u8.size() << std::endl;
-      emscripten::val view{emscripten::typed_memory_view(u8.size(), u8.data())};
-      auto result = emscripten::val::global("Uint8Array").new_(u8.size());
+      emscripten::val view{ emscripten::typed_memory_view(u8.size(), u8.data()) };
+      result = emscripten::val::global("Uint8Array").new_(u8.size());
       result.call<void>("set", view);
-      return view;
     } else if (type == Types::S32_t) {
-      emscripten::val view{
-          emscripten::typed_memory_view(i32.size(), i32.data())};
-      auto result = emscripten::val::global("Int32Array").new_(i32.size());
+      emscripten::val view{ emscripten::typed_memory_view(i32.size(), i32.data()) };
+      result = emscripten::val::global("Int32Array").new_(i32.size());
       result.call<void>("set", view);
-      return view;
     } else if (type == Types::F32_t) {
-      emscripten::val view{
-          emscripten::typed_memory_view(f32.size(), f32.data())};
-      auto result = emscripten::val::global("Float32Array").new_(f32.size());
+      emscripten::val view{ emscripten::typed_memory_view(f32.size(), f32.data()) };
+      result = emscripten::val::global("Float32Array").new_(f32.size());
       result.call<void>("set", view);
-      return view;
     } else if (type == Types::F64_t) {
-      emscripten::val view{
-          emscripten::typed_memory_view(f64.size(), f64.data())};
-      auto result = emscripten::val::global("Float64Array").new_(f64.size());
+      emscripten::val view{ emscripten::typed_memory_view(f64.size(), f64.data()) };
+      result = emscripten::val::global("Float64Array").new_(f64.size());
       result.call<void>("set", view);
-      return view;
     }
+    return result;
   }
 #endif
   void allocate() {
     size = (cols * channel) * rows;
     if (type == Types::U8_t) {
       u8.assign(size, 0);
-      std::cout << "size in allocate: " << u8.size() << std::endl;
     } else if (type == Types::S32_t) {
       i32.assign(size, 0);
     } else if (type == Types::F32_t) {
