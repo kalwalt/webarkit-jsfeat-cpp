@@ -5,6 +5,10 @@ At the moment only some classes are implemented and a bunch of functions are und
 ## Classes
 ### **Matrix_t**
 This class is responsible to hold different types of data, to be used by all classes.
+
+### **Matrix_smart**
+Experimental class very similar to Matrix_t but use shared_ptr in the core
+
 ### **Imgproc**
 It is one of important classes to manipulate image data for image processing. For now we have these functions:
 - gaussain_blur
@@ -14,6 +18,7 @@ It is one of important classes to manipulate image data for image processing. Fo
 - equalize_histogram
 - resample
 - warp_affine
+
 ### **Orb**
 Oriented FAST and rotated BRIEF (ORB) is one most important class for feature tracking. Ths feature is under testing.
 
@@ -69,6 +74,7 @@ Take a look at our examples in the examples folder:
 - gaussian_blur_video_example.html
 - grayscale_example.html
 - grayscale_m_example.html
+- grayscale_rgba_example.html
 - grayscale_video_example.html
 - keypoint_t_test.html
 - keypoints_test.html
