@@ -96,6 +96,15 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .value("C3_t", C3_t)
     .value("C4_t", C4_t);
 
+    enum_<ComboTypes>("ComboTypes")
+    .value("U8C1_t", U8C1_t)
+    .value("U8C3_t", U8C3_t)
+    .value("U8C4_t", U8C4_t)
+    .value("F32C1_t", F32C1_t)
+    .value("F32C2_t", F32C2_t)
+    .value("S32C1_t", S32C1_t)
+    .value("S32C2_t", S32C2_t);
+
     enum_<Colors>("Colors")
     .value("COLOR_RGBA2GRAY", Colors::COLOR_RGBA2GRAY)
     .value("COLOR_RGB2GRAY", COLOR_RGB2GRAY)
