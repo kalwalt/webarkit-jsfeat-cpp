@@ -18,7 +18,7 @@
         ctx.drawImage(img, 0, 0);
         var data = ctx.getImageData(0, 0, img.width, img.height);
 
-        const RGBA2GRAY = jsfeat.Colors.COLOR_RGBA2GRAY.value;
+        const RGBA = jsfeat.ColorsSpace.RGBA.value;
         const U8_t = jsfeat.Types.U8_t.value;
         const C1_t = jsfeat.Types.C1_t.value;
 
@@ -28,7 +28,7 @@
         var imgproc = new jsfeat.imgproc();
 
         if (data) {
-            imgproc.grayscale_rgba(data.data, img.width, img.height, m_u8.getSmartPointer());
+            imgproc.grayscale_rgba(data.data, img.width, img.height, m_u8.getSmartPointer(), RGBA);
             
             const imageData = ctxDst.createImageData(img.width, img.height);
             var inputData = m_u8.data;

@@ -2,8 +2,8 @@
 #define TYPES_H
 
 #include <cstdio>
-#include <vector>
 #include <variant>
+#include <vector>
 #ifdef __EMSCRIPTEN__
 #include <emscripten/val.h>
 #endif
@@ -11,14 +11,16 @@ namespace jsfeat {
 
 using u_char = unsigned char;
 using u_int = unsigned int;
-template <typename T> using Array = std::vector<T>;
-using Data =
-      std::variant<Array<u_char>, Array<int>, Array<float>, Array<double>>;
+
+template <typename T>
+using Array = std::vector<T>;
+using Data = std::variant<Array<u_char>, Array<int>, Array<float>, Array<double>>;
+
 #ifdef __EMSCRIPTEN__
-thread_local const emscripten::val Uint8Array =
-    emscripten::val::global("Uint8Array");
-thread_local const emscripten::val Float32Array =
-    emscripten::val::global("Float32Array");
+
+thread_local const emscripten::val Uint8Array = emscripten::val::global("Uint8Array");
+thread_local const emscripten::val Float32Array = emscripten::val::global("Float32Array");
+
 struct _Mat_t {
   int size;
   int cols;
@@ -26,6 +28,7 @@ struct _Mat_t {
   int channels;
   emscripten::val data = Uint8Array;
 };
+
 #endif
 
 struct KPoint_t;
@@ -60,12 +63,18 @@ enum ComboTypes {
   S32C2_t = Types(S32_t) | Types(C2_t)
 };
 
+enum ColorsSpace {
+  RGBA,
+  RGB,
+  GRAY
+};
+
 enum Colors {
   COLOR_RGBA2GRAY = 0,
   COLOR_RGB2GRAY = 1,
   COLOR_BGRA2GRAY = 2,
   COLOR_BGR2GRAY = 3
 };
-} // namespace jsfeat
+}  // namespace jsfeat
 
 #endif

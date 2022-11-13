@@ -161,7 +161,25 @@ class Imgproc : public Math {
       }
     }
   };
-  void grayscale_rgba_standard(Array<u_char> src, int w, int h, Matrix_t* dst) {
+  void grayscale_rgba_standard(Array<u_char> src, int w, int h, Matrix_t* dst, int colorType) {
+    int cn;
+    switch (colorType) {
+      case ColorsSpace::RGBA:
+        cn = 4;
+        break;
+      case ColorsSpace::RGB:
+        cn = 3;
+        break;
+      case ColorsSpace::GRAY:
+         #ifdef DEBUG_EM
+          throw "Grayscale input is not allwed with grayscale_rgba !";
+        #else
+          JSLOGe("Grayscale input is not allowed with grayscale_rgba !");
+        #endif
+        break;
+      default:
+        cn = 4;
+    }
     // code from jsartoolkit5
     auto videosize = w * h;
     auto q = 0;
@@ -172,16 +190,33 @@ class Imgproc : public Math {
       r = src[q + 0], g = src[q + 1], b = src[q + 2];
       // https://stackoverflow.com/a/596241/5843642
       dst->u8.push_back((r + r + r + b + g + g + g + g) >> 3);
-      q += 4;
+      q += cn;
     }
   }
   template <typename Matrix_class>
-  void grayscale_rgba_internal(Array<u_char> src, int w, int h,
-                               std::shared_ptr<Matrix_class> dst) {
+  void grayscale_rgba_internal(Array<u_char> src, int w, int h, std::shared_ptr<Matrix_class> dst, int colorType) {
     static_assert(
         std::is_base_of<Matrix_smart, Matrix_class>::value ||
             std::is_base_of<Matrix_t, Matrix_class>::value,
         "Matrix_class must inherit from Matrix_smart or Matrix_t class");
+    int cn;
+    switch (colorType) {
+      case ColorsSpace::RGBA:
+        cn = 4;
+        break;
+      case ColorsSpace::RGB:
+        cn = 3;
+        break;
+      case ColorsSpace::GRAY:
+        #ifdef DEBUG_EM
+          throw "Grayscale input is not allowed with grayscale_rgba !";
+        #else
+          JSLOGe("Grayscale input is not allowed with grayscale_rgba !");
+        #endif
+        break;
+      default:
+        cn = 4;
+    }
     // code from jsartoolkit5
     auto videosize = w * h;
     auto q = 0;
@@ -192,23 +227,23 @@ class Imgproc : public Math {
       r = src[q + 0], g = src[q + 1], b = src[q + 2];
       // https://stackoverflow.com/a/596241/5843642
       dst->u8.push_back((r + r + r + b + g + g + g + g) >> 3);
-      q += 4;
+      q += cn;
     }
   }
 #ifdef __EMSCRIPTEN__
-  void grayscale_rgba(emscripten::val inputSrc, int w, int h, Matrix_t* dst) {
+  void grayscale_rgba(emscripten::val inputSrc, int w, int h, Matrix_t* dst, int colorType) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
-    grayscale_rgba_standard(src, w, h, dst);
+    grayscale_rgba_standard(src, w, h, dst, colorType);
   }
   void grayscale_rgba(emscripten::val inputSrc, int w, int h,
-                      std::shared_ptr<Matrix_smart> dst) {
+                      std::shared_ptr<Matrix_smart> dst, int colorType) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
-    grayscale_rgba_internal<Matrix_smart>(src, w, h, dst);
+    grayscale_rgba_internal<Matrix_smart>(src, w, h, dst, colorType);
   }
   void grayscale_rgba(emscripten::val inputSrc, int w, int h,
-                      std::shared_ptr<Matrix_t> dst) {
+                      std::shared_ptr<Matrix_t> dst, int colorType) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
-    grayscale_rgba_internal<Matrix_t>(src, w, h, dst);
+    grayscale_rgba_internal<Matrix_t>(src, w, h, dst, colorType);
   }
 #endif
   void pyrdown(uintptr_t inputSrc, uintptr_t inputDst, int sx, int sy) {
