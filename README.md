@@ -2,6 +2,7 @@
 c++ [jsfeat](https://github.com/inspirit/jsfeat) version to build a WASM version thanks to Emscripten.
 The project is a Work in Progress, not all the features are released to make a comparison with the original jsfeat code. 
 At the moment only some classes are implemented and a bunch of functions are under testing. Anyway the main idea is to provide c++ code to build a WASM version, it's not intended to be used as a c++ library.
+Maybe this will become the future of [webarkit](https://github.com/webarkit)
 ## Classes
 ### **Matrix_t**
 This class is responsible to hold different types of data, to be used by all classes.
@@ -35,6 +36,11 @@ Feature detector from Computer Vision Lab, Ecole Polytechnique Federale de Lausa
 A class to handle multiple pyramidal images.
 
 This project is quite experimental so do not expect great results. More classes will be implemented in the future.
+
+### Useful functions
+
+At the moment only `load_jpeg_data` function to load a jpeg file and get important jpeg data (width, height, dpi and raw data).
+See grayscale_example or grayscale_m_example to see the function in action.
 
 ## Libs
 Libs are stored in `build` folder: 
@@ -87,8 +93,14 @@ Take a look at our examples in the examples folder:
 
 Both examples use the debug version of the lib but, of course you can use the non-debug version as well.
 
+## NPM
+npm is used to build the `libar.bc` and `libar_debug.bc` libs inside the build folder. You don't need to run `npm install` but it is required to have node and npm installed globally.
+
 ## Building the library
 If you make changes and/or if you make some enhancement to the C++ code ypu need to build the library. Run the shell script in the main folder:
+For the first time run:
+`./build.sh emscripten-all`
+this will build all the libs. After that if you need to compile and build only jsfeat libs:
 `./build.sh emscripten`
 and the two libs will be compiled in the build directory.
 We used emsdk 3.1.20.
