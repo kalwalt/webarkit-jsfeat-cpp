@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 function usage {
-    echo "Usage: $(basename $0) [--debug] ( linux | emscripten )"
+    echo "Usage: $(basename $0) [--debug | --clean-em] ( libar | linux | emscripten )"
     exit 1
 }
 
@@ -15,6 +15,8 @@ set -e
 while test $# -gt 0
 do
     case "$1" in
+        libar) BUILD_LIBAR=1
+            ;;
         linux) BUILD_LINUX=1
             ;;
         emscripten) BUILD_EM=1
@@ -47,6 +49,10 @@ then
     fi
 else
     CPUS=1
+fi
+
+if [ $BUILD_LIBAR ] ; then
+  npm run build
 fi
 
 if [ $BUILD_LINUX ] ; then
