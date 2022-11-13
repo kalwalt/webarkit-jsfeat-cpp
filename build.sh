@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 function usage {
-    echo "Usage: $(basename $0) [--debug | --clean-em] ( libar | linux | emscripten )"
+    echo "Usage: $(basename $0) [--debug | --clean-em] ( libar | linux | emscripten | emscripten-all )"
     exit 1
 }
 
@@ -20,6 +20,8 @@ do
         linux) BUILD_LINUX=1
             ;;
         emscripten) BUILD_EM=1
+            ;;
+        emscripten-all) BUILD_EM_ALL=1
             ;;
         --clean-em) CLEAN_EM=1
             ;;
@@ -61,6 +63,24 @@ if [ $BUILD_LINUX ] ; then
 fi
 
 if [ $BUILD_EM ]; then 
+  echo "Entering in build folder"
+  cd build
+  echo "Building jsfeatcpp.js  with emscripten (emcmake)..."
+  emcmake cmake .. -DCMAKE_BUILD_TYPE="Release"
+  echo "Running command make..."
+  make
+  echo "Building jsfeatcpp_debug.js  with emscripten (emcmake)..."
+  emcmake cmake .. -DCMAKE_BUILD_TYPE="Debug"
+  echo "Running command make..."
+  make
+  echo "Build completed."
+fi
+
+if [ $BUILD_EM_ALL ]; then 
+  echo "Building libar libs"
+  npm run build
+  echo "Done!"
+  echo "preparing to build jsfeat libs..."
   echo "Entering in build folder"
   cd build
   echo "Building jsfeatcpp.js  with emscripten (emcmake)..."
