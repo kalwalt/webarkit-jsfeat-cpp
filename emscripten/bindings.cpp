@@ -126,4 +126,8 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .field("level", &KPoint_t::level)
     .field("angle", &KPoint_t::angle);
 
+    // Extern jsfeat functions
+
+    function("load_jpeg_data", &load_jpeg_data);
+
 };
