@@ -2,7 +2,6 @@
 
 <body>
     <img id="img" src="pinball.jpg">
-    <canvas id="canvas" width="1637" height="2048"></canvas>
     <canvas id="dst" width="1637" height="2048"></canvas>
 
     <script type="module">
@@ -13,13 +12,12 @@
 
         var canvasDst = document.getElementById('dst');
         var ctxDst = canvasDst.getContext('2d');
-        var img = document.getElementById('img');
+
         const RGB2GRAY = jsfeat.Colors.COLOR_RGB2GRAY.value;
         const U8C1_t = jsfeat.ComboTypes.U8C1_t.value
 
-        var obj;
-        var id = loadJpeg("pinball.jpg", (img) => {
-            console.log(img);
+        loadJpeg("pinball.jpg", (img) => {
+            console.log("Jpeg data from loader: ", img);
 
             var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8C1_t);
             m_u8.allocate();
@@ -35,7 +33,7 @@
                 }
                 ctxDst.putImageData(imageData, 0, 0);
             }
-        }, (err) => { console.error(err); })
+        }, (err) => { console.error("Something went wrong while loading the jpeg: ",err); })
 
     </script>
 
