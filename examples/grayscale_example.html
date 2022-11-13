@@ -2,40 +2,38 @@
 
 <body>
     <img id="img" src="pinball.jpg">
-    <canvas id="canvas" width="1637" height="2048"></canvas>
     <canvas id="dst" width="1637" height="2048"></canvas>
 
     <script type="module">
         import jsfeatCpp from "./../build/jsfeatES6cpp_debug.js"
+        import { loadJpeg } from "./js/loader.js"
         const jsfeat = await jsfeatCpp();
         console.log(jsfeat);
 
-        var canvas = document.getElementById('canvas');
-        var ctx = canvas.getContext('2d');
         var canvasDst = document.getElementById('dst');
         var ctxDst = canvasDst.getContext('2d');
-        var img = document.getElementById('img');
-        ctx.drawImage(img, 0, 0);
-        var data = ctx.getImageData(0, 0, img.width, img.height);
 
-        const RGBA2GRAY = jsfeat.Colors.COLOR_RGBA2GRAY.value;
-        const U8_t = jsfeat.Types.U8_t.value;
-        const C1_t = jsfeat.Types.C1_t.value;
+        const RGB2GRAY = jsfeat.Colors.COLOR_RGB2GRAY.value;
+        const U8C1_t = jsfeat.ComboTypes.U8C1_t.value
 
-        var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8_t | C1_t);
-        m_u8.allocate();
-        var imgproc = new jsfeat.imgproc();
+        loadJpeg("pinball.jpg", (img) => {
+            console.log("Jpeg data from loader: ", img);
 
-        if (data) {
-            imgproc.grayscale(data.data, img.width, img.height, m_u8.getPointer(), RGBA2GRAY);
-            const imageData = ctxDst.createImageData(img.width, img.height);
-            var inputData = m_u8.data;
-            console.log(inputData);
-            for (let i = 0; i < imageData.data.length; i++) {
-                imageData.data[i] = inputData[i];
+            var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8C1_t);
+            m_u8.allocate();
+            var imgproc = new jsfeat.imgproc();
+
+            if (img.data) {
+                imgproc.grayscale(img.data, img.width, img.height, m_u8.getPointer(), RGB2GRAY);
+                const imageData = ctxDst.createImageData(img.width, img.height);
+                var inputData = m_u8.data;
+                console.log(inputData);
+                for (let i = 0; i < imageData.data.length; i++) {
+                    imageData.data[i] = inputData[i];
+                }
+                ctxDst.putImageData(imageData, 0, 0);
             }
-            ctxDst.putImageData(imageData, 0, 0);
-        }
+        }, (err) => { console.error("Something went wrong while loading the jpeg: ",err); })
 
     </script>
 
