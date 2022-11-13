@@ -7,8 +7,8 @@
     <script type="module">
         import jsfeatCpp from "./../build/jsfeatES6cpp_debug.js"
         import { loadJpeg } from "./js/loader.js"
+
         const jsfeat = await jsfeatCpp();
-        console.log(jsfeat);
 
         var canvasDst = document.getElementById('dst');
         var ctxDst = canvasDst.getContext('2d');
@@ -29,13 +29,15 @@
                 imgproc.grayscale_m(m_src.getPointer(), img.width, img.height, m_u8.getPointer(), RGB2GRAY);
                 const imageData = ctxDst.createImageData(img.width, img.height);
                 var inputData = m_u8.data;
-                console.log(inputData);
-                for (let i = 0; i < imageData.data.length; i++) {
-                    imageData.data[i] = inputData[i];
+                for (let i = 0, j = 0; i < imageData.data.length; i++, j += 4) {
+                    imageData.data[j] = inputData[i];
+                    imageData.data[j + 1] = inputData[i];
+                    imageData.data[j + 2] = inputData[i];
+                    imageData.data[j + 3] = 255;
                 }
                 ctxDst.putImageData(imageData, 0, 0);
             }
-        }, (err) => { console.error("Something went wrong while loading the jpeg: ",err); })
+        }, (err) => { console.error("Something went wrong while loading the jpeg: ", err); })
 
     </script>
 
