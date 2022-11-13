@@ -41,9 +41,9 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .function("gaussian_blur", &Imgproc::gaussian_blur, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
     .function("grayscale", &Imgproc::grayscale, allow_raw_pointer<Matrix_t>())
     .function("grayscale_m", &Imgproc::grayscale_m, allow_raw_pointer<Matrix_t>(), allow_raw_pointer<Matrix_t>())
-    .function("grayscale_rgba", select_overload<void(emscripten::val, int, int, std::shared_ptr<Matrix_smart>)>(&Imgproc::grayscale_rgba))
-    .function("grayscale_rgba_t", select_overload<void(emscripten::val, int, int, std::shared_ptr<Matrix_t>)>(&Imgproc::grayscale_rgba))
-    .function("grayscale_rgba_standard", select_overload<void(emscripten::val, int, int, Matrix_t*)>(&Imgproc::grayscale_rgba), allow_raw_pointer<Matrix_t>())
+    .function("grayscale_rgba", select_overload<void(emscripten::val, int, int, std::shared_ptr<Matrix_smart>, int)>(&Imgproc::grayscale_rgba))
+    .function("grayscale_rgba_t", select_overload<void(emscripten::val, int, int, std::shared_ptr<Matrix_t>, int)>(&Imgproc::grayscale_rgba))
+    .function("grayscale_rgba_standard", select_overload<void(emscripten::val, int, int, Matrix_t*, int)>(&Imgproc::grayscale_rgba), allow_raw_pointer<Matrix_t>())
     .function("pyrdown", &Imgproc::pyrdown, allow_raw_pointer<Matrix_t>())
     .function("equalize_histogram", &Imgproc::equalize_histogram, allow_raw_pointer<Matrix_t>())
     .function("warp_affine", &Imgproc::warp_affine, allow_raw_pointer<Matrix_t>())
@@ -105,6 +105,11 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     .value("F32C2_t", F32C2_t)
     .value("S32C1_t", S32C1_t)
     .value("S32C2_t", S32C2_t);
+
+    enum_<ColorsSpace>("ColorsSpace")
+    .value("RGBA", RGBA)
+    .value("RGB", RGB)
+    .value("GRAY", GRAY);
 
     enum_<Colors>("Colors")
     .value("COLOR_RGBA2GRAY", Colors::COLOR_RGBA2GRAY)
