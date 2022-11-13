@@ -1,7 +1,7 @@
 <html>
 
 <body>
-    <!--<img id="img" src="pinball.jpg">-->
+    <img id="img" src="pinball.jpg">
     <canvas id="canvas" width="1637" height="2048"></canvas>
     <canvas id="dst" width="1637" height="2048"></canvas>
 
@@ -11,27 +11,22 @@
         const jsfeat = await jsfeatCpp();
         console.log(jsfeat);
 
-        var canvas = document.getElementById('canvas');
-        var ctx = canvas.getContext('2d');
         var canvasDst = document.getElementById('dst');
         var ctxDst = canvasDst.getContext('2d');
         var img = document.getElementById('img');
-        const RGBA2GRAY = jsfeat.Colors.COLOR_RGBA2GRAY.value;
-        const U8_t = jsfeat.Types.U8_t.value;
-        const C1_t = jsfeat.Types.C1_t.value;
-        //ctx.drawImage(img, 0, 0);
-        //var data = ctx.getImageData(0, 0, img.width, img.height);
+        const RGB2GRAY = jsfeat.Colors.COLOR_RGB2GRAY.value;
+        const U8C1_t = jsfeat.ComboTypes.U8C1_t.value
+
         var obj;
         var id = loadJpeg("pinball.jpg", (img) => {
             console.log(img);
-            //var data = ctx.getImageData(0, 0, img.width, img.height);
 
-            var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8_t | C1_t);
+            var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8C1_t);
             m_u8.allocate();
             var imgproc = new jsfeat.imgproc();
 
-            if (img.array) {
-                imgproc.grayscale(img.array, img.width, img.height, m_u8.getPointer(), RGBA2GRAY);
+            if (img.data) {
+                imgproc.grayscale(img.data, img.width, img.height, m_u8.getPointer(), RGB2GRAY);
                 const imageData = ctxDst.createImageData(img.width, img.height);
                 var inputData = m_u8.data;
                 console.log(inputData);

@@ -74,7 +74,7 @@ emscripten::val load_jpeg(const char* filename) {
   obj.set("width", jpegImage->xsize);
   obj.set("height", jpegImage->ysize);
   obj.set("dpi", jpegImage->dpi);
-  obj.set("array", result);
+  obj.set("data", result);
 
   free(ext);
   free(jpegImage);
