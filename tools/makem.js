@@ -229,6 +229,19 @@ var compile_arlib = format(
   OUTPUT_PATH
 );
 
+var compile_debug_arlib = format(
+  EMCC +
+    INCLUDES +
+    " " +
+    ar_sources.join(" ") +
+    DEBUG_FLAGS +
+    FLAGS +
+    " " +
+    DEFINES +
+    " -r -o {OUTPUT_PATH}libar_debug.bc ",
+  OUTPUT_PATH
+);
+
 var compile_simd_arlib = format(
   EMCC +
     INCLUDES +
@@ -282,6 +295,7 @@ function addJob(job) {
 
 addJob(clean_builds);
 addJob(compile_arlib);
+addJob(compile_debug_arlib);
 //addJob(compile_simd_arlib);
 
 if (NO_LIBAR == true) {
