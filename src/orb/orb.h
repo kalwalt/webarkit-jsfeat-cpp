@@ -1,19 +1,21 @@
 #ifndef ORB_H
 #define ORB_H
 
-#include "bit_pattern_31.h"
+#include <emscripten/val.h>
 #include <imgproc/imgproc.h>
-#include <iostream>
 #include <jslog/jslog.h>
 #include <keypoint_t/keypoint_t.h>
 #include <matrix_t/matrix_t.h>
-#include <emscripten/val.h>
 #include <types/types.h>
+
+#include <iostream>
+
+#include "bit_pattern_31.h"
 
 namespace jsfeat {
 
 class Orb {
-public:
+ public:
   Orb() {
     H = new Matrix_t(3, 3, Types::F32_t | Types::C1_t);
     H->allocate();
@@ -21,31 +23,30 @@ public:
     patch_img->allocate();
   }
 
-  void describe(uintptr_t inputSrc, emscripten::val inputCorners, int count,
-                uintptr_t inputDescriptors) {
-    auto src = reinterpret_cast<Matrix_t *>(inputSrc);
+  void describe(uintptr_t inputSrc, emscripten::val inputCorners, int count, uintptr_t inputDescriptors) {
+    auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto corners = emscripten::vecFromJSArray<KeyPoint_t>(inputCorners);
-    auto descriptors = reinterpret_cast<Matrix_t *>(inputDescriptors);
-    int DESCR_SIZE = 32; // bytes;
+    auto descriptors = reinterpret_cast<Matrix_t*>(inputDescriptors);
+    int DESCR_SIZE = 32;  // bytes;
     int i = 0, b = 0, px = 0.0, py = 0.0, angle = 0.0;
     int t0 = 0, t1 = 0, val = 0;
     // int img = src.data, w = src.cols, h = src.rows;
-    u_char *patch_d = patch_img->u8.data();
-    int patch_off = 16 * 32 + 16; // center of patch
+    u_char* patch_d = patch_img->u8.data();
+    int patch_off = 16 * 32 + 16;  // center of patch
     int patt = 0;
 
-    if (!(descriptors->type & Types::U8_t)) {
+    if (!(descriptors->get_type() & Types::U8_t)) {
       // relocate to U8 type
-      descriptors->type = Types::U8_t;
-      descriptors->cols = DESCR_SIZE;
-      descriptors->rows = count;
-      descriptors->channel = 1;
+      descriptors->set_type(Types::U8_t);
+      descriptors->set_cols(DESCR_SIZE);
+      descriptors->set_rows(count);
+      descriptors->set_channel_m(1);
       descriptors->allocate();
     } else {
       descriptors->resize(DESCR_SIZE, count, 1);
     }
 
-    u_char *descr_d = descriptors->u8.data();
+    u_char* descr_d = descriptors->u8.data();
     int descr_off = 0;
 
     for (i = 0; i < count; ++i) {
@@ -58,7 +59,6 @@ public:
       // describe the patch
       patt = 0;
       for (b = 0; b < DESCR_SIZE; ++b) {
-
         t0 = patch_d[patch_off + bit_pattern_31_[patt + 1] * 32 +
                      bit_pattern_31_[patt]];
         patt += 2;
@@ -129,13 +129,12 @@ public:
     }
   }
 
-private:
+ private:
   Matrix_t* H;
   Matrix_t* patch_img;
 
-  void rectify_patch(Matrix_t *src, Matrix_t *dst, float angle, int px, int py,
-                     int psize) {
-    Imgproc *proc;
+  void rectify_patch(Matrix_t* src, Matrix_t* dst, float angle, int px, int py, int psize) {
+    Imgproc* proc;
 
     float cosine = std::cos(angle);
     float sine = std::sin(angle);
@@ -150,6 +149,6 @@ private:
   };
 };
 
-} // namespace jsfeat
+}  // namespace jsfeat
 
 #endif

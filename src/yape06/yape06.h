@@ -14,7 +14,7 @@
 namespace jsfeat {
 
 class Yape06 {
-public:
+ public:
   int laplacian_threshold;
   int min_eigen_value_threshold;
   Yape06() {
@@ -33,7 +33,7 @@ public:
     auto points = pts->kpoints;
     KeyPointsCount ypts(*pts);
     auto x = 0, y = 0;
-    auto w = src->cols, h = src->rows;
+    auto w = src->get_cols(), h = src->get_rows();
     // auto srd_d = src.data;
     auto srd_d = src->u8;
     auto Dxx = 5, Dyy = (5 * w) | 0;
@@ -58,7 +58,6 @@ public:
     row = (sy * w + sx) | 0;
     for (y = sy; y < ey; ++y, row += w) {
       for (x = sx, rowx = row; x < ex; ++x, ++rowx) {
-
         lv = laplacian[rowx];
 
         if ((lv < -lap_thresh && lv < laplacian[rowx - 1] &&
@@ -71,7 +70,6 @@ public:
              lv > laplacian[rowx + w] && lv > laplacian[rowx - w - 1] &&
              lv > laplacian[rowx + w - 1] && lv > laplacian[rowx - w + 1] &&
              lv > laplacian[rowx + w + 1])) {
-
           min_eigen_value = hessian_min_eigen_value<u_char>(srd_d, rowx, lv,
                                                             Dxx, Dyy, Dxy, Dyx);
 
@@ -81,7 +79,7 @@ public:
             ypts.pts.kpoints[number_of_points].y = y,
             ypts.pts.kpoints[number_of_points].score = min_eigen_value;
             ++number_of_points;
-            ++x, ++rowx; // skip next pixel since this is maxima in 3x3
+            ++x, ++rowx;  // skip next pixel since this is maxima in 3x3
           }
         }
       }
@@ -89,7 +87,7 @@ public:
 
     return ypts;
   }
-  #ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
   auto detect(uintptr_t inputSrc, uintptr_t inputPoints, int border) {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto points = reinterpret_cast<KeyPoints*>(inputPoints);
@@ -112,7 +110,7 @@ public:
 
     return outObj;
   }
-  #endif
+#endif
   // getters and setters
   auto get_laplacian_threshold() const { return laplacian_threshold; };
   auto get_min_eigen_value_threshold() const {
@@ -131,6 +129,6 @@ public:
   }
 };
 
-} // namespace jsfeat
+}  // namespace jsfeat
 
 #endif

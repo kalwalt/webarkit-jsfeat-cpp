@@ -25,10 +25,10 @@ int main() {
                   Colors::COLOR_RGBA2GRAY);
   img.grayscale(some, 2, 2, (uintptr_t)dst, Colors::COLOR_RGBA2GRAY);
   Matrix_t test(*src);
-  std::cout << "rows " << test.rows << std::endl;
-  std::cout << "cols " << test.cols << std::endl;
-  std::cout << "type " << test.type << std::endl;
-  std::cout << "channel " << test.channel << std::endl;
+  std::cout << "rows " << test.get_rows() << std::endl;
+  std::cout << "cols " << test.get_cols() << std::endl;
+  std::cout << "type " << test.get_type() << std::endl;
+  std::cout << "channel " << test.get_channel_m() << std::endl;
   std::cout << "first el: " << (int)test.u8[0] << std::endl;
   Cache<3> c;
   std::optional<Data_t> d = c.put_buffer(20, 0x0100 | 0x01);
@@ -77,7 +77,7 @@ int main() {
 
   Array<u_char> m_shared_src {23, 45, 14, 45, 126, 89, 245, 78, 178, 12, 224, 95, 120, 205, 120, 2};
   std::shared_ptr<Matrix_t> m_shared_dst = std::make_shared<Matrix_t>(2, 2, 0x0100 | 0x04);
-  img.grayscale_rgba_internal(m_shared_src, 2, 2, m_shared_dst);
+  img.grayscale_rgba_internal(m_shared_src, 2, 2, m_shared_dst, ColorsSpace::RGBA);
   std::cout << "Data from grayscale_rgba function" << std::endl;
   for(auto i=0; i<4; i++){
     std::cout << (int)m_shared_dst->u8[i] << std::endl;
