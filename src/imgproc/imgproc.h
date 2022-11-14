@@ -171,11 +171,11 @@ class Imgproc : public Math {
         cn = 3;
         break;
       case ColorsSpace::GRAY:
-         #ifdef DEBUG_EM
-          throw "Grayscale input is not allwed with grayscale_rgba !";
-        #else
-          JSLOGe("Grayscale input is not allowed with grayscale_rgba !");
-        #endif
+#ifdef DEBUG_EM
+        throw "Grayscale input is not allwed with grayscale_rgba !";
+#else
+        JSLOGe("Grayscale input is not allowed with grayscale_rgba !");
+#endif
         break;
       default:
         cn = 4;
@@ -208,11 +208,11 @@ class Imgproc : public Math {
         cn = 3;
         break;
       case ColorsSpace::GRAY:
-        #ifdef DEBUG_EM
-          throw "Grayscale input is not allowed with grayscale_rgba !";
-        #else
-          JSLOGe("Grayscale input is not allowed with grayscale_rgba !");
-        #endif
+#ifdef DEBUG_EM
+        throw "Grayscale input is not allwed with grayscale_rgba !";
+#else
+        JSLOGe("Grayscale input is not allowed with grayscale_rgba !");
+#endif
         break;
       default:
         cn = 4;
@@ -256,12 +256,12 @@ class Imgproc : public Math {
       sy = 0;
     }
 
-    int w = src->cols, h = src->rows;
+    int w = src->get_cols(), h = src->get_rows();
     int w2 = w >> 1, h2 = h >> 1;
     int _w2 = w2 - (sx << 1), _h2 = h2 - (sy << 1);
     int x = 0, y = 0, sptr = sx + sy * w, sline = 0, dptr = 0, dline = 0;
 
-    dst->resize(w2, h2, src->channel);
+    dst->resize(w2, h2, src->get_channel_m());
 
     // u_char* src_d = src->dt->u8.data();
     // u_char* dst_d = dst->dt->u8.data();
@@ -295,12 +295,12 @@ class Imgproc : public Math {
       sy = 0;
     }
 
-    int w = src->cols, h = src->rows;
+    int w = src->get_cols(), h = src->get_rows();
     int w2 = w >> 1, h2 = h >> 1;
     int _w2 = w2 - (sx << 1), _h2 = h2 - (sy << 1);
     int x = 0, y = 0, sptr = sx + sy * w, sline = 0, dptr = 0, dline = 0;
 
-    dst->resize(w2, h2, src->channel);
+    dst->resize(w2, h2, src->get_channel_m());
 
     u_char* src_d = src->u8.data();
     u_char* dst_d = dst->u8.data();
@@ -327,9 +327,9 @@ class Imgproc : public Math {
   };
 
   void equalize_histogram_internal(Matrix_t* src, Matrix_t* dst) {
-    auto w = src->cols, h = src->rows;
+    auto w = src->get_cols(), h = src->get_rows();
 
-    dst->resize(w, h, src->channel);
+    dst->resize(w, h, src->get_channel_m());
 
     /* max_val must be 255 if we use unsigned char as input, this should be
        changed if we use another input type (short, int...)
@@ -390,10 +390,10 @@ class Imgproc : public Math {
     if (!fill_value) {
       fill_value = 0;
     }
-    int src_width = src->cols;
-    int src_height = src->rows;
-    int dst_width = dst->cols;
-    int dst_height = dst->rows;
+    int src_width = src->get_cols();
+    int src_height = src->get_rows();
+    int dst_width = dst->get_cols();
+    int dst_height = dst->get_rows();
     int x = 0;
     int y = 0;
     int off = 0;
@@ -443,10 +443,10 @@ class Imgproc : public Math {
     if (!fill_value) {
       fill_value = 0;
     }
-    int src_width = ptrSrc->cols;
-    int src_height = ptrSrc->rows;
-    int dst_width = ptrDst->cols;
-    int dst_height = ptrDst->rows;
+    int src_width = ptrSrc->get_cols();
+    int src_height = ptrSrc->get_rows();
+    int dst_width = ptrDst->get_cols();
+    int dst_height = ptrDst->get_rows();
     int x = 0;
     int y = 0;
     int off = 0;
@@ -492,11 +492,11 @@ class Imgproc : public Math {
   void resample(uintptr_t inputSrc, uintptr_t inputDst, int nw, int nh) {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
-    int h = src->rows, w = src->cols;
+    int h = src->get_rows(), w = src->get_cols();
     if (h > nh && w > nw) {
-      dst->resize(nw, nh, src->channel);
+      dst->resize(nw, nh, src->get_channel_m());
       // using the fast alternative (fix point scale, 0x100 to avoid overflow)
-      if (src->type & Types::U8_t && dst->type & Types::U8_t &&
+      if (src->get_type() & Types::U8_t && dst->get_type() & Types::U8_t &&
           h * w / (nh * nw) < 0x100) {
         _resample_u8(src, dst, nw, nh);
       } else {
@@ -505,11 +505,11 @@ class Imgproc : public Math {
     }
   };
   void resample(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
-    int h = src->rows, w = src->cols;
+    int h = src->get_rows(), w = src->get_cols();
     if (h > nh && w > nw) {
-      dst->resize(nw, nh, src->channel);
+      dst->resize(nw, nh, src->get_channel_m());
       // using the fast alternative (fix point scale, 0x100 to avoid overflow)
-      if (src->type & Types::U8_t && dst->type & Types::U8_t &&
+      if (src->get_type() & Types::U8_t && dst->get_type() & Types::U8_t &&
           h * w / (nh * nw) < 0x100) {
         _resample_u8(src, dst, nw, nh);
       } else {
@@ -536,11 +536,11 @@ class Imgproc : public Math {
             ? (std::max(1, (int)(4.0 * sigma + 1.0 - 1e-8)) * 2 + 1) | 0
             : kernel_size;
     int half_kernel = kernel_size >> 1;
-    int w = src->cols, h = src->rows;
-    int data_type = src->type;
+    int w = src->get_cols(), h = src->get_rows();
+    int data_type = src->get_type();
     int is_u8 = data_type & Types::U8_t;
 
-    dst->resize(w, h, src->channel);
+    dst->resize(w, h, src->get_channel_m());
 
     auto src_d = src->u8;
     auto dst_d = dst->u8;
@@ -584,20 +584,20 @@ class Imgproc : public Math {
  private:
   // a is src matrix, b is dst matrix
   void _resample_u8(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
-    int h = src->rows, w = src->cols;
-    assert(src->cols > 0 && dst->cols > 0);
-    Array<jsfeat_int_alpha> xofs(src->cols * 2);
-    int ch = jsfeat_clamp(get_channel(src->type), 1, 4);
-    double scale_x = (double)src->cols / dst->cols;
-    double scale_y = (double)src->rows / dst->rows;
+    int h = src->get_rows(), w = src->get_cols();
+    assert(src->get_cols() > 0 && dst->get_cols() > 0);
+    Array<jsfeat_int_alpha> xofs(src->get_cols() * 2);
+    int ch = jsfeat_clamp(get_channel(src->get_type()), 1, 4);
+    double scale_x = (double)src->get_cols() / dst->get_cols();
+    double scale_y = (double)src->get_rows() / dst->get_rows();
     // double scale = 1.f / (scale_x * scale_y);
     unsigned int inv_scale_256 = (int)(scale_x * scale_y * 0x10000);
     int dx, dy, sx, sy, i, k, a, b;
-    for (dx = 0, k = 0; dx < dst->cols; dx++) {
+    for (dx = 0, k = 0; dx < dst->get_cols(); dx++) {
       double fsx1 = dx * scale_x, fsx2 = fsx1 + scale_x;
       int sx1 = (int)(fsx1 + 1.0 - 1e-6), sx2 = (int)(fsx2);
-      sx1 = std::min(sx1, src->cols - 1);
-      sx2 = std::min(sx2, src->cols - 1);
+      sx1 = std::min(sx1, src->get_cols() - 1);
+      sx2 = std::min(sx2, src->get_cols() - 1);
 
       if (sx1 > fsx1) {
         xofs[k].di = dx * ch;
@@ -618,13 +618,13 @@ class Imgproc : public Math {
       }
     }
     int xofs_count = k;
-    Array<u_int> buf(dst->cols * ch);
-    Array<u_int> sum(dst->cols * ch);
-    for (dx = 0; dx < dst->cols * ch; dx++) {
+    Array<u_int> buf(dst->get_cols() * ch);
+    Array<u_int> sum(dst->get_cols() * ch);
+    for (dx = 0; dx < dst->get_cols() * ch; dx++) {
       buf[dx] = sum[dx] = 0;
     }
     dy = 0;
-    for (sy = 0; sy < src->rows; sy++) {
+    for (sy = 0; sy < src->get_rows(); sy++) {
       a = w * sy;
       Array<u_char> a_ptr = dst->u8;
       for (k = 0; k < xofs_count; k++) {
@@ -633,20 +633,20 @@ class Imgproc : public Math {
         for (i = 0; i < ch; i++)
           buf[dxn + i] += a_ptr[a + xofs[k].si + i] * alpha;
       }
-      if ((dy + 1) * scale_y <= sy + 1 || sy == src->rows - 1) {
+      if ((dy + 1) * scale_y <= sy + 1 || sy == src->get_rows() - 1) {
         unsigned int beta =
             (int)((std::max(sy + 1 - (dy + 1) * scale_y, 0.)) * 256);
         unsigned int beta1 = 256 - beta;
         b = nw * dy;
         Array<u_char> b_ptr = dst->u8;  // + b->step  * dy;
         if (beta <= 0) {
-          for (dx = 0; dx < dst->cols * ch; dx++) {
+          for (dx = 0; dx < dst->get_cols() * ch; dx++) {
             b_ptr[b + dx] =
                 jsfeat_clamp(sum[dx] + buf[dx] * 256 / inv_scale_256, 0, 255);
             sum[dx] = buf[dx] = 0;
           }
         } else {
-          for (dx = 0; dx < dst->cols * ch; dx++) {
+          for (dx = 0; dx < dst->get_cols() * ch; dx++) {
             b_ptr[b + dx] = jsfeat_clamp(
                 (sum[dx] + buf[dx] * beta1) / inv_scale_256, 0, 255);
             sum[dx] = buf[dx] * beta;
@@ -655,7 +655,7 @@ class Imgproc : public Math {
         }
         dy++;
       } else {
-        for (dx = 0; dx < dst->cols * ch; dx++) {
+        for (dx = 0; dx < dst->get_cols() * ch; dx++) {
           sum[dx] += buf[dx] * 256;
           buf[dx] = 0;
         }

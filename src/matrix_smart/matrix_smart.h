@@ -1,14 +1,13 @@
 #ifndef MATRIX_SMART_H
 #define MATRIX_SMART_H
 
+#include <matrix_base/matrix_base.h>
+
+#include <memory>
+
 namespace jsfeat {
-class Matrix_smart : public Data_t {
+class Matrix_smart : public MatrixBase, public Data_t {
  public:
-  int cols;
-  int rows;
-  int type;
-  size_t channel;
-  size_t size;
   Matrix_smart(int c, int r, int data_type) {
     cols = c;
     rows = r;
@@ -45,26 +44,26 @@ class Matrix_smart : public Data_t {
   emscripten::val get_data() const {
     auto result = emscripten::val::null();
     if (type == Types::U8_t) {
-      emscripten::val view{ emscripten::typed_memory_view(u8.size(), u8.data()) };
+      emscripten::val view{emscripten::typed_memory_view(u8.size(), u8.data())};
       result = emscripten::val::global("Uint8Array").new_(u8.size());
       result.call<void>("set", view);
     } else if (type == Types::S32_t) {
-      emscripten::val view{ emscripten::typed_memory_view(i32.size(), i32.data()) };
+      emscripten::val view{emscripten::typed_memory_view(i32.size(), i32.data())};
       result = emscripten::val::global("Int32Array").new_(i32.size());
       result.call<void>("set", view);
     } else if (type == Types::F32_t) {
-      emscripten::val view{ emscripten::typed_memory_view(f32.size(), f32.data()) };
+      emscripten::val view{emscripten::typed_memory_view(f32.size(), f32.data())};
       result = emscripten::val::global("Float32Array").new_(f32.size());
       result.call<void>("set", view);
     } else if (type == Types::F64_t) {
-      emscripten::val view{ emscripten::typed_memory_view(f64.size(), f64.data()) };
+      emscripten::val view{emscripten::typed_memory_view(f64.size(), f64.data())};
       result = emscripten::val::global("Float64Array").new_(f64.size());
       result.call<void>("set", view);
     }
     return result;
   }
 #endif
-  void allocate() {
+  inline void allocate() override {
     size = (cols * channel) * rows;
     if (type == Types::U8_t) {
       u8.assign(size, 0);
@@ -76,7 +75,7 @@ class Matrix_smart : public Data_t {
       f64.assign(size, 0);
     }
   }
-  void resize(int c, int r, int ch) {
+  inline void resize(int c, int r, int ch) override {
     if (!ch) {
       ch = channel;
     }
@@ -101,6 +100,13 @@ class Matrix_smart : public Data_t {
       channel = ch;
     }
   }
+
+ private:
+  int cols;
+  int rows;
+  int type;
+  size_t channel;
+  size_t size;
 };
 
 }  // namespace jsfeat

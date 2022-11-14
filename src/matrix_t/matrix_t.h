@@ -5,6 +5,7 @@
 #include <emscripten/val.h>
 #endif
 #include <jslog/jslog.h>
+#include <matrix_base/matrix_base.h>
 #include <node_utils/data_t.h>
 #include <node_utils/functions.h>
 #include <types/types.h>
@@ -15,13 +16,8 @@
 
 namespace jsfeat {
 
-class Matrix_t : public Data_t {
+class Matrix_t : public MatrixBase, public Data_t {
  public:
-  int cols;
-  int rows;
-  int type;
-  size_t channel;
-  size_t size;
   Matrix_t() {
     cols = 0;
     rows = 0;
@@ -242,7 +238,7 @@ class Matrix_t : public Data_t {
   }
 #endif
 
-  void allocate() {
+  inline void allocate() override {
     size = (cols * channel) * rows;
     if (type == Types::U8_t) {
       u8.assign(size, 0);
@@ -255,7 +251,7 @@ class Matrix_t : public Data_t {
     }
   }
 
-  void resize(int c, int r, int ch) {
+  inline void resize(int c, int r, int ch) override {
     if (!ch) {
       ch = channel;
     }
@@ -315,6 +311,11 @@ class Matrix_t : public Data_t {
     return (value.typeOf().as<std::string>() == type);
   }
 #endif
+  int cols;
+  int rows;
+  int type;
+  size_t channel;
+  size_t size;
 };
 }  // namespace jsfeat
 
