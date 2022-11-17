@@ -5,11 +5,9 @@ var jpeg_count = 0;
 export function loadJpeg(url, callback, errorCallback) {
     var filename = '/load_jpeg_' + jpeg_count++ + '.jpg';
     var writeCallback = function (errorCode) {
-        //if (!Module._loadCamera) {
         if (!jsfeat.load_jpeg_data) {
             if (callback) callback(id); setTimeout(writeCallback, 10);
         } else {
-            //var id = Module._loadCamera(filename);
             var id = jsfeat.load_jpeg_data(filename)
             if (callback) callback(id);
         }
@@ -40,7 +38,7 @@ export function loadJpeg(url, callback, errorCallback) {
 export function trainOrbPattern(url, callback, errorCallback) {
     var filename = '/load_jpeg_' + jpeg_count++ + '.jpg';
     var writeCallback = function (errorCode) {
-        if (!jsfeat.trainOrbPattern) {
+        if (!jsfeat.train_orb_pattern) {
             if (callback) callback(id); setTimeout(writeCallback, 10);
         } else {
             var id = jsfeat.train_orb_pattern(filename)
