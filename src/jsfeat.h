@@ -1,3 +1,4 @@
+#include <feature_detection/detectors.h>
 #include <imgproc/imgproc.h>
 #include <keypoint_t/keypoint_t.h>
 #include <keypoints/keypoints.h>
