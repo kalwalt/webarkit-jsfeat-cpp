@@ -2,6 +2,7 @@
 #include <imgproc/imgproc.h>
 #include <keypoint_t/keypoint_t.h>
 #include <keypoints/keypoints.h>
+#include <keypoints_filter/keypoints_filter.h>
 #include <matrix_smart/matrix_smart.h>
 #include <matrix_t/matrix_t.h>
 #include <orb/orb.h>

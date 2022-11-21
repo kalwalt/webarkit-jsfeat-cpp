@@ -3,6 +3,7 @@
 
 #include <keypoint_t/keypoint_t.h>
 #include <keypoints/keypoints.h>
+#include <keypoints_filter/keypoints_filter.h>
 #include <math/math.h>
 #include <matrix_t/matrix_t.h>
 #include <types/types.h>
@@ -12,7 +13,7 @@ namespace jsfeat {
 
 namespace detectors {
 
-class Detectors : public Yape06, public Math {
+class Detectors : public Yape06, public Math, public KeyPointsFilter {
  public:
   Detectors() {}
   ~Detectors() {}
@@ -24,6 +25,7 @@ class Detectors : public Yape06, public Math {
     // sort by score and reduce the count if needed
     if (count > max_allowed) {
       // qsort_internal<KeyPoint_t, bool>(corners.kpoints, 0, count - 1, [](KeyPoint_t i, KeyPoint_t j){return (i.score < j.score);});
+      retainBest(corners.kpoints, count);
       count = max_allowed;
     }
 
