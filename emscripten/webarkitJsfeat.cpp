@@ -199,6 +199,7 @@ void train_orb_pattern_internal(const char* filename) {
   // orb.describe(lev_img.get(), lev_corners[0], corners_num, &pattern_descriptors[0]);
 
   // console.log("train " + lev_img.cols + "x" + lev_img.rows + " points: " + corners_num);
+  JSLOGi("Corners num:  %i", corners_num);
   JSLOGi("train %i x %i points: %i\n", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
   std::cout << "train " << lev_img.get()->get_cols() << " x " << lev_img.get()->get_rows() << " points: " << corners_num << std::endl;
   free(ext);
