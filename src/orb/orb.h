@@ -23,11 +23,8 @@ class Orb {
     patch_img->allocate();
   }
 
-  void describe(uintptr_t inputSrc, emscripten::val inputCorners, int count, uintptr_t inputDescriptors) {
-    auto src = reinterpret_cast<Matrix_t*>(inputSrc);
-    auto corners = emscripten::vecFromJSArray<KeyPoint_t>(inputCorners);
-    auto descriptors = reinterpret_cast<Matrix_t*>(inputDescriptors);
-    int DESCR_SIZE = 32;  // bytes;
+  void describe(Matrix_t* src, Array<KeyPoint_t> corners, int count, Matrix_t*  descriptors) {
+     int DESCR_SIZE = 32;  // bytes;
     int i = 0, b = 0, px = 0.0, py = 0.0, angle = 0.0;
     int t0 = 0, t1 = 0, val = 0;
     // int img = src.data, w = src.cols, h = src.rows;
@@ -127,6 +124,13 @@ class Orb {
       }
       descr_off += DESCR_SIZE;
     }
+  }
+
+  void describe(uintptr_t inputSrc, emscripten::val inputCorners, int count, uintptr_t inputDescriptors) {
+    auto src = reinterpret_cast<Matrix_t*>(inputSrc);
+    auto corners = emscripten::vecFromJSArray<KeyPoint_t>(inputCorners);
+    auto descriptors = reinterpret_cast<Matrix_t*>(inputDescriptors);
+    describe(src, corners, count, descriptors);
   }
 
  private:
