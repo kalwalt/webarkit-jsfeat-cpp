@@ -151,7 +151,7 @@ void train_orb_pattern_internal(const char* filename) {
   }
   webarkitLOGi("Image done!");
 
-  JSLOGi("Starting detection routine...");
+  JSLOGi("Starting detection routine...\n");
 
   Orb orb;
   Imgproc imgproc;
@@ -159,6 +159,7 @@ void train_orb_pattern_internal(const char* filename) {
   std::unique_ptr<Matrix_t> lev0_img = std::make_unique<Matrix_t>(jpegImage->xsize, jpegImage->ysize, ComboTypes::U8C1_t);
   std::unique_ptr<Matrix_t> lev_img = std::make_unique<Matrix_t>(jpegImage->xsize, jpegImage->ysize, ComboTypes::U8C1_t);
   Array<std::unique_ptr<Matrix_t>> pattern_corners;
+  std::cout << "after orb" << std::endl;
 
   auto sc0 = std::min(max_pattern_size / jpegImage->ysize, max_pattern_size / jpegImage->xsize);
   new_width = (jpegImage->ysize * sc0) | 0;
@@ -168,14 +169,17 @@ void train_orb_pattern_internal(const char* filename) {
   auto i_u8_size = jpegImage->xsize * jpegImage->ysize * jpegImage->nc;
   Array<u_char> i_u8(jpegImage->image, jpegImage->image + i_u8_size);
   std::unique_ptr<Matrix_t> img_u8 = std::make_unique<Matrix_t>(jpegImage->xsize, jpegImage->ysize, ComboTypes::U8C4_t, i_u8);
-
-  imgproc.resample(img_u8.get(), lev0_img.get(), new_width, new_height);
-
+  
+  JSLOGi("Resampling image...");
+  
+  //imgproc.resample(img_u8.get(), lev0_img.get(), new_width, new_height);
+  
+  JSLOGi("Image resampled, starting pyramid now...");
   // prepare preview
   std::unique_ptr<Matrix_t> pattern_preview = std::make_unique<Matrix_t>(jpegImage->xsize >> 1, jpegImage->ysize >> 1, ComboTypes::U8C1_t);
   imgproc.pyrdown_internal(lev0_img.get(), pattern_preview.get());
 
-  Array<KeyPoints> lev_corners;
+  Array<KeyPoints*> lev_corners(4);
   Array<std::unique_ptr<Matrix_t>> pattern_descriptors;
 
   for (lev = 0; lev < num_train_levels; ++lev) {
@@ -186,12 +190,19 @@ void train_orb_pattern_internal(const char* filename) {
     // preallocate corners array
     i = (new_width * new_height) >> lev;
     while (--i >= 0) {
-      lev_corners[lev].set_size(i);
+      lev_corners[lev]->set_size(i);
+      lev_corners[lev]->allocate();
     }
+    std::cout << "Num. of level: " << lev << std::endl;
     pattern_descriptors.push_back(std::unique_ptr<Matrix_t>(new Matrix_t(32, max_per_level, ComboTypes::U8C1_t)));
   }
 
-  imgproc.gaussian_blur_internal(lev0_img.get(), lev_img.get(), 5, 0.2);  // this is more robust
+  //std::cout << "Size of first lev_corners: " << lev_corners[0]->kpoints.size() << std::endl;
+
+  imgproc.gaussian_blur_internal(lev0_img.get(), lev_img.get(), 5, 2);  // this is more robust
+
+  JSLOGi("After Gaussian blur");
+
   corners_num = detectors.detect_keypoints(lev_img.get(), lev_corners[0], max_per_level);
 
   // orb.describe(lev_img.get(), lev_corners[0], corners_num, lev_descr.get());
@@ -199,9 +210,10 @@ void train_orb_pattern_internal(const char* filename) {
   // orb.describe(lev_img.get(), lev_corners[0], corners_num, &pattern_descriptors[0]);
 
   // console.log("train " + lev_img.cols + "x" + lev_img.rows + " points: " + corners_num);
-  JSLOGi("Corners num:  %i", corners_num);
-  JSLOGi("train %i x %i points: %i\n", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
-  std::cout << "train " << lev_img.get()->get_cols() << " x " << lev_img.get()->get_rows() << " points: " << corners_num << std::endl;
+  std::cout << "Corners num: " << (int)corners_num << std::endl;
+  //JSLOGi("Corners num:  %i", corners_num);
+  //JSLOGi("train %i x %i points: %i\n", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
+  //std::cout << "train " << lev_img.get()->get_cols() << " x " << lev_img.get()->get_rows() << " points: " << corners_num << std::endl;
   free(ext);
   free(jpegImage);
 };

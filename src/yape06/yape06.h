@@ -84,6 +84,7 @@ class Yape06 {
         }
       }
     }
+    std::cout << "count: " << ypts.count << std::endl;
 
     return ypts;
   }

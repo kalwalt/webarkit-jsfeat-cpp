@@ -18,21 +18,25 @@ class Detectors : public Yape06, public Math, public KeyPointsFilter {
   Detectors() {}
   ~Detectors() {}
 
-  int detect_keypoints(Matrix_t* img, KeyPoints corners, int max_allowed) {
+  int detect_keypoints(Matrix_t* img, KeyPoints* corners, int max_allowed) {
     // detect features
-    auto kpc = detect_internal(img, &corners, 17);
+    auto kpc = detect_internal(img, corners, 17);
     auto count = kpc.count;
+    std::cout << "here" << std::endl;
+    //std::cout << count << std::endl;
     // sort by score and reduce the count if needed
     if (count > max_allowed) {
       // qsort_internal<KeyPoint_t, bool>(corners.kpoints, 0, count - 1, [](KeyPoint_t i, KeyPoint_t j){return (i.score < j.score);});
-      retainBest(corners.kpoints, count);
+      retainBest(corners->kpoints, count);
       count = max_allowed;
     }
 
     // calculate dominant orientation for each keypoint
     for (auto i = 0; i < count; ++i) {
-      corners.kpoints[i].angle = ic_angle(img, corners.kpoints[i].x, corners.kpoints[i].y);
+      corners->kpoints[i].angle = ic_angle(img, corners->kpoints[i].x, corners->kpoints[i].y);
     }
+
+    //std::cout << count << std::endl;
 
     return count;
   }
