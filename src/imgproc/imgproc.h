@@ -37,10 +37,8 @@ typedef struct {
 
 class Imgproc : public Math {
  public:
-  void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {
-    auto ptrSrc = reinterpret_cast<Matrix_t*>(src);
-    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
-    // this is default image data representation in browser
+  template <typename SRC, typename DST>
+  void grayscale_m_internal(SRC* src, int w, int h, DST* dst, int code) {
     if (!code) {
       code = Colors::COLOR_RGBA2GRAY;
     }
@@ -66,39 +64,45 @@ class Imgproc : public Math {
     int cn2 = cn << 1;
     int cn3 = (cn * 3) | 0;
 
-    ptrDst->resize(w, h, 1);
+    dst->resize(w, h, 1);
 
-    if (ptrSrc->u8.empty()) {
+    if (src->u8.empty()) {
       JSLOGe("vector is empty");
     }
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        ptrDst->u8[jr] =
-            (ptrSrc->u8[ir] * coeff_r + ptrSrc->u8[ir + 1] * coeff_g +
-             ptrSrc->u8[ir + 2] * coeff_b + 8192) >>
+        dst->u8[jr] =
+            (src->u8[ir] * coeff_r + src->u8[ir + 1] * coeff_g +
+             src->u8[ir + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8[jr + 1] =
-            (ptrSrc->u8[ir + cn] * coeff_r + ptrSrc->u8[ir + cn + 1] * coeff_g +
-             ptrSrc->u8[ir + cn + 2] * coeff_b + 8192) >>
+        dst->u8[jr + 1] =
+            (src->u8[ir + cn] * coeff_r + src->u8[ir + cn + 1] * coeff_g +
+             src->u8[ir + cn + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8[jr + 2] = (ptrSrc->u8[ir + cn2] * coeff_r +
-                              ptrSrc->u8[ir + cn2 + 1] * coeff_g +
-                              ptrSrc->u8[ir + cn2 + 2] * coeff_b + 8192) >>
-                             14;
-        ptrDst->u8[jr + 3] = (ptrSrc->u8[ir + cn3] * coeff_r +
-                              ptrSrc->u8[ir + cn3 + 1] * coeff_g +
-                              ptrSrc->u8[ir + cn3 + 2] * coeff_b + 8192) >>
-                             14;
+        dst->u8[jr + 2] = (src->u8[ir + cn2] * coeff_r +
+                           src->u8[ir + cn2 + 1] * coeff_g +
+                           src->u8[ir + cn2 + 2] * coeff_b + 8192) >>
+                          14;
+        dst->u8[jr + 3] = (src->u8[ir + cn3] * coeff_r +
+                           src->u8[ir + cn3 + 1] * coeff_g +
+                           src->u8[ir + cn3 + 2] * coeff_b + 8192) >>
+                          14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        ptrDst->u8[jr] =
-            (ptrSrc->u8[ir] * coeff_r + ptrSrc->u8[ir + 1] * coeff_g +
-             ptrSrc->u8[ir + 2] * coeff_b + 8192) >>
+        dst->u8[jr] =
+            (src->u8[ir] * coeff_r + src->u8[ir + 1] * coeff_g +
+             src->u8[ir + 2] * coeff_b + 8192) >>
             14;
       }
     }
-  };
+  }
+
+  void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {
+    auto ptrSrc = reinterpret_cast<Matrix_t*>(src);
+    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
+    grayscale_m_internal<Matrix_t, Matrix_t>(ptrSrc, w, h, ptrDst, code);
+  }
 
 #ifdef __EMSCRIPTEN__
   void grayscale(emscripten::val inputSrc, int w, int h, uintptr_t dst,
