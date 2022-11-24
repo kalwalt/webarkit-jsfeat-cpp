@@ -256,46 +256,11 @@ class Imgproc : public Math {
     grayscale_rgba_internal<Matrix_t>(src, w, h, dst, colorType);
   }
 #endif
+
   void pyrdown(uintptr_t inputSrc, uintptr_t inputDst, int sx, int sy) {
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
-    if (!sx) {
-      sx = 0;
-    }
-    if (!sy) {
-      sy = 0;
-    }
-
-    int w = src->get_cols(), h = src->get_rows();
-    int w2 = w >> 1, h2 = h >> 1;
-    int _w2 = w2 - (sx << 1), _h2 = h2 - (sy << 1);
-    int x = 0, y = 0, sptr = sx + sy * w, sline = 0, dptr = 0, dline = 0;
-
-    dst->resize(w2, h2, src->get_channel_m());
-
-    // u_char* src_d = src->dt->u8.data();
-    // u_char* dst_d = dst->dt->u8.data();
-
-    for (y = 0; y < _h2; ++y) {
-      sline = sptr;
-      dline = dptr;
-      for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
-        dst->u8[dline] = (src->u8[sline] + src->u8[sline + 1] +
-                          src->u8[sline + w] + src->u8[sline + w + 1] + 2) >>
-                         2;
-        dst->u8[dline + 1] =
-            (src->u8[sline + 2] + src->u8[sline + 3] + src->u8[sline + w + 2] +
-             src->u8[sline + w + 3] + 2) >>
-            2;
-      }
-      for (; x < _w2; ++x, ++dline, sline += 2) {
-        dst->u8[dline] = (src->u8[sline] + src->u8[sline + 1] +
-                          src->u8[sline + w] + src->u8[sline + w + 1] + 2) >>
-                         2;
-      }
-      sptr += w << 1;
-      dptr += w2;
-    }
+    pyrdown_internal(src, dst, sx, sy);
   };
   void pyrdown_internal(Matrix_t* src, Matrix_t* dst, int sx = 0, int sy = 0) {
     if (!sx) {
@@ -312,8 +277,10 @@ class Imgproc : public Math {
 
     dst->resize(w2, h2, src->get_channel_m());
 
-    u_char* src_d = src->u8.data();
-    u_char* dst_d = dst->u8.data();
+    // u_char* src_d = src->u8.data();
+    // u_char* dst_d = dst->u8.data();
+    auto src_d = src->u8;
+    auto dst_d = dst->u8;
 
     for (y = 0; y < _h2; ++y) {
       sline = sptr;
