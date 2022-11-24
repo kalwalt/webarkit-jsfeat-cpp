@@ -103,16 +103,8 @@ class Imgproc : public Math {
     auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
     grayscale_m_internal<Matrix_t, Matrix_t>(ptrSrc, w, h, ptrDst, code);
   }
-
-#ifdef __EMSCRIPTEN__
-  void grayscale(emscripten::val inputSrc, int w, int h, uintptr_t dst,
-                 int code) {
-    auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
-#else
-  void grayscale(u_char* src, int w, int h, uintptr_t dst, int code) {
-#endif
-    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
-    // this is default image data representation in browser
+  template <typename SRC, typename DST>
+  void grayscale_internal(SRC* src, int w, int h, DST* dst, int code) {
     if (!code) {
       code = Colors::COLOR_RGBA2GRAY;
     }
@@ -138,33 +130,47 @@ class Imgproc : public Math {
     int cn2 = cn << 1;
     int cn3 = (cn * 3) | 0;
 
-    ptrDst->resize(w, h, 1);
+    dst->resize(w, h, 1);
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        ptrDst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
-                          src[ir + 2] * coeff_b + 8192) >>
-                         14;
-        ptrDst->u8[jr + 1] =
+        dst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+                       src[ir + 2] * coeff_b + 8192) >>
+                      14;
+        dst->u8[jr + 1] =
             (src[ir + cn] * coeff_r + src[ir + cn + 1] * coeff_g +
              src[ir + cn + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8[jr + 2] =
+        dst->u8[jr + 2] =
             (src[ir + cn2] * coeff_r + src[ir + cn2 + 1] * coeff_g +
              src[ir + cn2 + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8[jr + 3] =
+        dst->u8[jr + 3] =
             (src[ir + cn3] * coeff_r + src[ir + cn3 + 1] * coeff_g +
              src[ir + cn3 + 2] * coeff_b + 8192) >>
             14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        ptrDst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
-                          src[ir + 2] * coeff_b + 8192) >>
-                         14;
+        dst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+                       src[ir + 2] * coeff_b + 8192) >>
+                      14;
       }
     }
-  };
+  }
+
+#ifdef __EMSCRIPTEN__
+  void grayscale(emscripten::val inputSrc, int w, int h, uintptr_t dst, int code) {
+    auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
+    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
+    grayscale_internal<u_char, Matrix_t>(src.data(), w, h, ptrDst, code);
+  }
+#endif
+
+  void grayscale(u_char* src, int w, int h, uintptr_t dst, int code) {
+    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
+    grayscale_internal<u_char, Matrix_t>(src, w, h, ptrDst, code);
+  }
+
   void grayscale_rgba_standard(Array<u_char> src, int w, int h, Matrix_t* dst, int colorType) {
     int cn;
     switch (colorType) {
