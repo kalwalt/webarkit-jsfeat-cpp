@@ -362,8 +362,7 @@ class Imgproc : public Math {
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     this->equalize_histogram_internal(src, dst);
   }
-  void warp_affine_internal(Matrix_t* src, Matrix_t* dst, Matrix_t* transform,
-                            int fill_value) {
+  void warp_affine_internal(Matrix_t* src, Matrix_t* dst, Matrix_t* transform, int fill_value) {
     if (!fill_value) {
       fill_value = 0;
     }
@@ -412,59 +411,11 @@ class Imgproc : public Math {
       }
     }
   }
-  void warp_affine(uintptr_t src, uintptr_t dst, uintptr_t transform,
-                   int fill_value) {
+  void warp_affine(uintptr_t src, uintptr_t dst, uintptr_t transform, int fill_value) {
     auto ptrSrc = reinterpret_cast<Matrix_t*>(src);
     auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
     auto ptrTransform = reinterpret_cast<Matrix_t*>(transform);
-    if (!fill_value) {
-      fill_value = 0;
-    }
-    int src_width = ptrSrc->get_cols();
-    int src_height = ptrSrc->get_rows();
-    int dst_width = ptrDst->get_cols();
-    int dst_height = ptrDst->get_rows();
-    int x = 0;
-    int y = 0;
-    int off = 0;
-    int ixs = 0;
-    int iys = 0;
-    int xs = 0.0;
-    int ys = 0.0;
-    float a = 0.0;
-    float b = 0.0;
-    float p0 = 0.0;
-    float p1 = 0.0;
-    float* td = ptrTransform->f32.data();
-    float m00 = td[0];
-    float m01 = td[1];
-    float m02 = td[2];
-    float m10 = td[3];
-    float m11 = td[4];
-    float m12 = td[5];
-    for (int dptr = 0; y < dst_height; ++y) {
-      xs = m01 * y + m02;
-      ys = m11 * y + m12;
-      for (x = 0; x < dst_width; ++x, ++dptr, xs += m00, ys += m10) {
-        ixs = xs | 0;
-        iys = ys | 0;
-
-        if (ixs >= 0 && iys >= 0 && ixs < (src_width - 1) &&
-            iys < (src_height - 1)) {
-          a = xs - ixs;
-          b = ys - iys;
-          off = src_width * iys + ixs;
-
-          p0 = ptrSrc->u8[off] + a * (ptrSrc->u8[off + 1] - ptrSrc->u8[off]);
-          p1 = ptrSrc->u8[off + src_width] +
-               a * (ptrSrc->u8[off + src_width + 1] -
-                    ptrSrc->u8[off + src_width]);
-
-          ptrDst->u8[dptr] = p0 + b * (p1 - p0);
-        } else
-          ptrDst->u8[dptr] = fill_value;
-      }
-    }
+    warp_affine_internal(ptrSrc, ptrDst, ptrTransform, fill_value);
   }
   void resample(uintptr_t inputSrc, uintptr_t inputDst, int nw, int nh) {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
