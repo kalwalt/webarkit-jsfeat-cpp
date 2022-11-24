@@ -420,17 +420,7 @@ class Imgproc : public Math {
   void resample(uintptr_t inputSrc, uintptr_t inputDst, int nw, int nh) {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
-    int h = src->get_rows(), w = src->get_cols();
-    if (h > nh && w > nw) {
-      dst->resize(nw, nh, src->get_channel_m());
-      // using the fast alternative (fix point scale, 0x100 to avoid overflow)
-      if (src->get_type() & Types::U8_t && dst->get_type() & Types::U8_t &&
-          h * w / (nh * nw) < 0x100) {
-        _resample_u8(src, dst, nw, nh);
-      } else {
-        _resample(src, dst, nw, nh);
-      }
-    }
+    resample(src, dst, nw, nh);
   };
   void resample(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
     int h = src->get_rows(), w = src->get_cols();
