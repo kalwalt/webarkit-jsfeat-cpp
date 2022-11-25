@@ -38,10 +38,7 @@ typedef struct {
 class Imgproc : public Math {
  public:
   template <typename SRC, typename DST>
-  void grayscale_m_internal(SRC* src, int w, int h, DST* dst, int code) {
-    if (!code) {
-      code = Colors::COLOR_RGBA2GRAY;
-    }
+  void grayscale_m_internal(SRC* src, int w, int h, DST* dst, int code = Colors::COLOR_RGBA2GRAY) {
     int videosize = w * h;
     int x = 0;
     int y = 0;
@@ -103,11 +100,9 @@ class Imgproc : public Math {
     auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
     grayscale_m_internal<Matrix_t, Matrix_t>(ptrSrc, w, h, ptrDst, code);
   }
+
   template <typename SRC, typename DST>
-  void grayscale_internal(SRC* src, int w, int h, DST* dst, int code) {
-    if (!code) {
-      code = Colors::COLOR_RGBA2GRAY;
-    }
+  void grayscale_internal(SRC* src, int w, int h, DST* dst, int code = Colors::COLOR_RGBA2GRAY) {
     int videosize = w * h;
     int x = 0;
     int y = 0;
@@ -203,6 +198,7 @@ class Imgproc : public Math {
       q += cn;
     }
   }
+
   template <typename Matrix_class>
   void grayscale_rgba_internal(Array<u_char> src, int w, int h, std::shared_ptr<Matrix_class> dst, int colorType) {
     static_assert(
@@ -240,6 +236,7 @@ class Imgproc : public Math {
       q += cn;
     }
   }
+
 #ifdef __EMSCRIPTEN__
   void grayscale_rgba(emscripten::val inputSrc, int w, int h, Matrix_t* dst, int colorType) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
@@ -262,14 +259,8 @@ class Imgproc : public Math {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     pyrdown_internal(src, dst, sx, sy);
   };
-  void pyrdown_internal(Matrix_t* src, Matrix_t* dst, int sx = 0, int sy = 0) {
-    if (!sx) {
-      sx = 0;
-    }
-    if (!sy) {
-      sy = 0;
-    }
 
+  void pyrdown_internal(Matrix_t* src, Matrix_t* dst, int sx = 0, int sy = 0) {
     int w = src->get_cols(), h = src->get_rows();
     int w2 = w >> 1, h2 = h >> 1;
     int _w2 = w2 - (sx << 1), _h2 = h2 - (sy << 1);
@@ -362,10 +353,8 @@ class Imgproc : public Math {
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     this->equalize_histogram_internal(src, dst);
   }
-  void warp_affine_internal(Matrix_t* src, Matrix_t* dst, Matrix_t* transform, int fill_value) {
-    if (!fill_value) {
-      fill_value = 0;
-    }
+
+  void warp_affine_internal(Matrix_t* src, Matrix_t* dst, Matrix_t* transform, int fill_value = 0) {
     int src_width = src->get_cols();
     int src_height = src->get_rows();
     int dst_width = dst->get_cols();
@@ -411,17 +400,20 @@ class Imgproc : public Math {
       }
     }
   }
+
   void warp_affine(uintptr_t src, uintptr_t dst, uintptr_t transform, int fill_value) {
     auto ptrSrc = reinterpret_cast<Matrix_t*>(src);
     auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
     auto ptrTransform = reinterpret_cast<Matrix_t*>(transform);
     warp_affine_internal(ptrSrc, ptrDst, ptrTransform, fill_value);
   }
+
   void resample(uintptr_t inputSrc, uintptr_t inputDst, int nw, int nh) {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     resample(src, dst, nw, nh);
   };
+
   void resample(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
     int h = src->get_rows(), w = src->get_cols();
     if (h > nh && w > nw) {
@@ -435,12 +427,14 @@ class Imgproc : public Math {
       }
     }
   };
+
   void gaussian_blur(uintptr_t inputSrc, uintptr_t inputDst, int kernel_size,
                      float sigma) {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     gaussian_blur_internal(src, dst, kernel_size, sigma);
   };
+
   void gaussian_blur_internal(Matrix_t* src, Matrix_t* dst, int kernel_size,
                               float sigma) {
     if (!sigma) {
@@ -584,6 +578,7 @@ class Imgproc : public Math {
   void _resample(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
     // to be implemented!
   }
+
   template <typename Buffer, typename Filter>
   void _convol_u8(Array<Buffer>& buf, Array<u_char>& src_d,
                   Array<u_char>& dst_d, int w, int h, Array<Filter>& filter,
@@ -679,6 +674,7 @@ class Imgproc : public Math {
       }
     }
   }
+
   template <typename Buffer, typename Filter>
   void _convol(Array<Buffer>& buf, Array<u_char>& src_d, Array<u_char>& dst_d,
                int w, int h, Array<Filter>& filter, int kernel_size,
