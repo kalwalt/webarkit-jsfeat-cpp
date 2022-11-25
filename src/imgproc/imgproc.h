@@ -37,13 +37,8 @@ typedef struct {
 
 class Imgproc : public Math {
  public:
-  void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {
-    auto ptrSrc = reinterpret_cast<Matrix_t*>(src);
-    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
-    // this is default image data representation in browser
-    if (!code) {
-      code = Colors::COLOR_RGBA2GRAY;
-    }
+  template <typename SRC, typename DST>
+  void grayscale_m_internal(SRC* src, int w, int h, DST* dst, int code = Colors::COLOR_RGBA2GRAY) {
     int videosize = w * h;
     int x = 0;
     int y = 0;
@@ -66,52 +61,48 @@ class Imgproc : public Math {
     int cn2 = cn << 1;
     int cn3 = (cn * 3) | 0;
 
-    ptrDst->resize(w, h, 1);
+    dst->resize(w, h, 1);
 
-    if (ptrSrc->u8.empty()) {
+    if (src->u8.empty()) {
       JSLOGe("vector is empty");
     }
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        ptrDst->u8[jr] =
-            (ptrSrc->u8[ir] * coeff_r + ptrSrc->u8[ir + 1] * coeff_g +
-             ptrSrc->u8[ir + 2] * coeff_b + 8192) >>
+        dst->u8[jr] =
+            (src->u8[ir] * coeff_r + src->u8[ir + 1] * coeff_g +
+             src->u8[ir + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8[jr + 1] =
-            (ptrSrc->u8[ir + cn] * coeff_r + ptrSrc->u8[ir + cn + 1] * coeff_g +
-             ptrSrc->u8[ir + cn + 2] * coeff_b + 8192) >>
+        dst->u8[jr + 1] =
+            (src->u8[ir + cn] * coeff_r + src->u8[ir + cn + 1] * coeff_g +
+             src->u8[ir + cn + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8[jr + 2] = (ptrSrc->u8[ir + cn2] * coeff_r +
-                              ptrSrc->u8[ir + cn2 + 1] * coeff_g +
-                              ptrSrc->u8[ir + cn2 + 2] * coeff_b + 8192) >>
-                             14;
-        ptrDst->u8[jr + 3] = (ptrSrc->u8[ir + cn3] * coeff_r +
-                              ptrSrc->u8[ir + cn3 + 1] * coeff_g +
-                              ptrSrc->u8[ir + cn3 + 2] * coeff_b + 8192) >>
-                             14;
+        dst->u8[jr + 2] = (src->u8[ir + cn2] * coeff_r +
+                           src->u8[ir + cn2 + 1] * coeff_g +
+                           src->u8[ir + cn2 + 2] * coeff_b + 8192) >>
+                          14;
+        dst->u8[jr + 3] = (src->u8[ir + cn3] * coeff_r +
+                           src->u8[ir + cn3 + 1] * coeff_g +
+                           src->u8[ir + cn3 + 2] * coeff_b + 8192) >>
+                          14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        ptrDst->u8[jr] =
-            (ptrSrc->u8[ir] * coeff_r + ptrSrc->u8[ir + 1] * coeff_g +
-             ptrSrc->u8[ir + 2] * coeff_b + 8192) >>
+        dst->u8[jr] =
+            (src->u8[ir] * coeff_r + src->u8[ir + 1] * coeff_g +
+             src->u8[ir + 2] * coeff_b + 8192) >>
             14;
       }
     }
-  };
+  }
 
-#ifdef __EMSCRIPTEN__
-  void grayscale(emscripten::val inputSrc, int w, int h, uintptr_t dst,
-                 int code) {
-    auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
-#else
-  void grayscale(u_char* src, int w, int h, uintptr_t dst, int code) {
-#endif
+  void grayscale_m(uintptr_t src, int w, int h, uintptr_t dst, int code) {
+    auto ptrSrc = reinterpret_cast<Matrix_t*>(src);
     auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
-    // this is default image data representation in browser
-    if (!code) {
-      code = Colors::COLOR_RGBA2GRAY;
-    }
+    grayscale_m_internal<Matrix_t, Matrix_t>(ptrSrc, w, h, ptrDst, code);
+  }
+
+  template <typename SRC, typename DST>
+  void grayscale_internal(SRC* src, int w, int h, DST* dst, int code = Colors::COLOR_RGBA2GRAY) {
     int videosize = w * h;
     int x = 0;
     int y = 0;
@@ -134,33 +125,47 @@ class Imgproc : public Math {
     int cn2 = cn << 1;
     int cn3 = (cn * 3) | 0;
 
-    ptrDst->resize(w, h, 1);
+    dst->resize(w, h, 1);
 
     for (y = 0; y < h; ++y, j += w, i += w * cn) {
       for (x = 0, ir = i, jr = j; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-        ptrDst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
-                          src[ir + 2] * coeff_b + 8192) >>
-                         14;
-        ptrDst->u8[jr + 1] =
+        dst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+                       src[ir + 2] * coeff_b + 8192) >>
+                      14;
+        dst->u8[jr + 1] =
             (src[ir + cn] * coeff_r + src[ir + cn + 1] * coeff_g +
              src[ir + cn + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8[jr + 2] =
+        dst->u8[jr + 2] =
             (src[ir + cn2] * coeff_r + src[ir + cn2 + 1] * coeff_g +
              src[ir + cn2 + 2] * coeff_b + 8192) >>
             14;
-        ptrDst->u8[jr + 3] =
+        dst->u8[jr + 3] =
             (src[ir + cn3] * coeff_r + src[ir + cn3 + 1] * coeff_g +
              src[ir + cn3 + 2] * coeff_b + 8192) >>
             14;
       }
       for (; x < w; ++x, ++jr, ir += cn) {
-        ptrDst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
-                          src[ir + 2] * coeff_b + 8192) >>
-                         14;
+        dst->u8[jr] = (src[ir] * coeff_r + src[ir + 1] * coeff_g +
+                       src[ir + 2] * coeff_b + 8192) >>
+                      14;
       }
     }
-  };
+  }
+
+#ifdef __EMSCRIPTEN__
+  void grayscale(emscripten::val inputSrc, int w, int h, uintptr_t dst, int code) {
+    auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
+    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
+    grayscale_internal<u_char, Matrix_t>(src.data(), w, h, ptrDst, code);
+  }
+#endif
+
+  void grayscale(u_char* src, int w, int h, uintptr_t dst, int code) {
+    auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
+    grayscale_internal<u_char, Matrix_t>(src, w, h, ptrDst, code);
+  }
+
   void grayscale_rgba_standard(Array<u_char> src, int w, int h, Matrix_t* dst, int colorType) {
     int cn;
     switch (colorType) {
@@ -193,6 +198,7 @@ class Imgproc : public Math {
       q += cn;
     }
   }
+
   template <typename Matrix_class>
   void grayscale_rgba_internal(Array<u_char> src, int w, int h, std::shared_ptr<Matrix_class> dst, int colorType) {
     static_assert(
@@ -230,6 +236,7 @@ class Imgproc : public Math {
       q += cn;
     }
   }
+
 #ifdef __EMSCRIPTEN__
   void grayscale_rgba(emscripten::val inputSrc, int w, int h, Matrix_t* dst, int colorType) {
     auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
@@ -246,55 +253,14 @@ class Imgproc : public Math {
     grayscale_rgba_internal<Matrix_t>(src, w, h, dst, colorType);
   }
 #endif
+
   void pyrdown(uintptr_t inputSrc, uintptr_t inputDst, int sx, int sy) {
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
-    if (!sx) {
-      sx = 0;
-    }
-    if (!sy) {
-      sy = 0;
-    }
-
-    int w = src->get_cols(), h = src->get_rows();
-    int w2 = w >> 1, h2 = h >> 1;
-    int _w2 = w2 - (sx << 1), _h2 = h2 - (sy << 1);
-    int x = 0, y = 0, sptr = sx + sy * w, sline = 0, dptr = 0, dline = 0;
-
-    dst->resize(w2, h2, src->get_channel_m());
-
-    // u_char* src_d = src->dt->u8.data();
-    // u_char* dst_d = dst->dt->u8.data();
-
-    for (y = 0; y < _h2; ++y) {
-      sline = sptr;
-      dline = dptr;
-      for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
-        dst->u8[dline] = (src->u8[sline] + src->u8[sline + 1] +
-                          src->u8[sline + w] + src->u8[sline + w + 1] + 2) >>
-                         2;
-        dst->u8[dline + 1] =
-            (src->u8[sline + 2] + src->u8[sline + 3] + src->u8[sline + w + 2] +
-             src->u8[sline + w + 3] + 2) >>
-            2;
-      }
-      for (; x < _w2; ++x, ++dline, sline += 2) {
-        dst->u8[dline] = (src->u8[sline] + src->u8[sline + 1] +
-                          src->u8[sline + w] + src->u8[sline + w + 1] + 2) >>
-                         2;
-      }
-      sptr += w << 1;
-      dptr += w2;
-    }
+    pyrdown_internal(src, dst, sx, sy);
   };
-  void pyrdown_internal(Matrix_t* src, Matrix_t* dst, int sx = 0, int sy = 0) {
-    if (!sx) {
-      sx = 0;
-    }
-    if (!sy) {
-      sy = 0;
-    }
 
+  void pyrdown_internal(Matrix_t* src, Matrix_t* dst, int sx = 0, int sy = 0) {
     int w = src->get_cols(), h = src->get_rows();
     int w2 = w >> 1, h2 = h >> 1;
     int _w2 = w2 - (sx << 1), _h2 = h2 - (sy << 1);
@@ -304,6 +270,8 @@ class Imgproc : public Math {
 
     u_char* src_d = src->u8.data();
     u_char* dst_d = dst->u8.data();
+    //auto src_d = src->u8;
+    //auto dst_d = dst->u8;
 
     for (y = 0; y < _h2; ++y) {
       sline = sptr;
@@ -385,11 +353,8 @@ class Imgproc : public Math {
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     this->equalize_histogram_internal(src, dst);
   }
-  void warp_affine_internal(Matrix_t* src, Matrix_t* dst, Matrix_t* transform,
-                            int fill_value) {
-    if (!fill_value) {
-      fill_value = 0;
-    }
+
+  void warp_affine_internal(Matrix_t* src, Matrix_t* dst, Matrix_t* transform, int fill_value = 0) {
     int src_width = src->get_cols();
     int src_height = src->get_rows();
     int dst_width = dst->get_cols();
@@ -435,75 +400,20 @@ class Imgproc : public Math {
       }
     }
   }
-  void warp_affine(uintptr_t src, uintptr_t dst, uintptr_t transform,
-                   int fill_value) {
+
+  void warp_affine(uintptr_t src, uintptr_t dst, uintptr_t transform, int fill_value) {
     auto ptrSrc = reinterpret_cast<Matrix_t*>(src);
     auto ptrDst = reinterpret_cast<Matrix_t*>(dst);
     auto ptrTransform = reinterpret_cast<Matrix_t*>(transform);
-    if (!fill_value) {
-      fill_value = 0;
-    }
-    int src_width = ptrSrc->get_cols();
-    int src_height = ptrSrc->get_rows();
-    int dst_width = ptrDst->get_cols();
-    int dst_height = ptrDst->get_rows();
-    int x = 0;
-    int y = 0;
-    int off = 0;
-    int ixs = 0;
-    int iys = 0;
-    int xs = 0.0;
-    int ys = 0.0;
-    float a = 0.0;
-    float b = 0.0;
-    float p0 = 0.0;
-    float p1 = 0.0;
-    float* td = ptrTransform->f32.data();
-    float m00 = td[0];
-    float m01 = td[1];
-    float m02 = td[2];
-    float m10 = td[3];
-    float m11 = td[4];
-    float m12 = td[5];
-    for (int dptr = 0; y < dst_height; ++y) {
-      xs = m01 * y + m02;
-      ys = m11 * y + m12;
-      for (x = 0; x < dst_width; ++x, ++dptr, xs += m00, ys += m10) {
-        ixs = xs | 0;
-        iys = ys | 0;
-
-        if (ixs >= 0 && iys >= 0 && ixs < (src_width - 1) &&
-            iys < (src_height - 1)) {
-          a = xs - ixs;
-          b = ys - iys;
-          off = src_width * iys + ixs;
-
-          p0 = ptrSrc->u8[off] + a * (ptrSrc->u8[off + 1] - ptrSrc->u8[off]);
-          p1 = ptrSrc->u8[off + src_width] +
-               a * (ptrSrc->u8[off + src_width + 1] -
-                    ptrSrc->u8[off + src_width]);
-
-          ptrDst->u8[dptr] = p0 + b * (p1 - p0);
-        } else
-          ptrDst->u8[dptr] = fill_value;
-      }
-    }
+    warp_affine_internal(ptrSrc, ptrDst, ptrTransform, fill_value);
   }
+
   void resample(uintptr_t inputSrc, uintptr_t inputDst, int nw, int nh) {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
-    int h = src->get_rows(), w = src->get_cols();
-    if (h > nh && w > nw) {
-      dst->resize(nw, nh, src->get_channel_m());
-      // using the fast alternative (fix point scale, 0x100 to avoid overflow)
-      if (src->get_type() & Types::U8_t && dst->get_type() & Types::U8_t &&
-          h * w / (nh * nw) < 0x100) {
-        _resample_u8(src, dst, nw, nh);
-      } else {
-        _resample(src, dst, nw, nh);
-      }
-    }
+    resample(src, dst, nw, nh);
   };
+
   void resample(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
     int h = src->get_rows(), w = src->get_cols();
     if (h > nh && w > nw) {
@@ -517,12 +427,14 @@ class Imgproc : public Math {
       }
     }
   };
+
   void gaussian_blur(uintptr_t inputSrc, uintptr_t inputDst, int kernel_size,
                      float sigma) {
     auto src = reinterpret_cast<Matrix_t*>(inputSrc);
     auto dst = reinterpret_cast<Matrix_t*>(inputDst);
     gaussian_blur_internal(src, dst, kernel_size, sigma);
   };
+
   void gaussian_blur_internal(Matrix_t* src, Matrix_t* dst, int kernel_size,
                               float sigma) {
     if (!sigma) {
@@ -666,6 +578,7 @@ class Imgproc : public Math {
   void _resample(Matrix_t* src, Matrix_t* dst, int nw, int nh) {
     // to be implemented!
   }
+
   template <typename Buffer, typename Filter>
   void _convol_u8(Array<Buffer>& buf, Array<u_char>& src_d,
                   Array<u_char>& dst_d, int w, int h, Array<Filter>& filter,
@@ -761,6 +674,7 @@ class Imgproc : public Math {
       }
     }
   }
+
   template <typename Buffer, typename Filter>
   void _convol(Array<Buffer>& buf, Array<u_char>& src_d, Array<u_char>& dst_d,
                int w, int h, Array<Filter>& filter, int kernel_size,
