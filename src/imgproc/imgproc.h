@@ -268,10 +268,10 @@ class Imgproc : public Math {
 
     dst->resize(w2, h2, src->get_channel_m());
 
-    // u_char* src_d = src->u8.data();
-    // u_char* dst_d = dst->u8.data();
-    auto src_d = src->u8;
-    auto dst_d = dst->u8;
+    u_char* src_d = src->u8.data();
+    u_char* dst_d = dst->u8.data();
+    //auto src_d = src->u8;
+    //auto dst_d = dst->u8;
 
     for (y = 0; y < _h2; ++y) {
       sline = sptr;
