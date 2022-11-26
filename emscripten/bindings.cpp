@@ -134,5 +134,6 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     // Extern jsfeat functions
 
     function("load_jpeg_data", &load_jpeg_data);
+    function("yape06_detect", &yape06_detect);
 
 };

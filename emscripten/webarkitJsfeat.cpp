@@ -85,7 +85,22 @@ emscripten::val load_jpeg(const char* filename) {
 emscripten::val load_jpeg_data(std::string filename) {
   auto out = load_jpeg(filename.c_str());
   return out;
-}
+};
+
+int yape06_detect(emscripten::val inputSrc, int w, int h) {
+  auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
+  Imgproc imgproc;
+  Yape06 yape;
+  KeyPoints keypoints(w * h);
+  std::unique_ptr<Matrix_t> lev0_img = std::make_unique<Matrix_t>(w, h, ComboTypes::U8C1_t);
+
+  imgproc.grayscale_internal<u_char, Matrix_t>(src.data(), w, h, lev0_img.get(), ColorSpace::COLOR_RGBA2GRAY);
+  imgproc.gaussian_blur_internal(lev0_img.get(), lev0_img.get(), 5, 2);
+  auto kpc = yape.detect_internal(lev0_img.get(), keypoints&, 17);
+
+  return kpc.count;
+};
+
 }
 
 #include "bindings.cpp"
