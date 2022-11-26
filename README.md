@@ -39,8 +39,9 @@ This project is quite experimental so do not expect great results. More classes 
 
 ### Useful functions
 
-At the moment only `load_jpeg_data` function to load a jpeg file and get important jpeg data (width, height, dpi and raw data).
+At the moment you can try `load_jpeg_data` function to load a jpeg file and get important jpeg data (width, height, dpi and raw data).
 See grayscale_example or grayscale_m_example to see the function in action.
+Try `yape06_detect` function as a compact version for the yape06 detect routine. See it in action in the  yape06_detect_video_example.html
 
 ## Libs
 Libs are stored in `build` folder: 
@@ -90,6 +91,7 @@ Take a look at our examples in the examples folder:
 - resample_video_example.html
 - sample_orb_mixed.html
 - yape06_video_example.html
+- yape06_detect_video_example.html
 
 Both examples use the debug version of the lib but, of course you can use the non-debug version as well.
 
@@ -103,4 +105,7 @@ For the first time run:
 this will build all the libs. After that if you need to compile and build only jsfeat libs:
 `./build.sh emscripten`
 and the two libs will be compiled in the build directory.
+
+If you run under Windows use the `./build.Unix.sh` script instead.
+
 We used emsdk 3.1.20.
