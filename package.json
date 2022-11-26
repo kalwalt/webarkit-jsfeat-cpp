@@ -1,6 +1,6 @@
 {
   "name": "webarkit-jsfeat-cpp",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "jsfeat c++ version to build a WASM version thanks to Emscripten.",
   "main": "index.js",
   "directories": {
