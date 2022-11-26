@@ -19,16 +19,6 @@
 
         window.addEventListener('jsfeatCpp-loaded', function (e) {
             var jsfeatCpp = Module;
-            console.log(jsfeatCpp);
-            var imgproc = new jsfeatCpp.imgproc();
-            var yape06 = new jsfeatCpp.yape06();
-            yape06.laplacian_threshold = 30;
-            yape06.min_eigen_value_threshold = 25;
-            var size = 640 * 480;
-            corners = new jsfeatCpp.KeyPoints(size);
-            const U8_t = Module.Types.U8_t.value;
-            const C1_t = Module.Types.C1_t.value;
-            const COLOR_RGBA2GRAY = Module.Colors.COLOR_RGBA2GRAY.value;
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 var hint = {
                     audio: false,
@@ -111,11 +101,11 @@
                     ctx.drawImage(video, 0, 0, width, height);
                     var image_data = ctx.getImageData(0, 0, width, height);
                     var obj = jsfeatCpp.yape06_detect(image_data.data, width, height);
-                    console.log("count is: ", obj);
+                    // console.log("count is: ", obj);
                     var data_u32 = new Uint32Array(image_data.data.buffer);
                     // we convert to mono gray image, check both methods
                     //render_mono_image(img_u8.data, data_u32, width, height, 640)
-                    //render_corners(obj.points, obj.count, data_u32, 640);
+                    render_corners(obj.points, obj.count, data_u32, 640);
                     //moveBytes(img_u8.data, image_data.data, width, height);
                     ctx.putImageData(image_data, 0, 0);
                     requestAnimationFrame(process);
