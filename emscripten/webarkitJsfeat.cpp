@@ -221,6 +221,35 @@ void train_orb_pattern_internal(const char* filename) {
 void train_orb_pattern(std::string filename) {
   train_orb_pattern_internal(filename.c_str());
 }
+emscripten::val yape06_detect(emscripten::val inputSrc, int w, int h) {
+  auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
+  Imgproc imgproc;
+  Yape06 yape;
+
+  std::unique_ptr<KeyPoints> keypoints = std::make_unique<KeyPoints>(w * h);
+  std::unique_ptr<Matrix_t> lev0_img = std::make_unique<Matrix_t>(w, h, ComboTypes::U8C1_t);
+
+  imgproc.grayscale_internal<u_char, Matrix_t>(src.data(), w, h, lev0_img.get(), Colors::COLOR_RGBA2GRAY);
+  imgproc.gaussian_blur_internal(lev0_img.get(), lev0_img.get(), 5, 2);
+  auto obj = yape.detect_internal(lev0_img.get(), keypoints.get(), 17);
+
+  emscripten::val outObj = emscripten::val::object();
+  emscripten::val pointsArr = emscripten::val::array();
+  KPoint_t pt;
+  for (auto i = 0; i < obj.pts.kpoints.size(); i++) {
+    pt.x = obj.pts.kpoints[i].x;
+    pt.y = obj.pts.kpoints[i].y;
+    pt.level = obj.pts.kpoints[i].level;
+    pt.score = obj.pts.kpoints[i].score;
+    pt.angle = obj.pts.kpoints[i].angle;
+    pointsArr.call<void>("push", pt);
+  }
+  outObj.set("count", obj.count);
+  outObj.set("points", pointsArr);
+
+  return outObj;
+};
+
 }
 
 #include "bindings.cpp"
