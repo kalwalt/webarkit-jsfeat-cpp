@@ -84,7 +84,7 @@ class Yape06 {
         }
       }
     }
-    std::cout << "count: " << ypts.count << std::endl;
+    std::cout << "Count inside Yape06 detect_internal: " << ypts.count << std::endl;
 
     return ypts;
   }

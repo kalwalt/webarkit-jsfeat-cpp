@@ -38,7 +38,7 @@ public:
 
   auto allocate() {
     KeyPoint_t kpt(0, 0, 0, 0, -1);
-    kpoints.assign(this->size, kpt);
+    this->kpoints.assign(this->size, kpt);
   }
 
   auto get_size() const {return size; };

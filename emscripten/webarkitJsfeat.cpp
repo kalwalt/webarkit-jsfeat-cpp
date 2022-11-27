@@ -173,7 +173,7 @@ void train_orb_pattern_internal(const char* filename) {
   
   JSLOGi("Image converted to GRAY.");
 
-  Array<KeyPoints*> lev_corners(num_train_levels);
+  Array<KeyPoints> lev_corners(num_train_levels);
   //Array<std::unique_ptr<KeyPoints>> lev_corners;
   //Array<std::unique_ptr<Matrix_t>> pattern_descriptors;
 
@@ -185,36 +185,33 @@ void train_orb_pattern_internal(const char* filename) {
     // preallocate corners array
     //i = (new_width * new_height) >> lev;
     i = (width * height) >> lev;
-    //std::cout << i << std::endl;
     JSLOGi("Level %i with %i keypoints.", lev, i);
+    lev_corners[lev].set_size(i);
+    lev_corners[lev].allocate();
     while (--i >= 0) {
-      lev_corners[lev]->set_size(i);
-      //lev_corners[lev]->allocate();
+      //lev_corners[lev].set_size(i);
+      //lev_corners[lev].allocate();
       //lev_corners[lev] = std::make_unique<KeyPoints>(i);
       //lev_corners.push_back(std::unique_ptr<KeyPoints>(new KeyPoints(i)));
     }
-    //std::cout << "Num. of level: " << lev << std::endl;
     
     //pattern_descriptors.push_back(std::unique_ptr<Matrix_t>(new Matrix_t(32, max_per_level, ComboTypes::U8C1_t)));
   }
 
-  std::cout << "Size of first lev_corners: " << lev_corners[0]->kpoints.size() << std::endl;
+  std::cout << "Size of first lev_corners: " << lev_corners[0].kpoints.size() << std::endl;
 
   imgproc.gaussian_blur_internal(lev0_img.get(), lev_img.get(), 5, 2);  // this is more robust
 
   JSLOGi("After Gaussian blur");
 
-  corners_num = detectors.detect_keypoints(lev_img.get(), lev_corners[0], max_per_level);
+  corners_num = detectors.detect_keypoints(lev_img.get(), &lev_corners[0], max_per_level);
 
   // orb.describe(lev_img.get(), lev_corners[0], corners_num, lev_descr.get());
   // This probablly will work in a near future
   // orb.describe(lev_img.get(), lev_corners[0], corners_num, &pattern_descriptors[0]);
 
-  // console.log("train " + lev_img.cols + "x" + lev_img.rows + " points: " + corners_num);
-  std::cout << "Corners num: " << corners_num << std::endl;
-  //JSLOGi("Corners num:  %i", corners_num);
-  //JSLOGi("train %i x %i points: %i\n", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
-  //std::cout << "train " << lev_img.get()->get_cols() << " x " << lev_img.get()->get_rows() << " points: " << corners_num << std::endl;
+  JSLOGi("train %i x %i points: %i", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
+
   free(ext);
   free(jpegImage);
 };
