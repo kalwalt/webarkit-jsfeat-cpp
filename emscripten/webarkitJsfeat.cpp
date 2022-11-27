@@ -185,18 +185,20 @@ void train_orb_pattern_internal(const char* filename) {
     // preallocate corners array
     //i = (new_width * new_height) >> lev;
     i = (width * height) >> lev;
-    std::cout << i << std::endl;
+    //std::cout << i << std::endl;
+    JSLOGi("Level %i with %i keypoints.", lev, i);
     while (--i >= 0) {
       lev_corners[lev]->set_size(i);
       //lev_corners[lev]->allocate();
       //lev_corners[lev] = std::make_unique<KeyPoints>(i);
       //lev_corners.push_back(std::unique_ptr<KeyPoints>(new KeyPoints(i)));
     }
-    std::cout << "Num. of level: " << lev << std::endl;
+    //std::cout << "Num. of level: " << lev << std::endl;
+    
     //pattern_descriptors.push_back(std::unique_ptr<Matrix_t>(new Matrix_t(32, max_per_level, ComboTypes::U8C1_t)));
   }
 
-  //std::cout << "Size of first lev_corners: " << lev_corners[0]->kpoints.size() << std::endl;
+  std::cout << "Size of first lev_corners: " << lev_corners[0]->kpoints.size() << std::endl;
 
   imgproc.gaussian_blur_internal(lev0_img.get(), lev_img.get(), 5, 2);  // this is more robust
 
