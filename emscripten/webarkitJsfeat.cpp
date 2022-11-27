@@ -151,36 +151,31 @@ void train_orb_pattern_internal(const char* filename) {
   }
   webarkitLOGi("Image done!");
 
-  JSLOGi("Starting detection routine...\n");
+  JSLOGi("Starting detection routine...");
 
   Orb orb;
   Imgproc imgproc;
   detectors::Detectors detectors;
-  std::unique_ptr<Matrix_t> lev0_img = std::make_unique<Matrix_t>(jpegImage->xsize, jpegImage->ysize, ComboTypes::U8C1_t);
-  std::unique_ptr<Matrix_t> lev_img = std::make_unique<Matrix_t>(jpegImage->xsize, jpegImage->ysize, ComboTypes::U8C1_t);
+  auto width = jpegImage->xsize;
+  auto height = jpegImage->ysize;
+  std::unique_ptr<Matrix_t> lev0_img = std::make_unique<Matrix_t>(width, height, ComboTypes::U8C1_t);
+  std::unique_ptr<Matrix_t> lev_img = std::make_unique<Matrix_t>(width, height, ComboTypes::U8C1_t);
   Array<std::unique_ptr<Matrix_t>> pattern_corners;
-  std::cout << "after orb" << std::endl;
 
-  auto sc0 = std::min(max_pattern_size / jpegImage->ysize, max_pattern_size / jpegImage->xsize);
-  new_width = (jpegImage->ysize * sc0) | 0;
-  new_height = (jpegImage->xsize * sc0) | 0;
+  auto sc0 = std::min(max_pattern_size / height, max_pattern_size / width);
+  //new_width = (jpegImage->ysize * sc0) | 0;
+  //new_height = (jpegImage->xsize * sc0) | 0;
   auto num_train_levels = 4;
+  
+  JSLOGi("Converting the RGB image to GRAY...");
+  
+  imgproc.grayscale_internal<u_char, Matrix_t>(jpegImage->image, width, height, lev0_img.get(), Colors::COLOR_RGB2GRAY);
+  
+  JSLOGi("Image converted to GRAY.");
 
-  auto i_u8_size = jpegImage->xsize * jpegImage->ysize * jpegImage->nc;
-  Array<u_char> i_u8(jpegImage->image, jpegImage->image + i_u8_size);
-  std::unique_ptr<Matrix_t> img_u8 = std::make_unique<Matrix_t>(jpegImage->xsize, jpegImage->ysize, ComboTypes::U8C4_t, i_u8);
-  
-  JSLOGi("Resampling image...");
-  
-  //imgproc.resample(img_u8.get(), lev0_img.get(), new_width, new_height);
-  
-  JSLOGi("Image resampled, starting pyramid now...");
-  // prepare preview
-  std::unique_ptr<Matrix_t> pattern_preview = std::make_unique<Matrix_t>(jpegImage->xsize >> 1, jpegImage->ysize >> 1, ComboTypes::U8C1_t);
-  imgproc.pyrdown_internal(lev0_img.get(), pattern_preview.get());
-
-  Array<KeyPoints*> lev_corners(4);
-  Array<std::unique_ptr<Matrix_t>> pattern_descriptors;
+  Array<KeyPoints*> lev_corners(num_train_levels);
+  //Array<std::unique_ptr<KeyPoints>> lev_corners;
+  //Array<std::unique_ptr<Matrix_t>> pattern_descriptors;
 
   for (lev = 0; lev < num_train_levels; ++lev) {
     // what we should do with this code?
@@ -188,13 +183,17 @@ void train_orb_pattern_internal(const char* filename) {
     // lev_corners = pattern_corners[lev];
 
     // preallocate corners array
-    i = (new_width * new_height) >> lev;
+    //i = (new_width * new_height) >> lev;
+    i = (width * height) >> lev;
+    std::cout << i << std::endl;
     while (--i >= 0) {
       lev_corners[lev]->set_size(i);
-      lev_corners[lev]->allocate();
+      //lev_corners[lev]->allocate();
+      //lev_corners[lev] = std::make_unique<KeyPoints>(i);
+      //lev_corners.push_back(std::unique_ptr<KeyPoints>(new KeyPoints(i)));
     }
     std::cout << "Num. of level: " << lev << std::endl;
-    pattern_descriptors.push_back(std::unique_ptr<Matrix_t>(new Matrix_t(32, max_per_level, ComboTypes::U8C1_t)));
+    //pattern_descriptors.push_back(std::unique_ptr<Matrix_t>(new Matrix_t(32, max_per_level, ComboTypes::U8C1_t)));
   }
 
   //std::cout << "Size of first lev_corners: " << lev_corners[0]->kpoints.size() << std::endl;
@@ -210,7 +209,7 @@ void train_orb_pattern_internal(const char* filename) {
   // orb.describe(lev_img.get(), lev_corners[0], corners_num, &pattern_descriptors[0]);
 
   // console.log("train " + lev_img.cols + "x" + lev_img.rows + " points: " + corners_num);
-  std::cout << "Corners num: " << (int)corners_num << std::endl;
+  std::cout << "Corners num: " << corners_num << std::endl;
   //JSLOGi("Corners num:  %i", corners_num);
   //JSLOGi("train %i x %i points: %i\n", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
   //std::cout << "train " << lev_img.get()->get_cols() << " x " << lev_img.get()->get_rows() << " points: " << corners_num << std::endl;
@@ -221,6 +220,7 @@ void train_orb_pattern_internal(const char* filename) {
 void train_orb_pattern(std::string filename) {
   train_orb_pattern_internal(filename.c_str());
 }
+
 emscripten::val yape06_detect(emscripten::val inputSrc, int w, int h) {
   auto src = emscripten::convertJSArrayToNumberVector<u_char>(inputSrc);
   Imgproc imgproc;
