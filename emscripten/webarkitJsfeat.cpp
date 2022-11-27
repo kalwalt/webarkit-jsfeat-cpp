@@ -175,7 +175,7 @@ void train_orb_pattern_internal(const char* filename) {
 
   Array<KeyPoints> lev_corners(num_train_levels);
   //Array<std::unique_ptr<KeyPoints>> lev_corners;
-  //Array<std::unique_ptr<Matrix_t>> pattern_descriptors;
+  Array<std::unique_ptr<Matrix_t>> pattern_descriptors;
 
   for (lev = 0; lev < num_train_levels; ++lev) {
     // what we should do with this code?
@@ -195,7 +195,7 @@ void train_orb_pattern_internal(const char* filename) {
       //lev_corners.push_back(std::unique_ptr<KeyPoints>(new KeyPoints(i)));
     }
     
-    //pattern_descriptors.push_back(std::unique_ptr<Matrix_t>(new Matrix_t(32, max_per_level, ComboTypes::U8C1_t)));
+    pattern_descriptors.push_back(std::unique_ptr<Matrix_t>(new Matrix_t(32, max_per_level, ComboTypes::U8C1_t)));
   }
 
   std::cout << "Size of first lev_corners: " << lev_corners[0].kpoints.size() << std::endl;
@@ -206,9 +206,7 @@ void train_orb_pattern_internal(const char* filename) {
 
   corners_num = detectors.detect_keypoints(lev_img.get(), &lev_corners[0], max_per_level);
 
-  // orb.describe(lev_img.get(), lev_corners[0], corners_num, lev_descr.get());
-  // This probablly will work in a near future
-  // orb.describe(lev_img.get(), lev_corners[0], corners_num, &pattern_descriptors[0]);
+  orb.describe_internal(lev_img.get(), lev_corners[0].kpoints, corners_num, pattern_descriptors[0].get());
 
   JSLOGi("train %i x %i points: %i", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
 
