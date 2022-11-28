@@ -134,6 +134,7 @@ EMSCRIPTEN_BINDINGS(webarkit) {
     // Extern jsfeat functions
 
     function("load_jpeg_data", &load_jpeg_data);
+    function("train_orb_pattern", &train_orb_pattern);
     function("yape06_detect", &yape06_detect);
 
 };

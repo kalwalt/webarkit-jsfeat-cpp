@@ -35,6 +35,12 @@ public:
     this->size = kp.size;
     this->kpoints = kp.kpoints;
   }
+
+  auto allocate() {
+    KeyPoint_t kpt(0, 0, 0, 0, -1);
+    this->kpoints.assign(this->size, kpt);
+  }
+
   auto get_size() const {return size; };
   
   auto set_size(int size) { this->size = size; };

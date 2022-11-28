@@ -1,0 +1,7 @@
+// before all:
+git submodule update --init
+//Assumend that you have emscripten engine installed under docker, you may run:
+// for the first time
+docker exec emscripten ./build.sh emscripten-all
+// and then when WebarkitLib is compiled:
+docker exec emscripten ./build.sh emscripten
