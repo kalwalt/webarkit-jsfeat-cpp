@@ -1,0 +1,74 @@
+<html>
+
+<body>
+    <img id="img" src="pinball.jpg">
+    <canvas id="dst" width="1637" height="2048"></canvas>
+
+    <script type="module">
+        import jsfeatCpp from "./../build/jsfeatES6cpp_debug.js"
+        import { loadJpeg } from "./js/loader.js"
+
+        const jsfeat = await jsfeatCpp();
+
+        var canvasDst = document.getElementById('dst');
+        var ctxDst = canvasDst.getContext('2d');
+
+        const RGB2GRAY = jsfeat.Colors.COLOR_RGB2GRAY.value;
+        const U8C1_t = jsfeat.ComboTypes.U8C1_t.value;
+
+        const radius = 2;
+        const sigma = 0;
+        var r = radius | 0;
+        var kernel_size = (r + 1) << 1;
+
+        function render_corners(corners, count, img, step) {
+                var pix = (0xff << 24) | (0x00 << 16) | (0xff << 8) | 0x00;
+                for(var i=0; i < count; ++i)
+                {
+                    var x = corners[i].x;
+                    var y = corners[i].y;
+                    var off = (x + y * step);
+                    img[off] = pix;
+                    img[off-1] = pix;
+                    img[off+1] = pix;
+                    img[off-step] = pix;
+                    img[off+step] = pix;
+                }
+            }
+
+        loadJpeg("pinball.jpg", (img) => {
+            console.log("Jpeg data from loader: ", img);
+
+            var m_u8 = new jsfeat.matrix_t(img.width, img.height, U8C1_t);
+            m_u8.allocate();
+            var imgproc = new jsfeat.imgproc();
+            var yape06 = new jsfeat.yape06();
+            yape06.laplacian_threshold = 30;
+            yape06.min_eigen_value_threshold = 25;
+            var size = img.width * img.height;
+            var corners = new jsfeat.KeyPoints(size);
+
+            if (img.data) {
+                imgproc.grayscale(img.data, img.width, img.height, m_u8.getPointer(), RGB2GRAY);
+                imgproc.gaussian_blur(m_u8.getPointer(), m_u8.getPointer(), kernel_size, sigma);
+                var obj = yape06.detect(m_u8.getPointer(), corners.get_pointer(), 17);
+                const imageData = ctxDst.createImageData(img.width, img.height);
+                var inputData = m_u8.data;
+                for (let i = 0, j = 0; i < imageData.data.length; i++, j += 4) {
+                    imageData.data[j] = inputData[i];
+                    imageData.data[j + 1] = inputData[i];
+                    imageData.data[j + 2] = inputData[i];
+                    imageData.data[j + 3] = 255;
+                }
+                console.log("count is: ", obj);
+                var data_u32 = new Uint32Array(imageData.data.buffer);
+                render_corners(obj.points, obj.count, data_u32, 1637);
+                ctxDst.putImageData(imageData, 0, 0);
+            }
+        }, (err) => { console.error("Something went wrong while loading the jpeg: ", err); })
+
+    </script>
+
+</body>
+
+</html>

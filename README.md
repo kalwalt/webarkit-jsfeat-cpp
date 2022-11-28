@@ -90,6 +90,7 @@ Take a look at our examples in the examples folder:
 - pyrdown_video_example.html
 - resample_video_example.html
 - sample_orb_mixed.html
+- yape06_image_example.html
 - yape06_video_example.html
 - yape06_detect_video_example.html
 
