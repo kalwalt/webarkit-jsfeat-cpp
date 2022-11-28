@@ -200,7 +200,7 @@ void train_orb_pattern_internal(const char* filename) {
 
   std::cout << "Size of first lev_corners: " << lev_corners[0].kpoints.size() << std::endl;
 
-  imgproc.gaussian_blur_internal(lev0_img.get(), lev_img.get(), 5, 2);  // this is more robust
+  imgproc.gaussian_blur_internal(lev0_img.get(), lev_img.get(), 5, 0.0);  // this is more robust
 
   JSLOGi("After Gaussian blur");
 

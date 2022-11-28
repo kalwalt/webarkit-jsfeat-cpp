@@ -24,7 +24,7 @@ class Orb {
   }
 
   void describe_internal(Matrix_t* src, Array<KeyPoint_t> corners, int count, Matrix_t*  descriptors) {
-     int DESCR_SIZE = 32;  // bytes;
+    int DESCR_SIZE = 32;  // bytes;
     int i = 0, b = 0, px = 0.0, py = 0.0, angle = 0.0;
     int t0 = 0, t1 = 0, val = 0;
     // int img = src.data, w = src.cols, h = src.rows;
