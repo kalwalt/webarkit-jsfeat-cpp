@@ -163,18 +163,18 @@ void train_orb_pattern_internal(const char* filename) {
   Array<std::unique_ptr<Matrix_t>> pattern_corners;
 
   auto sc0 = std::min(max_pattern_size / height, max_pattern_size / width);
-  //new_width = (jpegImage->ysize * sc0) | 0;
-  //new_height = (jpegImage->xsize * sc0) | 0;
+  // new_width = (jpegImage->ysize * sc0) | 0;
+  // new_height = (jpegImage->xsize * sc0) | 0;
   auto num_train_levels = 4;
-  
+
   JSLOGi("Converting the RGB image to GRAY...");
-  
+
   imgproc.grayscale_internal<u_char, Matrix_t>(jpegImage->image, width, height, lev0_img.get(), Colors::COLOR_RGB2GRAY);
-  
+
   JSLOGi("Image converted to GRAY.");
 
   Array<KeyPoints> lev_corners(num_train_levels);
-  //Array<std::unique_ptr<KeyPoints>> lev_corners;
+  // Array<std::unique_ptr<KeyPoints>> lev_corners;
   Array<std::unique_ptr<Matrix_t>> pattern_descriptors;
 
   for (lev = 0; lev < num_train_levels; ++lev) {
@@ -183,18 +183,18 @@ void train_orb_pattern_internal(const char* filename) {
     // lev_corners = pattern_corners[lev];
 
     // preallocate corners array
-    //i = (new_width * new_height) >> lev;
+    // i = (new_width * new_height) >> lev;
     i = (width * height) >> lev;
     JSLOGi("Level %i with %i keypoints.", lev, i);
     lev_corners[lev].set_size(i);
     lev_corners[lev].allocate();
     while (--i >= 0) {
-      //lev_corners[lev].set_size(i);
-      //lev_corners[lev].allocate();
-      //lev_corners[lev] = std::make_unique<KeyPoints>(i);
-      //lev_corners.push_back(std::unique_ptr<KeyPoints>(new KeyPoints(i)));
+      // lev_corners[lev].set_size(i);
+      // lev_corners[lev].allocate();
+      // lev_corners[lev] = std::make_unique<KeyPoints>(i);
+      // lev_corners.push_back(std::unique_ptr<KeyPoints>(new KeyPoints(i)));
     }
-    
+
     pattern_descriptors.push_back(std::unique_ptr<Matrix_t>(new Matrix_t(32, max_per_level, ComboTypes::U8C1_t)));
   }
 
@@ -209,6 +209,34 @@ void train_orb_pattern_internal(const char* filename) {
   orb.describe_internal(lev_img.get(), lev_corners[0].kpoints, corners_num, pattern_descriptors[0].get());
 
   JSLOGi("train %i x %i points: %i", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
+
+  sc /= sc_inc;
+
+  for (lev = 1; lev < num_train_levels; ++lev) {
+    //lev_corners = pattern_corners[lev];
+    //lev_descr = pattern_descriptors[lev];
+
+    //new_width = (lev0_img.cols * sc) | 0;
+    new_width = (lev0_img.get()->get_cols() * sc) ;
+    //new_height = (lev0_img.rows * sc) | 0;
+    new_height = (lev0_img.get()->get_rows() * sc);
+
+    imgproc.resample(lev0_img.get(), lev_img.get(), new_width, new_height);
+    imgproc.gaussian_blur_internal(lev_img.get(), lev_img.get(), 5, 0.0);
+    corners_num = detectors.detect_keypoints(lev_img.get(), &lev_corners[lev], max_per_level);
+    orb.describe_internal(lev_img.get(), lev_corners[lev].kpoints, corners_num, pattern_descriptors[lev].get());
+
+    // fix the coordinates due to scale level
+    // will fix this later...
+    /*for (i = 0; i < corners_num; ++i) {
+      lev_corners[i].x *= 1. / sc;
+      lev_corners[i].y *= 1. / sc;
+    }*/
+
+    JSLOGi("train %i x %i points: %i", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
+
+    sc /= sc_inc;
+  }
 
   free(ext);
   free(jpegImage);
@@ -246,7 +274,6 @@ emscripten::val yape06_detect(emscripten::val inputSrc, int w, int h) {
 
   return outObj;
 };
-
 }
 
 #include "bindings.cpp"
