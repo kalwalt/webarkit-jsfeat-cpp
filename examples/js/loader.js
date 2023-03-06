@@ -1,4 +1,5 @@
-import jsfeatCpp from "./../../build/jsfeatES6cpp_debug.js"
+//import jsfeatCpp from "./../../build/jsfeatES6cpp_debug.js"
+import jsfeatCpp from "./../../build/jsfeatES6cpp.js"
 var jsfeat = await jsfeatCpp();
 
 var jpeg_count = 0;

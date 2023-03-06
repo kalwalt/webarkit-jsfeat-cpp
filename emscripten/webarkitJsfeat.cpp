@@ -232,6 +232,11 @@ void train_orb_pattern_internal(const char* filename) {
       lev_corners[i].x *= 1. / sc;
       lev_corners[i].y *= 1. / sc;
     }*/
+    
+    for (i = 0; i < corners_num; ++i) {
+      lev_corners[lev].kpoints[i].x *= 1. / sc;
+      lev_corners[lev].kpoints[i].y *= 1. / sc;
+    }
 
     JSLOGi("train %i x %i points: %i", lev_img.get()->get_cols(), lev_img.get()->get_rows(), corners_num);
 
